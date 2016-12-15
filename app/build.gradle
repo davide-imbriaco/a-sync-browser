@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
+    defaultConfig {
+        applicationId "it.anyplace.syncbrowser"
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        jackOptions {
+            enabled true
+        }
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile ('it.anyplace.sync:a-sync-client:1.0') {
+        exclude group: 'commons-logging', module:'commons-logging'
+        exclude group: 'commons-cli'
+        exclude group: 'commons-codec'
+        exclude group: 'org.apache.httpcomponents', module:'httpclient'
+        exclude group: 'org.slf4j'
+        exclude group: 'ch.qos.logback'
+    }
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    compile 'org.slf4j:slf4j-android:1.7.13'
+    compile 'com.google.zxing:android-integration:3.3.0'
+    compile 'com.nononsenseapps:filepicker:2.5.2'
+}

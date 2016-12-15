@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- The main content view -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="@color/primary">
+            <TextView
+                android:id="@+id/show_menu_button"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:textColor="@color/white_on_primary"
+                android:text="@string/icon_fa_bars" />
+            <TextView
+                android:id="@+id/current_folder_name_header"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:textColor="@color/white_on_primary"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/topBar"
+            android:orientation="vertical"
+            android:divider="?android:listDivider"
+            android:showDividers="middle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:id="@+id/index_loading_bar"
+                android:orientation="horizontal"
+                android:background="@color/primary"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    />
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"/>
+                <TextView
+                    android:id="@+id/index_update_message"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white_on_primary"
+                    android:text="index update..."
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/no_folder_shared_message"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:padding="8dp"
+                    android:text="no shared folders available..."
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    />
+
+            </LinearLayout>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/listView"
+                android:divider="@color/divider"
+                android:dividerHeight="2dp">
+
+            </ListView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/file_upload_bar"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/file_upload_message"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="file upload..."
+                    android:textSize="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    android:paddingRight="8dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cancel_file_upload_button"
+                    android:textSize="32dp"
+                    android:textColor="@color/primary"
+                    android:background="?selectableItemBackground"
+                    android:text="@string/icon_fa_times"
+                    android:layout_marginRight="8dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/file_upload_button"
+                    android:textSize="32dp"
+                    android:textColor="@color/primary"
+                    android:background="?selectableItemBackground"
+                    android:text="@string/icon_fa_cloud_upload"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/upload_here_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="48dp"
+            android:textColor="@color/primary"
+            android:background="?selectableItemBackground"
+            android:text="@string/icon_plus_circle"/>
+
+        <FrameLayout
+            android:id="@+id/mainProgressBarHolder"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
+            android:alpha="0.4"
+            android:background="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_gravity="center" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <!-- The navigation drawer -->
+
+    <ScrollView
+        android:background="?android:windowBackground"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fadeScrollbars="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/qrButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <TextView
+            android:id="@+id/qr_button_icon"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:text="@string/icon_qrcode"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="add device"
+                android:layout_gravity="center_vertical"
+                android:textAlignment="gravity"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cleanupButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <TextView
+                android:id="@+id/cleanup_button_icon"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:text="@string/icon_cleanup"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="clear local cache/index"
+                android:layout_gravity="center_vertical"
+                android:textAlignment="gravity"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/updateIndexButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <TextView
+                android:id="@+id/update_index_button_icon"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:text="@string/icon_update"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="update remote index"
+                android:layout_gravity="center_vertical"
+                android:textAlignment="gravity"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/exitMenuButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <TextView
+                android:id="@+id/exit_menu_button_icon"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:text="@string/icon_fa_sign_out"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="exit menu"
+                android:layout_gravity="center_vertical"
+                android:textAlignment="gravity"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+    </ScrollView>
+
+    <!-- device drawer (right) -->
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/devicesDrawer"
+        android:background="?android:windowBackground"
+        android:layout_width="280dp"
+        android:layout_gravity="end">
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/devicesListView"
+                android:divider="@color/divider"
+                android:dividerHeight="2dp">
+
+            </ListView>
+            <TextView
+                android:id="@+id/add_device_here_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:textSize="48dp"
+                android:textColor="@color/primary"
+                android:background="?selectableItemBackground"
+                android:text="@string/icon_qrcode"/>
+    </RelativeLayout>
+
+</android.support.v4.widget.DrawerLayout>
+
+
