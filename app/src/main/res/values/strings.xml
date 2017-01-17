@@ -1,17 +1,14 @@
 <resources>
     <string name="app_name">a-sync-browser</string>
-
-    <string name="icon_cleanup">&#xf014;</string>
-    <string name="icon_qrcode">&#xf029;</string>
-    <string name="icon_folder">&#xf07b;</string>
-    <string name="icon_folder_o">&#xf114;</string>
-    <string name="icon_file_o">&#xf016;</string>
-    <string name="icon_update">&#xf079;</string>
-    <string name="icon_plus_circle">&#xf055;</string>
-    <string name="icon_fa_bars">&#xf0c9;</string>
-    <string name="icon_fa_share_alt">&#xf1e0;</string>
-    <string name="icon_fa_sign_out">&#xf08b;</string>
-    <string name="icon_fa_cloud_upload">&#xf0ee;</string>
-    <string name="icon_fa_times">&#xf00d;</string>
-    <string name="icon_fa_laptop">&#xf109;</string>
+    <string name="index_update_progress_message">index update...</string>
+    <string name="folder_list_empty_message">no folder avaliable</string>
+    <string name="no_search_result_message">0 results found</string>
+    <string name="too_many_search_results_message">too many results found</string>
+    <string name="search_hint">search...</string>
+    <string name="file_upload_default_label">file upload...</string>
+    <string name="add_device_label">add device</string>
+    <string name="clear_local_cache_index_label">clear local cache/index</string>
+    <string name="update_remote_index_label">update remote index</string>
+    <string name="exit_menu_label">exit menu</string>
+    <string name="devices_list_view_empty_message">no devices avaliable</string>
 </resources>

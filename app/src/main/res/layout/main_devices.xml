@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/devices_right_drawer"
+        android:background="?android:windowBackground"
+        android:layout_width="280dp"
+        android:layout_gravity="end">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/devices_list_view"
+                android:divider="@color/divider"
+                android:dividerHeight="2dp">
+            </ListView>
+            <TextView
+                android:id="@+id/devices_list_view_empty_element"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/devices_list_view_empty_message"
+                android:textSize="20dp"
+                android:visibility="gone" />
+            <np.TextView
+                android:id="@+id/devices_list_view_add_device_here_qrcode_button"
+                style="@style/FontAwesomeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:textSize="48dp"
+                android:textColor="@color/primary"
+                android:background="?android:windowBackground"
+                android:text="@string/icon_qrcode"/>
+
+</RelativeLayout>
+
+

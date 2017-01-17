@@ -10,8 +10,12 @@
         android:banner="@drawable/banner"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Syncthing">
-        <activity android:name="it.anyplace.syncbrowser.MainActivity">
+        android:theme="@style/Theme.ASync">
+        <activity
+            android:name="it.anyplace.syncbrowser.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

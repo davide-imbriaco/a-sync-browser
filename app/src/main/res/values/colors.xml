@@ -10,4 +10,8 @@
     <color name="text_blue">#ff33b5e5</color>
     <color name="text_green">#ff99cc00</color>
     <color name="light_grey">#cccccc</color>
+
+    <color name="device_online_active">#ff99cc00</color>
+    <color name="device_online_inactive">#f43703</color>
+    <color name="device_offline">#aaaaaa</color>
 </resources>

@@ -6,13 +6,14 @@
     android:paddingRight="@dimen/abc_action_bar_content_inset_material"
     android:paddingTop="12dp">
 
-    <TextView
+    <np.TextView
         android:id="@+id/folder_icon"
+        style="@style/FontAwesomeIcon"
         android:layout_width="60dp"
         android:layout_height="match_parent"
         android:textSize="60dp"
         android:textColor="@color/primary"
-        android:text="@string/icon_fa_share_alt"
+        android:text="@string/icon_share_alt"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"/>
 

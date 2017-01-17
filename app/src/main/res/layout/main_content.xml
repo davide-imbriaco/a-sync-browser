@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <!--top bar BEGIN-->
+        <LinearLayout
+            android:id="@+id/main_header"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="@color/primary">
+            <np.TextView
+                style="@style/FontAwesomeIcon"
+                android:id="@+id/main_header_show_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:paddingRight="12dp"
+                android:textColor="@color/white_on_primary"
+                android:text="@string/icon_bars" />
+            <TextView
+                android:id="@+id/main_header_folder_label"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:text="@string/app_name"
+                android:textColor="@color/white_on_primary"/>
+            <np.TextView
+                style="@style/FontAwesomeIcon"
+                android:id="@+id/main_header_search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/white_on_primary"
+                android:text="@string/icon_search" />
+            <np.TextView
+                style="@style/FontAwesomeIcon"
+                android:id="@+id/main_header_sort_order_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/white_on_primary"
+                android:text="@string/icon_sort_alpha_asc" />
+            <np.TextView
+                style="@style/FontAwesomeIcon"
+                android:id="@+id/main_header_show_devices_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:textColor="@color/white_on_primary"
+                android:text="@string/icon_laptop" />
+        </LinearLayout>
+    <!--top bar END-->
+
+    <!--center content BEGIN-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_header"
+            android:orientation="vertical"
+            android:divider="?android:listDivider"
+            android:showDividers="middle">
+
+            <!--index loading progress BEGIN-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:id="@+id/main_index_progress_bar"
+                android:orientation="horizontal"
+                android:background="@color/primary"
+                android:visibility="gone">
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"
+                    android:paddingLeft="12dp"/>
+                <TextView
+                    android:id="@+id/main_index_progress_bar_label"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textSize="18dp"
+                    android:textColor="@color/white_on_primary"
+                    android:text="@string/index_update_progress_message"
+                    android:layout_gravity="left"
+                    android:textAlignment="gravity"
+                    />
+            </LinearLayout>
+            <!--index loading progress END-->
+
+            <!--search bar BEGIN-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:padding="8dp"
+                android:id="@+id/main_search_bar"
+                android:orientation="horizontal"
+                android:background="@color/primary"
+                android:visibility="gone">
+                <ProgressBar
+                    android:id="@+id/main_search_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"
+                    android:paddingLeft="12dp"
+                    android:visibility="gone"/>
+                <EditText
+                    android:id="@+id/main_search_bar_input_field"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:padding="4sp"
+                    android:paddingLeft="8sp"
+                    android:textColor="?android:textColorPrimary"
+                    android:background="@color/white_on_primary"
+                    android:layout_gravity="bottom"
+                    android:textAlignment="gravity"
+                    android:hint="@string/search_hint"
+                    android:maxLines="1"
+                    />
+                <np.TextView
+                    style="@style/FontAwesomeIcon"
+                    android:id="@+id/main_search_bar_close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    android:textSize="24dp"
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/white_on_primary"
+                    android:text="@string/icon_times" />
+            </LinearLayout>
+            <!--search bar END-->
+
+            <!--main list view BEGIN-->
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/main_folder_and_files_list_view"
+                android:divider="@color/divider"
+                android:dividerHeight="2dp">
+            </ListView>
+            <TextView
+                android:id="@+id/main_list_view_empty_element"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:text="@string/folder_list_empty_message"
+                android:textSize="20dp"
+                android:visibility="gone" />
+            <!--main list view END-->
+
+            <!--search list view BEGIN-->
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/main_search_results_list_view"
+                android:divider="@color/divider"
+                android:dividerHeight="2dp"
+                android:visibility="gone">
+            </ListView>
+            <TextView
+                android:id="@+id/main_search_results_empty_element"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:text="@string/no_search_result_message"
+                android:textSize="20dp"
+                android:visibility="gone" />
+            <!--main list view END-->
+
+            <!--file upload footer BEGIN-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/file_upload_intent_footer"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone"
+                android:background="@drawable/footer_background">
+                <TextView
+                    android:id="@+id/file_upload_intent_footer_label"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/file_upload_default_label"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="12dp"
+                    />
+                <np.TextView
+                    style="@style/FontAwesomeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/file_upload_intent_footer_cancel_button"
+                    android:textSize="40dp"
+                    android:textColor="@color/primary"
+                    android:background="?selectableItemBackground"
+                    android:text="@string/icon_times"
+                    android:layout_marginRight="12dp"/>
+                <np.TextView
+                    style="@style/FontAwesomeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/file_upload_intent_footer_confirm_button"
+                    android:textSize="40dp"
+                    android:textColor="@color/primary"
+                    android:background="?selectableItemBackground"
+                    android:text="@string/icon_cloud_upload"/>
+            </LinearLayout>
+            <!--file upload footer END-->
+
+        </LinearLayout>
+    <!--center content END-->
+
+    <!--upload here overlay button BEGIN-->
+        <np.TextView
+            style="@style/FontAwesomeIcon"
+            android:id="@+id/main_list_view_upload_here_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="48dp"
+            android:textColor="@color/primary"
+            android:background="?android:windowBackground"
+            android:text="@string/icon_cloud_upload"/>
+    <!--upload here overlay button END-->
+
+    <!--main progress mask BEGIN-->
+        <FrameLayout
+            android:id="@+id/main_progress_bar_container"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
+            android:alpha="0.4"
+            android:background="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/main_header">
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_gravity="center" />
+            <TextView
+                android:id="@+id/main_progress_bar_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="100dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:textAlignment="gravity"
+                android:textColor="@color/white_on_primary"  />
+        </FrameLayout>
+    <!--main progress mask END-->
+
+</RelativeLayout>
+

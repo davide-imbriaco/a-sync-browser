@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Widget" />
-    <style name="Widget.Syncthing" />
+    <!-- CUSTOM -->
+    <style name="FontAwesomeIcon">
+        <item name="typeface">fontawesome-webfont.ttf</item>
+    </style>
 
-    <style name="Widget.Syncthing.ListView" parent="Widget.AppCompat.ListView">
+    <!-- ST -->
+    <style name="Widget" />
+    <style name="Widget.ASync" />
+
+    <style name="Widget.ASync.ListView" parent="Widget.AppCompat.ListView">
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:clipToPadding">false</item>
@@ -11,9 +17,9 @@
         <item name="android:divider">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.Syncthing.TextView" />
+    <style name="Widget.ASync.TextView" />
 
-    <style name="Widget.Syncthing.TextView.Label" parent="@android:style/Widget.TextView">
+    <style name="Widget.ASync.TextView.Label" parent="@android:style/Widget.TextView">
         <item name="android:background">?selectableItemBackground</item>
         <item name="android:drawablePadding">32dp</item>
         <item name="android:gravity">start|center_vertical</item>
@@ -22,38 +28,38 @@
         <item name="android:paddingRight">@dimen/abc_action_bar_content_inset_material</item>
     </style>
 
-    <style name="Widget.Syncthing.TextView.Label.Details">
+    <style name="Widget.ASync.TextView.Label.Details">
         <item name="android:textColor">?attr/editTextColor</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="Widget.Syncthing.TextView.Label.Details.DeviceList">
+    <style name="Widget.ASync.TextView.Label.Details.DeviceList">
         <item name="android:paddingLeft">4dp</item>
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="Widget.Syncthing.TextView.Label.Details.Field">
+    <style name="Widget.ASync.TextView.Label.Details.Field">
         <item name="android:background">@null</item>
     </style>
 
-    <style name="Widget.Syncthing.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+    <style name="Widget.ASync.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">false</item>
         <item name="color">@android:color/white</item>
     </style>
 
     <style name="TextAppearance" />
-    <style name="TextAppearance.Syncthing" />
-    <style name="TextAppearance.Syncthing.ListItemPrimary" parent="TextAppearance.AppCompat.Subhead">
+    <style name="TextAppearance.ASync" />
+    <style name="TextAppearance.ASync.ListItemPrimary" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="TextAppearance.Syncthing.ListItemSecondary" parent="TextAppearance.AppCompat.Body1">
+    <style name="TextAppearance.ASync.ListItemSecondary" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
-    <style name="TextAppearance.Syncthing.ListItemSmall" parent="TextAppearance.AppCompat.Caption" />
+    <style name="TextAppearance.ASync.ListItemSmall" parent="TextAppearance.AppCompat.Caption" />
 
 
 
