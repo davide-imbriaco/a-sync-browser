@@ -2,6 +2,8 @@
 
 [![MPLv2 License](https://img.shields.io/badge/license-MPLv2-blue.svg?style=flat-square)](https://www.mozilla.org/MPL/2.0/)
 
+[<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80">](https://play.google.com/store/apps/details?id=it.anyplace.syncbrowser)
+
 This project is an android app, that works as a client for a [Syncthing][1] share (accessing syncthing devices in the same way a client-server file sharing app access its proprietary server). 
 This project is based on [a-sync][2], a java implementation of Syncthing protocols (bep, discovery, relay). 
 
