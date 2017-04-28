@@ -108,7 +108,7 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 //TODO move interface code to fragment
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private ConfigurationService configuration;
     private SyncthingClient syncthingClient;
@@ -184,10 +184,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Log.i("MainActivity", "onRequestPermissionsResult: "+Joiner.on(",").join(permissions)+" -> "+Joiner.on(",").join(Arrays.asList(grantResults)));
+        Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Log.i("MainActivity","onRequestPermissionsResult: restart app for new permissions");
+        finish();
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("onCreate", "BEGIN");
         super.onCreate(savedInstanceState);
+
+
+        {
+            Log.i("MainActivity", "check permissions BEGIN");
+            List<String> requests = Lists.newArrayList();
+            for (String requiredPermission : Arrays.asList(
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                int permissionCheck = ContextCompat.checkSelfPermission(this, requiredPermission);
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("MainActivity.onCreate", "app is missing permission " + requiredPermission + ", sending request");
+                    requests.add(requiredPermission);
+                }
+            }
+            if (!requests.isEmpty()) {
+                ActivityCompat.requestPermissions(MainActivity.this, requests.toArray(new String[]{}), 13);
+            }
+            Log.i("MainActivity", "check permissions END");
+        }
 
         setContentView(R.layout.main_container);
 
@@ -513,6 +543,7 @@ public class MainActivity extends AppCompatActivity {
         searchModeOn=false;
         ListView listView = (ListView) findViewById(R.id.main_search_results_list_view);
         listView.setEmptyView(null);
+        ((TextView)findViewById(R.id.main_search_results_empty_element)).setVisibility(View.GONE);
         listView.setAdapter(null);
         updateButtonsVisibility();
         indexFinder.close();
