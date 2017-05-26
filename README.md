@@ -24,4 +24,3 @@ If you like this work, please donate something to help its development!
 [2]: https://github.com/davide-imbriaco/a-sync
 [3]: https://github.com/davide-imbriaco/a-sync-browser/blob/master/LICENSE
 [4]: https://play.google.com/store/apps/details?id=it.anyplace.syncbrowser
-

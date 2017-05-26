@@ -71,6 +71,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -156,13 +157,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             Log.i("handleIndexRecordEvent", "trigger folder list update from index record acquired");
                             ((TextView) findViewById(R.id.main_index_progress_bar_label)).setText("index update, folder "
                                     + label + " " + ((int) (indexInfo.getCompleted() * 100)) + "% synchronized");
-                            updateFolderListView();
+                            if(indexBrowser==null  || event.getAffectedPaths().contains(indexBrowser.getCurrentPath())) {
+                                updateFolderListView();
+                            }
                         }
                     });
                 }
 
                 @Subscribe
-                public void handleRemoteIndexAquiredEvent(IndexHandler.RemoteIndexAquiredEvent event) {
+                public void handleRemoteIndexAquiredEvent(IndexHandler.FullIndexAquiredEvent event) {
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -339,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                 indexFinder.submitSearch(text);
                             }
                         }
-                    }.execute();
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                 }
             }
@@ -382,6 +385,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 updateMainProgressBar(false,null);
                 if (syncthingClient == null) {
                     Toast.makeText(MainActivity.this, "error starting syncthing client: " + statupError, Toast.LENGTH_LONG).show();
+                    MainActivity.this.finish();
                 } else {
                     restoreBrowserFolderFromPref();
                     Date lastUpdate = getLastIndexUpdateFromPref();
@@ -609,14 +613,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private String getContentFileName(Uri contentUri) {
-        String fileName = contentUri.getLastPathSegment();
+        String fileName = new File(contentUri.getLastPathSegment()).getName();
         if (equal(contentUri.getScheme(), "content")) {
             try (Cursor cursor = MainActivity.this.getContentResolver().query(contentUri, new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();
                 String path = cursor.getString(column_index);
                 Log.d("Main", "recovered 'content' uri real path = " + path);
-                fileName = Uri.parse(path).getLastPathSegment();
+                fileName = new File(Uri.parse(path).getLastPathSegment()).getName();
+            }catch(Exception ex) {
+                Log.w("getContentFileName", "unable to get content _data from uri = " + contentUri, ex);
             }
         }
         return fileName;
@@ -846,7 +852,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         isBrowsingFolder = true;
         navigateToFolder(indexBrowser.getCurrentPathInfo());
         updateButtonsVisibility();
-        Log.d("Main", "showFolderListView END");
+        Log.d("showFolderListView", "showFolderListView END");
     }
 
     private void updateMainProgressBar(boolean visible, String message){
@@ -855,12 +861,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void navigateToFolder(FileInfo fileInfo) {
+        Log.d("navigateToFolder", "BEGIN");
         if (indexBrowser.isRoot() && PathUtils.isParent(fileInfo.getPath())) {
             showAllFoldersListView(); //navigate back to folder list
         } else {
             if (fileInfo.isDirectory()) {
                 indexBrowser.navigateTo(fileInfo);
+                FileInfo newFileInfo=PathUtils.isParent(fileInfo.getPath())?indexBrowser.getCurrentPathInfo():fileInfo;
                 if (!indexBrowser.isCacheReadyAfterALittleWait()) {
+                    Log.d("navigateToFolder", "load folder cache bg");
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected void onPreExecute() {
@@ -875,14 +884,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                         @Override
                         protected void onPostExecute(Void aVoid) {
+                            Log.d("navigateToFolder", "cache ready, navigate to folder");
                             updateMainProgressBar(false,null);
-                            navigateToFolder(fileInfo);
+                            navigateToFolder(newFileInfo);
                         }
-                    }.execute();
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     List<FileInfo> list = indexBrowser.listFiles();
-                    Log.i("showFolderListView", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list.size() + " records");
-                    Log.d("showFolderListView", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list);
+                    Log.i("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list.size() + " records");
+                    Log.d("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list);
                     checkArgument(!list.isEmpty());//list must contain at least the 'parent' path
                     ListView listView = (ListView) findViewById(R.id.main_folder_and_files_list_view);
                     ArrayAdapter adapter = (ArrayAdapter) listView.getAdapter();
@@ -893,12 +903,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     saveCurrentFolder();
                     ((TextView) findViewById(R.id.main_header_folder_label)).setText(indexBrowser.isRoot()
                             ?folderBrowser.getFolderInfo(indexBrowser.getFolder()).getLabel()
-                            :(PathUtils.isParent(fileInfo.getPath())?indexBrowser.getCurrentPathInfo():fileInfo).getFileName());
+                            :newFileInfo.getFileName());
                 }
             } else {
                 pullFile(fileInfo);
             }
         }
+        Log.d("navigateToFolder", "END");
     }
 
     private void updateFolderListView() {
@@ -988,6 +999,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void updateDeviceList() {
+        //TODO fix npe when opening drawer before app has fully started (no synclient)
         List<DeviceStats> list = Lists.newArrayList(syncthingClient.getDevicesHandler().getDeviceStatsList());
         Collections.sort(list, new Comparator<DeviceStats>() {
             Function<DeviceStats.DeviceStatus,Integer> fun= Functions.forMap(ImmutableMap.of(DeviceStats.DeviceStatus.OFFLINE,3, DeviceStats.DeviceStatus.ONLINE_INACTIVE,2, DeviceStats.DeviceStatus.ONLINE_ACTIVE,1));
@@ -1088,7 +1100,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     }
                 }
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private final static String LAST_INDEX_UPDATE_TS_PREF = "LAST_INDEX_UPDATE_TS";
@@ -1141,7 +1153,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             .putLong(LAST_INDEX_UPDATE_TS_PREF, new Date().getTime())
                             .apply();
                 }
-            }.execute();
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         Log.d("Main", "updateIndexFromRemote END (running bg)");
     }
@@ -1158,7 +1170,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     configuration=null;
                     return null;
                 }
-            }.execute().get();
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
         } catch (Exception ex) {
             Log.w("Main", "error closing client", ex);
         }
