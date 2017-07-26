@@ -38,6 +38,32 @@
                 />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/main_menu_add_device_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <np.TextView
+                style="@style/FontAwesomeIcon"
+                android:id="@+id/main_menu_add_device_button_icon"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:textSize="24dp"
+                android:text="@string/icon_plus"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:text="@string/add_device_text_label"
+                android:layout_gravity="center_vertical"
+                android:textAlignment="gravity"
+                />
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/main_menu_cleanup_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

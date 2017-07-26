@@ -7,8 +7,12 @@
     <string name="search_hint">search...</string>
     <string name="file_upload_default_label">file upload...</string>
     <string name="add_device_label">add device</string>
+    <string name="add_device_text_label">add device (manual)</string>
     <string name="clear_local_cache_index_label">clear local cache/index</string>
     <string name="update_remote_index_label">update remote index</string>
     <string name="exit_menu_label">exit menu</string>
     <string name="devices_list_view_empty_message">no devices avaliable</string>
+    <string name="ok">ok</string>
+    <string name="discard">discard</string>
+	<string name="remote_syncthing_id">Remote Syncthing ID</string>
 </resources>

@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,7 +33,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -68,10 +68,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Text;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -103,8 +101,6 @@ import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.nullToEmpty;
-import static it.anyplace.syncbrowser.utils.ViewUtils.listViews;
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -256,6 +252,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(View view) {
                 openQrcode();
+                ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
+            }
+        });
+        ((View) findViewById(R.id.main_menu_add_device_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openManualAdd();
                 ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
             }
         });
@@ -1181,6 +1184,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         integrator.initiateScan();
     }
 
+    public void openManualAdd() {
+        ManualAddDialog dialog = ManualAddDialog.newInstance(this);
+        dialog.show(getSupportFragmentManager(), "manualadd");
+    }
+
 
     /**
      * Receives value of scanned QR code and sets it as device ID.
@@ -1213,7 +1221,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-    private void importDeviceId(String deviceId) {
+    protected void importDeviceId(String deviceId) {
         try {
             KeystoreHandler.validateDeviceId(deviceId);
             boolean modified = configuration.edit().addPeers(new DeviceInfo(deviceId, null));
