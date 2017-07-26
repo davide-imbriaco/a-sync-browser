@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">a-sync-browser</string>
-    <string name="index_update_progress_message">index update...</string>
-    <string name="folder_list_empty_message">no folder avaliable</string>
+    <string name="index_update_progress_message">Updating index…</string>
+    <string name="folder_list_empty_message">No folder available</string>
     <string name="no_search_result_message">0 results found</string>
-    <string name="too_many_search_results_message">too many results found</string>
-    <string name="search_hint">search...</string>
-    <string name="file_upload_default_label">file upload...</string>
-    <string name="add_device_label">add device</string>
-    <string name="clear_local_cache_index_label">clear local cache/index</string>
-    <string name="update_remote_index_label">update remote index</string>
-    <string name="exit_menu_label">exit menu</string>
-    <string name="devices_list_view_empty_message">no devices avaliable</string>
+    <string name="too_many_search_results_message">Too many results</string>
+    <string name="search_hint">Search…</string>
+    <string name="file_upload_default_label">Uploading file…</string>
+    <string name="add_device_label">Add device</string>
+    <string name="clear_local_cache_index_label">Clear local cache/index</string>
+    <string name="update_remote_index_label">Update remote index</string>
+    <string name="exit_menu_label">Exit menu</string>
+    <string name="devices_list_view_empty_message">No devices available</string>
 </resources>

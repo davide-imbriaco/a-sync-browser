@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">a-sync-browser</string>
+	<string name="index_update_progress_message">Aggiornamento indici…</string>
+	<string name="folder_list_empty_message">Nessuna directory disponibile</string>
+	<string name="no_search_result_message">0 risultati trovati</string>
+	<string name="too_many_search_results_message">Troppi risultati trovati</string>
+	<string name="search_hint">Cerca…</string>
+	<string name="file_upload_default_label">Invio file…</string>
+	<string name="add_device_label">Aggiungi dispositivo</string>
+	<string name="clear_local_cache_index_label">Pulisci la cache e indici</string>
+	<string name="update_remote_index_label">Aggiorna indici</string>
+	<string name="exit_menu_label">Esci dal menu</string>
+	<string name="devices_list_view_empty_message">Nessun dispositivo disponibile</string>
+</resources>
