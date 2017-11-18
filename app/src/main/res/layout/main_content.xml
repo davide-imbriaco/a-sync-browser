@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    android:layout_height="match_parent">
 
     <!--top bar BEGIN-->
         <LinearLayout
@@ -21,7 +19,7 @@
                 android:id="@+id/main_header_show_menu_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:paddingRight="12dp"
                 android:textColor="@color/white_on_primary"
                 android:text="@string/icon_bars" />
@@ -31,7 +29,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:maxLines="1"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:text="@string/app_name"
                 android:textColor="@color/white_on_primary"/>
@@ -40,7 +38,7 @@
                 android:id="@+id/main_header_search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:paddingRight="16dp"
                 android:textColor="@color/white_on_primary"
                 android:text="@string/icon_search" />
@@ -49,7 +47,7 @@
                 android:id="@+id/main_header_sort_order_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:paddingRight="16dp"
                 android:textColor="@color/white_on_primary"
                 android:text="@string/icon_sort_alpha_asc" />
@@ -58,7 +56,7 @@
                 android:id="@+id/main_header_show_devices_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:textColor="@color/white_on_primary"
                 android:text="@string/icon_laptop" />
         </LinearLayout>
@@ -90,10 +88,10 @@
                     android:paddingLeft="12dp"/>
                 <TextView
                     android:id="@+id/main_index_progress_bar_label"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:textSize="18dp"
+                    android:textSize="18sp"
                     android:textColor="@color/white_on_primary"
                     android:text="@string/index_update_progress_message"
                     android:layout_gravity="left"
@@ -140,7 +138,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
                     android:textAlignment="gravity"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:paddingLeft="16dp"
                     android:textColor="@color/white_on_primary"
                     android:text="@string/icon_times" />
@@ -163,7 +161,7 @@
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:text="@string/folder_list_empty_message"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:visibility="gone" />
             <!--main list view END-->
 
@@ -184,7 +182,7 @@
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:text="@string/no_search_result_message"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:visibility="gone" />
             <!--main list view END-->
 
@@ -203,7 +201,7 @@
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/file_upload_default_label"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:layout_gravity="center_vertical"
                     android:textAlignment="gravity"
                     android:paddingTop="4dp"
@@ -216,7 +214,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/file_upload_intent_footer_cancel_button"
-                    android:textSize="40dp"
+                    android:textSize="40sp"
                     android:textColor="@color/primary"
                     android:background="?selectableItemBackground"
                     android:text="@string/icon_times"
@@ -226,7 +224,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/file_upload_intent_footer_confirm_button"
-                    android:textSize="40dp"
+                    android:textSize="40sp"
                     android:textColor="@color/primary"
                     android:background="?selectableItemBackground"
                     android:text="@string/icon_cloud_upload"/>
@@ -246,7 +244,7 @@
             android:layout_marginBottom="24dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:textSize="48dp"
+            android:textSize="48sp"
             android:textColor="@color/primary"
             android:background="?android:windowBackground"
             android:text="@string/icon_cloud_upload"/>
@@ -273,7 +271,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="100dp"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:textAlignment="gravity"

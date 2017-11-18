@@ -10,7 +10,4 @@
         <item name="drawerArrowStyle">@style/Widget.ASync.DrawerArrowToggle</item>
     </style>
     <style name="Theme.ASync" parent="Theme.ASync.Base"/>
-    <style name="Theme.ASync.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/primary_dark</item>
-    </style>
 </resources>

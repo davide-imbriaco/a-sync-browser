@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/devices_list_view_empty_message"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:visibility="gone" />
             <np.TextView
                 android:id="@+id/devices_list_view_add_device_here_qrcode_button"
@@ -31,7 +31,7 @@
                 android:layout_marginBottom="18dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:textSize="48dp"
+                android:textSize="48sp"
                 android:textColor="@color/primary"
                 android:background="?android:windowBackground"
                 android:text="@string/icon_qrcode"/>

@@ -7,7 +7,6 @@
 
     <!-- ST -->
     <style name="Widget" />
-    <style name="Widget.ASync" />
 
     <style name="Widget.ASync.ListView" parent="Widget.AppCompat.ListView">
         <item name="android:paddingTop">8dp</item>
@@ -17,50 +16,10 @@
         <item name="android:divider">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.ASync.TextView" />
-
-    <style name="Widget.ASync.TextView.Label" parent="@android:style/Widget.TextView">
-        <item name="android:background">?selectableItemBackground</item>
-        <item name="android:drawablePadding">32dp</item>
-        <item name="android:gravity">start|center_vertical</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
-        <item name="android:paddingLeft">@dimen/abc_action_bar_content_inset_material</item>
-        <item name="android:paddingRight">@dimen/abc_action_bar_content_inset_material</item>
-    </style>
-
-    <style name="Widget.ASync.TextView.Label.Details">
-        <item name="android:textColor">?attr/editTextColor</item>
-        <item name="android:minHeight">56dp</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-    </style>
-
-    <style name="Widget.ASync.TextView.Label.Details.DeviceList">
-        <item name="android:paddingLeft">4dp</item>
-        <item name="android:minHeight">48dp</item>
-    </style>
-
-    <style name="Widget.ASync.TextView.Label.Details.Field">
-        <item name="android:background">@null</item>
-    </style>
-
     <style name="Widget.ASync.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">false</item>
         <item name="color">@android:color/white</item>
     </style>
-
-    <style name="TextAppearance" />
-    <style name="TextAppearance.ASync" />
-    <style name="TextAppearance.ASync.ListItemPrimary" parent="TextAppearance.AppCompat.Subhead">
-        <item name="android:textColor">?android:textColorPrimary</item>
-    </style>
-
-    <style name="TextAppearance.ASync.ListItemSecondary" parent="TextAppearance.AppCompat.Body1">
-        <item name="android:textColor">?android:textColorSecondary</item>
-    </style>
-
-    <style name="TextAppearance.ASync.ListItemSmall" parent="TextAppearance.AppCompat.Caption" />
-
 
 
     <!-- You can also inherit from NNF_BaseTheme.Light -->
