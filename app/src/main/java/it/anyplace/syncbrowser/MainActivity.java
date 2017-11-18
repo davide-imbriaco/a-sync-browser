@@ -19,13 +19,10 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,10 +43,8 @@ import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.eventbus.Subscribe;
@@ -75,7 +70,6 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.Nullable;
 
 import it.anyplace.sync.bep.BlockPuller;
-import it.anyplace.sync.bep.BlockPusher;
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.bep.IndexBrowser;
 import it.anyplace.sync.bep.IndexHandler;
@@ -95,7 +89,6 @@ import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.nullToEmpty;
-import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 //TODO move interface code to fragment
@@ -129,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setCache(new File(getExternalCacheDir(), "cache"))
                     .setDatabase(new File(getExternalFilesDir(null), "database"))
                     .loadFrom(new File(getExternalFilesDir(null), "config.properties"));
-            configuration.edit().setDeviceName(getDeviceName());
+            configuration.edit().setDeviceName(Util.getDeviceName());
             FileUtils.cleanDirectory(configuration.getTemp());
             KeystoreHandler keystoreHandler = KeystoreHandler.newLoader().loadAndStore(configuration);
             configuration.edit().persistLater();
@@ -257,15 +250,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             }
         }.execute();
-
-        Log.i("onCreate", "app ready, scanning intent");
-        Intent intent = getIntent();
-        if (equal(Intent.ACTION_SEND, intent.getAction())) {
-            handleSendSingle(intent);
-        } else if (equal(Intent.ACTION_SEND_MULTIPLE, intent.getAction())) {
-            handleSendMany(intent);
-        }
-        Log.i("onCreate", "END");
     }
 
     private void checkPermissions() {
@@ -314,167 +298,25 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-    private void handleSendSingle(Intent intent) {
-        Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (fileUri != null) {
-            handleSend(Collections.singletonList(fileUri));
-        }
-    }
-
-    private void handleSendMany(Intent intent) {
-        List<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        if (fileUris != null && !fileUris.isEmpty()) {
-            handleSend(fileUris);
-        }
-    }
-
     private void updateButtonsVisibility() {
         findViewById(R.id.main_folder_and_files_list_view).setVisibility(View.VISIBLE);
-        if (isHandlingUploadIntent) {
-            findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
-            findViewById(R.id.file_upload_intent_footer).setVisibility(View.VISIBLE);//todo set button disabled if not in folder
-            if (isBrowsingFolder) {
-                findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(true);
-            } else {
-                findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(false);
-            }
+        if (isBrowsingFolder) {
+            findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.VISIBLE);
         } else {
-            if (isBrowsingFolder) {
-                findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.VISIBLE);
-            } else {
-                findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
-            }
-            findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
+            findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
         }
+        findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
     }
 
-    private List<Uri> filesToUpload;
-
-    private void handleSend(List<Uri> list) {
-        Log.i("Main", "handle send of files = " + list);
-        isHandlingUploadIntent = true;
-        filesToUpload = list;
-        updateButtonsVisibility();
-        ((TextView) findViewById(R.id.file_upload_intent_footer_label)).setText(Joiner.on(", ").join(Iterables.transform(list, this::getContentFileName)));
-        findViewById(R.id.file_upload_intent_footer_confirm_button).setOnClickListener(view -> {
-            if (indexBrowser != null) {
-                doUpload(indexBrowser.getFolder(), indexBrowser.getCurrentPath(), filesToUpload);
-                filesToUpload = null;
-                isHandlingUploadIntent = false;
-                updateButtonsVisibility();
-            } else {
-                Toast.makeText(MainActivity.this, "choose a folder for upload", Toast.LENGTH_SHORT).show();
-            }
-        });
-        findViewById(R.id.file_upload_intent_footer_cancel_button).setOnClickListener(view -> {
-            filesToUpload = null;
-            isHandlingUploadIntent = false;
-            updateButtonsVisibility();
-            Toast.makeText(MainActivity.this, "file upload cancelled", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    private String getContentFileName(Uri contentUri) {
-        String fileName = new File(contentUri.getLastPathSegment()).getName();
-        if (equal(contentUri.getScheme(), "content")) {
-            try (Cursor cursor = MainActivity.this.getContentResolver().query(contentUri, new String[]{MediaStore.Images.Media.DATA}, null, null, null)) {
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                cursor.moveToFirst();
-                String path = cursor.getString(column_index);
-                Log.d("Main", "recovered 'content' uri real path = " + path);
-                fileName = new File(Uri.parse(path).getLastPathSegment()).getName();
-            }
-        }
-        return fileName;
-    }
-
-    private void doUpload(final String folder, final String dir, final List<Uri> filesToUpload) {
-        if (!filesToUpload.isEmpty()) {
-            new AsyncTask<Void, BlockPusher.FileUploadObserver, Exception>() {
-                private ProgressDialog progressDialog;
-                private Thread thread;
-                private boolean cancelled = false;
-                private final Uri fileToUpload = filesToUpload.iterator().next();
-                private final List<Uri> nextFilesToUpload = filesToUpload.subList(1, filesToUpload.size());
-                private final String fileName = getContentFileName(fileToUpload);
-                private final String path = PathUtils.buildPath(dir, fileName);
-
-                @Override
-                protected void onPreExecute() {
-                    Log.i("doUpload", "upload of file " + fileName + " to folder " + folder + ":" + dir);
-                    progressDialog = new ProgressDialog(MainActivity.this);
-                    progressDialog.setMessage("uploading file " + fileName);
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    progressDialog.setCancelable(true);
-                    progressDialog.setOnCancelListener(dialogInterface -> {
-                        cancelled = true;
-                        if (thread != null) {
-                            thread.interrupt();
-                        }
-                        Toast.makeText(MainActivity.this, "upload aborted by user", Toast.LENGTH_SHORT).show();
-                    });
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.show();
-                }
-
-                @Override
-                protected Exception doInBackground(Void... voidd) {
-                    try {
-                        try (BlockPusher.FileUploadObserver observer = syncthingClient.pushFile(getContentResolver().openInputStream(fileToUpload), folder, path)) {
-                            Log.i("doUpload", "pushing file " + fileName + " to folder " + folder + ":" + dir);
-                            publishProgress(observer);
-                            while (!observer.isCompleted() && !cancelled) {
-                                observer.waitForProgressUpdate();
-                                Log.i("Main", "upload progress = " + observer.getProgressMessage());
-                                publishProgress(observer);
-                            }
-                            if (cancelled) {
-                                return null;
-                            }
-                            Log.i("Main", "uploaded file = " + path);
-                            return null;
-                        }
-                    } catch (Exception ex) {
-                        if (cancelled) {
-                            return null;
-                        }
-                        Log.e("Main", "file upload exception", ex);
-                        return ex;
-                    }
-                }
-
-                @Override
-                protected void onProgressUpdate(BlockPusher.FileUploadObserver... observer) {
-                    if (observer[0].getProgress() > 0) {
-                        progressDialog.setIndeterminate(false);
-                        progressDialog.setMax((int) observer[0].getDataSource().getSize());
-                        progressDialog.setProgress((int) (observer[0].getProgress() * observer[0].getDataSource().getSize()));
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(Exception res) {
-                    progressDialog.dismiss();
-                    if (cancelled) {
-                        // do nothing
-                    } else if (res != null) {
-                        Toast.makeText(MainActivity.this, "error uploading file: " + res, Toast.LENGTH_LONG).show();
-                    } else {
-                        Log.i("doUpload", "uploaded file " + fileName + " to folder " + folder + ":" + dir);
-                        Toast.makeText(MainActivity.this, "uploaded file: " + fileName, Toast.LENGTH_SHORT).show();
-                        updateFolderListView();
-                        if (!nextFilesToUpload.isEmpty()) {
-                            doUpload(folder, dir, nextFilesToUpload);
-                        }
-                    }
-                }
-            }.execute();
-        }
+    private void doUpload(final String syncthingFolder, final String syncthingSubFolder, final Uri fileToUpload) {
+        new UploadFileTask(this, syncthingClient, fileToUpload, syncthingFolder,
+                    syncthingSubFolder, this::updateFolderListView).execute();
     }
 
     private FolderBrowser folderBrowser;
     private IndexBrowser indexBrowser;
-    private boolean isBrowsingFolder = false, isHandlingUploadIntent = false, indexUpdateInProgress = false;
+    private boolean isBrowsingFolder = false;
+    private boolean indexUpdateInProgress = false;
 
     private final static String CURRENT_FOLDER_PREF = "CURRENT_FOLDER";
 
@@ -903,25 +745,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         integrator.initiateScan();
     }
 
-
-    /**
-     * Receives value of scanned QR code and sets it as device ID.
-     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        // Check if this was a QR code scan.
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
             String deviceId = scanResult.getContents();
             if (!isBlank(deviceId)) {
                 Log.i("Main", "qrcode text = " + deviceId);
                 importDeviceId(deviceId);
-                return;
             }
         }
-
-        if (resultCode == Activity.RESULT_OK) {
-            Uri fileUri = intent.getData();
-            doUpload(indexBrowser.getFolder(), indexBrowser.getCurrentPath(), Collections.singletonList(fileUri));
+        // Otherwise, it was a file upload.
+        else {
+            if (resultCode == Activity.RESULT_OK) {
+                doUpload(indexBrowser.getFolder(), indexBrowser.getCurrentPath(), intent.getData());
+            }
         }
     }
 
@@ -946,21 +785,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         } else {
             Toast.makeText(this, "device already present: " + deviceId, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private String getDeviceName() {
-        String manufacturer = nullToEmpty(Build.MANUFACTURER);
-        String model = nullToEmpty(Build.MODEL);
-        String deviceName;
-        if (model.startsWith(manufacturer)) {
-            deviceName = capitalize(model);
-        } else {
-            deviceName = capitalize(manufacturer) + " " + model;
-        }
-        if (isBlank(deviceName)) {
-            deviceName = "android";
-        }
-        return deviceName;
     }
 
 }
