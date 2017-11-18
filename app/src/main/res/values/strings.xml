@@ -11,4 +11,5 @@
     <string name="update_remote_index_label">update remote index</string>
     <string name="exit_menu_label">exit menu</string>
     <string name="devices_list_view_empty_message">no devices avaliable</string>
+    <string name="toast_write_storage_permission_required">Write storage permission is required for this app</string>
 </resources>

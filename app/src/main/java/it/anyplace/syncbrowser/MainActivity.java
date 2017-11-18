@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,7 +33,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -68,10 +68,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Text;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -103,13 +101,13 @@ import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.nullToEmpty;
-import static it.anyplace.syncbrowser.utils.ViewUtils.listViews;
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 //TODO move interface code to fragment
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private static final int REQUEST_WRITE_STORAGE = 142;
 
     private ConfigurationService configuration;
     private SyncthingClient syncthingClient;
@@ -187,40 +185,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        Log.i("MainActivity", "onRequestPermissionsResult: "+Joiner.on(",").join(permissions)+" -> "+Joiner.on(",").join(Arrays.asList(grantResults)));
-        Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Log.i("MainActivity","onRequestPermissionsResult: restart app for new permissions");
-        finish();
-        startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("onCreate", "BEGIN");
         super.onCreate(savedInstanceState);
-
-
-        {
-            Log.i("MainActivity", "check permissions BEGIN");
-            List<String> requests = Lists.newArrayList();
-            for (String requiredPermission : Arrays.asList(
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                int permissionCheck = ContextCompat.checkSelfPermission(this, requiredPermission);
-                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                    Log.i("MainActivity.onCreate", "app is missing permission " + requiredPermission + ", sending request");
-                    requests.add(requiredPermission);
-                }
-            }
-            if (!requests.isEmpty()) {
-                ActivityCompat.requestPermissions(MainActivity.this, requests.toArray(new String[]{}), 13);
-            }
-            Log.i("MainActivity", "check permissions END");
-        }
 
         setContentView(R.layout.main_container);
 
@@ -408,21 +376,31 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.i("onCreate", "END");
     }
 
-    private boolean checkPermissions() {
-        List<String> missingPermissions = Lists.newArrayList();
-        for (String permission : Arrays.asList(Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
-            }
+    private void checkPermissions() {
+        int permissionState = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionState != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
         }
-        if (!missingPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(this, missingPermissions.toArray(new String[]{}), 0);
-            return false;
-        } else {
-            return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_WRITE_STORAGE:
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.toast_write_storage_permission_required,
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        //TODO handle response
     }
 
     private void showUploadHereDialog() {
