@@ -32,8 +32,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -42,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,7 +61,6 @@ import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -74,7 +70,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
@@ -83,7 +78,6 @@ import it.anyplace.sync.bep.BlockPuller;
 import it.anyplace.sync.bep.BlockPusher;
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.bep.IndexBrowser;
-import it.anyplace.sync.bep.IndexFinder;
 import it.anyplace.sync.bep.IndexHandler;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.beans.DeviceInfo;
@@ -190,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         checkPermissions();
 
-        findViewById(R.id.main_header_sort_order_button).setOnClickListener(view -> toggleFileSort());
         findViewById(R.id.main_header_show_menu_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.LEFT));
         findViewById(R.id.main_header_show_devices_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.RIGHT));
         findViewById(R.id.main_menu_exit_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT));
@@ -214,46 +207,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
         });
         findViewById(R.id.main_list_view_upload_here_button).setOnClickListener(view -> showUploadHereDialog());
-        findViewById(R.id.main_header_search_button).setOnClickListener(view -> enterSearchMode());
-        findViewById(R.id.main_search_bar_close_button).setOnClickListener(view -> exitSearchMode());
-        ((EditText) findViewById(R.id.main_search_bar_input_field)).addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                final String text=editable.toString();
-                if(indexFinder!=null && !StringUtils.isBlank(text) && text.trim().length()>2) {
-                    new AsyncTask<Void,Void,Void>(){
-
-                        @Override
-                        protected Void doInBackground(Void... voids) {
-                            try {
-                                Thread.sleep(750);
-                            } catch (InterruptedException e) {
-                            }
-                            return null;
-                        }
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            String newText=((EditText) findViewById(R.id.main_search_bar_input_field)).getText().toString();
-                            if(equal(text,newText)) {
-                                findViewById(R.id.main_search_progress_bar).setVisibility(View.VISIBLE);
-                                indexFinder.submitSearch(text);
-                            }
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-                }
-            }
-        });
         ((DrawerLayout) findViewById(R.id.main_drawer_layout)).addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -376,114 +329,23 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void updateButtonsVisibility() {
-        if(searchModeOn){
-            findViewById(R.id.main_header_sort_order_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
-            findViewById(R.id.main_folder_and_files_list_view).setVisibility(View.GONE);
+        findViewById(R.id.main_folder_and_files_list_view).setVisibility(View.VISIBLE);
+        if (isHandlingUploadIntent) {
             findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
-            findViewById(R.id.main_search_results_list_view).setVisibility(View.VISIBLE);
-            findViewById(R.id.main_search_bar).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.main_folder_and_files_list_view).setVisibility(View.VISIBLE);
-            findViewById(R.id.main_search_results_list_view).setVisibility(View.GONE);
-            findViewById(R.id.main_search_bar).setVisibility(View.GONE);
-            if (isHandlingUploadIntent) {
-                findViewById(R.id.main_header_search_button).setVisibility(View.GONE);
-                findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
-                findViewById(R.id.file_upload_intent_footer).setVisibility(View.VISIBLE);//todo set button disabled if not in folder
-                if (isBrowsingFolder) {
-                    findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(true);
-                } else {
-                    findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(false);
-                }
-            } else {
-                findViewById(R.id.main_header_sort_order_button).setVisibility(View.VISIBLE);
-                if (isBrowsingFolder) {
-                    findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.VISIBLE);
-                } else {
-                    findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
-                }
-                findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
-            }
+            findViewById(R.id.file_upload_intent_footer).setVisibility(View.VISIBLE);//todo set button disabled if not in folder
             if (isBrowsingFolder) {
-                findViewById(R.id.main_header_search_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(true);
             } else {
-                findViewById(R.id.main_header_sort_order_button).setVisibility(View.GONE);
+                findViewById(R.id.file_upload_intent_footer_confirm_button).setEnabled(false);
             }
+        } else {
+            if (isBrowsingFolder) {
+                findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.VISIBLE);
+            } else {
+                findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
+            }
+            findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
         }
-    }
-
-    private IndexFinder indexFinder;
-    private IndexFinder.SearchCompletedEvent searchCompletedEvent;
-
-    private void enterSearchMode(){
-        Log.i("Main","enterSearchMode");
-        searchModeOn=true;
-        searchCompletedEvent=null;
-        indexFinder=syncthingClient.getIndexHandler().newIndexFinderBuilder().build();
-        indexFinder.setOrdering(fileInfoOrdering);
-        indexFinder.getEventBus().register(new Object(){
-            @Subscribe
-            public void handleSearchCompletedEvent(IndexFinder.SearchCompletedEvent event){
-                runOnUiThread(() -> {
-                    String term = ((EditText) findViewById(R.id.main_search_bar_input_field)).getText().toString();
-                    if(equal(event.getQuery(),term)){
-                        searchCompletedEvent=event;
-                        updateSearchResultListView();
-                        findViewById(R.id.main_search_progress_bar).setVisibility(View.GONE);
-                    }
-                });
-            }
-        });
-
-        ListView listView = findViewById(R.id.main_search_results_list_view);
-        listView.setEmptyView(findViewById(R.id.main_search_results_empty_element));
-        ArrayAdapter adapter = createFileInfoArrayAdapter();
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((adapterView, view, position, l) -> {
-            FileInfo fileInfo = (FileInfo) listView.getItemAtPosition(position);
-            if(fileInfo.isDirectory()){
-                exitSearchMode();
-                showFolderListView(fileInfo.getFolder(),fileInfo.getPath());
-            }else if(fileInfo.isFile()){
-                pullFile(fileInfo);
-            }
-        });
-
-        updateButtonsVisibility();
-        updateSearchResultListView();
-    }
-
-    private void exitSearchMode(){
-        Log.i("Main","exitSearchMode");
-        searchModeOn=false;
-        ListView listView = findViewById(R.id.main_search_results_list_view);
-        listView.setEmptyView(null);
-        findViewById(R.id.main_search_results_empty_element).setVisibility(View.GONE);
-        listView.setAdapter(null);
-        updateButtonsVisibility();
-        indexFinder.close();
-        indexFinder=null;
-        searchCompletedEvent=null;
-    }
-
-    private void updateSearchResultListView(){
-        ListView listView = findViewById(R.id.main_search_results_list_view);
-        ArrayAdapter<FileInfo> arrayAdapter=((ArrayAdapter)listView.getAdapter());
-        arrayAdapter.clear();
-        if(searchCompletedEvent==null || searchCompletedEvent.hasZeroResults()){
-            Log.i("Main", "updateSearchResultListView, no result");
-            ((TextView)findViewById(R.id.main_search_results_empty_element)).setText(R.string.no_search_result_message);
-        }else if(searchCompletedEvent.hasTooManyResults()) {
-            Log.i("Main", "updateSearchResultListView, too many results");
-            ((TextView)findViewById(R.id.main_search_results_empty_element)).setText(R.string.too_many_search_results_message);
-        }else{
-            List<FileInfo> list = searchCompletedEvent.getResultList();
-            Log.i("Main", "updateSearchResultListView, result count = " + list.size());
-            arrayAdapter.addAll(list);
-        }
-        arrayAdapter.notifyDataSetChanged();
-        listView.setSelection(0);
     }
 
     private List<Uri> filesToUpload;
@@ -612,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private FolderBrowser folderBrowser;
     private IndexBrowser indexBrowser;
-    private boolean isBrowsingFolder = false, isHandlingUploadIntent = false, indexUpdateInProgress = false, searchModeOn=false;
+    private boolean isBrowsingFolder = false, isHandlingUploadIntent = false, indexUpdateInProgress = false;
 
     private final static String CURRENT_FOLDER_PREF = "CURRENT_FOLDER";
 
@@ -860,20 +722,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private final List<Comparator<FileInfo>> availableFileInfoOrderings=Collections.unmodifiableList(Arrays.asList(FileInfoOrdering.ALPHA_ASC_DIR_FIRST, FileInfoOrdering.LAST_MOD_DESC));
     private Comparator<FileInfo> fileInfoOrdering=availableFileInfoOrderings.iterator().next();
-    private final Map<Comparator<FileInfo>,Integer> iconResourceForOrdering=ImmutableMap.of(FileInfoOrdering.ALPHA_ASC_DIR_FIRST,R.string.icon_sort_alpha_asc,FileInfoOrdering.LAST_MOD_DESC,R.string.icon_sort_numeric_desc);
-
-    private void toggleFileSort(){
-        fileInfoOrdering=availableFileInfoOrderings.get( (availableFileInfoOrderings.indexOf(fileInfoOrdering)+1)%availableFileInfoOrderings.size() );
-        ((TextView)findViewById(R.id.main_header_sort_order_button)).setText(iconResourceForOrdering.get(fileInfoOrdering));
-        if(indexBrowser!=null){
-            indexBrowser.setOrdering(fileInfoOrdering);
-            updateFolderListView();
-        }
-        if(indexFinder!=null){
-            indexFinder.setOrdering(fileInfoOrdering);
-            updateSearchResultListView();
-        }
-    }
 
     private void updateDeviceList() {
         //TODO fix npe when opening drawer before app has fully started (no synclient)

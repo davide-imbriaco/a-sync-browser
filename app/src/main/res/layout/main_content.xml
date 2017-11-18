@@ -35,24 +35,6 @@
                 android:textColor="@color/white_on_primary"/>
             <np.TextView
                 style="@style/FontAwesomeIcon"
-                android:id="@+id/main_header_search_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:paddingRight="16dp"
-                android:textColor="@color/white_on_primary"
-                android:text="@string/icon_search" />
-            <np.TextView
-                style="@style/FontAwesomeIcon"
-                android:id="@+id/main_header_sort_order_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:paddingRight="16dp"
-                android:textColor="@color/white_on_primary"
-                android:text="@string/icon_sort_alpha_asc" />
-            <np.TextView
-                style="@style/FontAwesomeIcon"
                 android:id="@+id/main_header_show_devices_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -100,51 +82,6 @@
             </LinearLayout>
             <!--index loading progress END-->
 
-            <!--search bar BEGIN-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:padding="8dp"
-                android:id="@+id/main_search_bar"
-                android:orientation="horizontal"
-                android:background="@color/primary"
-                android:visibility="gone">
-                <ProgressBar
-                    android:id="@+id/main_search_progress_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:indeterminate="true"
-                    android:paddingLeft="12dp"
-                    android:visibility="gone"/>
-                <EditText
-                    android:id="@+id/main_search_bar_input_field"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:textSize="16sp"
-                    android:padding="4sp"
-                    android:paddingLeft="8sp"
-                    android:textColor="?android:textColorPrimary"
-                    android:background="@color/white_on_primary"
-                    android:layout_gravity="bottom"
-                    android:textAlignment="gravity"
-                    android:hint="@string/search_hint"
-                    android:maxLines="1"
-                    />
-                <np.TextView
-                    style="@style/FontAwesomeIcon"
-                    android:id="@+id/main_search_bar_close_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:textAlignment="gravity"
-                    android:textSize="24sp"
-                    android:paddingLeft="16dp"
-                    android:textColor="@color/white_on_primary"
-                    android:text="@string/icon_times" />
-            </LinearLayout>
-            <!--search bar END-->
-
             <!--main list view BEGIN-->
             <ListView
                 android:layout_width="match_parent"
@@ -161,27 +98,6 @@
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:text="@string/folder_list_empty_message"
-                android:textSize="20sp"
-                android:visibility="gone" />
-            <!--main list view END-->
-
-            <!--search list view BEGIN-->
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/main_search_results_list_view"
-                android:divider="@color/divider"
-                android:dividerHeight="2dp"
-                android:visibility="gone">
-            </ListView>
-            <TextView
-                android:id="@+id/main_search_results_empty_element"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAlignment="center"
-                android:text="@string/no_search_result_message"
                 android:textSize="20sp"
                 android:visibility="gone" />
             <!--main list view END-->
