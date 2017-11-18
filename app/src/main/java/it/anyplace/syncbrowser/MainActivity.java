@@ -48,8 +48,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nononsenseapps.filepicker.FilePickerActivity;
@@ -240,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     Toast.makeText(MainActivity.this, "error starting syncthing client: " + statupError, Toast.LENGTH_LONG).show();
                     MainActivity.this.finish();
                 } else {
-                    restoreBrowserFolderFromPref();
+                    showAllFoldersListView();
                     Date lastUpdate = getLastIndexUpdateFromPref();
                     if (lastUpdate == null || new Date().getTime() - lastUpdate.getTime() > 10 * 60 * 1000) { //trigger update if last was more than 10mins ago
                         Log.d("onCreate", "trigger index update, last was " + lastUpdate);
@@ -318,37 +316,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private boolean isBrowsingFolder = false;
     private boolean indexUpdateInProgress = false;
 
-    private final static String CURRENT_FOLDER_PREF = "CURRENT_FOLDER";
-
-    private void saveCurrentFolder() {
-        Log.d("saveCurrentFolder", "saveCurrentFolder");
-        if (isBrowsingFolder) {
-            getPreferences(MODE_PRIVATE).edit()
-                    .putString(CURRENT_FOLDER_PREF, new Gson().toJson(Arrays.asList(indexBrowser.getFolder(), indexBrowser.getCurrentPath())))
-                    .apply();
-        } else {
-            getPreferences(MODE_PRIVATE).edit().remove(CURRENT_FOLDER_PREF).apply();
-        }
-    }
-
-    private void restoreBrowserFolderFromPref() {
-        Log.d("restoreBrowserFolder...", "restoreBrowserFolderFromPref");
-        String value = getPreferences(MODE_PRIVATE).getString(CURRENT_FOLDER_PREF, null);
-        if (isBlank(value)) {
-            showAllFoldersListView();
-        } else {
-            try {
-                List<String> list = new Gson().fromJson(value, new TypeToken<List<String>>() {
-                }.getType());
-                checkArgument(list.size() == 2);
-                showFolderListView(list.get(0), list.get(1));
-            } catch (Exception ex) {
-                Log.e("restoreBrowserFolder...", "error restoring browser folder from preferences", ex);
-                showAllFoldersListView();
-            }
-        }
-    }
-
     private void showAllFoldersListView() {
         Log.d("Main", "showAllFoldersListView BEGIN");
         if (indexBrowser != null) {
@@ -382,7 +349,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         });
         isBrowsingFolder = false;
         updateButtonsVisibility();
-        saveCurrentFolder();
         ((TextView) findViewById(R.id.main_header_folder_label)).setText(R.string.app_name);
         Log.d("Main", "showAllFoldersListView END");
     }
@@ -488,7 +454,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     adapter.addAll(list);
                     adapter.notifyDataSetChanged();
                     listView.setSelection(0);
-                    saveCurrentFolder();
                     ((TextView) findViewById(R.id.main_header_folder_label)).setText(indexBrowser.isRoot()
                             ?folderBrowser.getFolderInfo(indexBrowser.getFolder()).getLabel()
                             :newFileInfo.getFileName());
