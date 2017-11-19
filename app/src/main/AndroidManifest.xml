@@ -7,10 +7,9 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:banner="@drawable/banner"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.ASync">
+        android:theme="@style/Theme.Syncbrowser"
+        android:supportsRtl="true">
         <activity
             android:name="it.anyplace.syncbrowser.MainActivity"
             android:windowSoftInputMode="adjustResize">

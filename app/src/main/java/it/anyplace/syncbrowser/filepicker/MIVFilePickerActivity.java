@@ -5,9 +5,6 @@ import com.nononsenseapps.filepicker.AbstractFilePickerFragment;
 
 import java.io.File;
 
-/**
- * Created by aleph on 27/05/16.
- */
 public class MIVFilePickerActivity extends AbstractFilePickerActivity<File> {
 
 

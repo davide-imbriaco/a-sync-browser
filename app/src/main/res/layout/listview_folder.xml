@@ -6,27 +6,16 @@
     android:paddingRight="@dimen/abc_action_bar_content_inset_material"
     android:paddingTop="12dp">
 
-    <np.TextView
-        style="@style/FontAwesomeIcon"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:textSize="60sp"
-        android:textColor="@color/primary"
-        android:text="@string/icon_share_alt"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
-
     <TextView
         android:id="@+id/folder_name"
         android:layout_width="match_parent"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
         android:layout_alignParentTop="true"
         android:gravity="top"
         android:textAlignment="gravity"
-        android:paddingLeft="75dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -37,7 +26,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:layout_below="@id/folder_name"
-        android:paddingLeft="75dp"
         android:textSize="14sp"
         android:layout_alignParentStart="true" />
 
@@ -48,7 +36,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:layout_below="@id/folder_lastmod_info"
-        android:paddingLeft="75dp"
         android:textSize="14sp"
         android:layout_alignParentStart="true"  />
 

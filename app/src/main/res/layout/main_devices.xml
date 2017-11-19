@@ -22,19 +22,16 @@
                 android:text="@string/devices_list_view_empty_message"
                 android:textSize="20sp"
                 android:visibility="gone" />
-            <np.TextView
+            <ImageView
                 android:id="@+id/devices_list_view_add_device_here_qrcode_button"
-                style="@style/FontAwesomeIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="18dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="18dp"
                 android:layout_marginBottom="18dp"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:textSize="48sp"
                 android:textColor="@color/primary"
-                android:background="?android:windowBackground"
-                android:text="@string/icon_qrcode"/>
+                android:src="@drawable/ic_qr_code_black_24dp"/>
 
 </RelativeLayout>
 

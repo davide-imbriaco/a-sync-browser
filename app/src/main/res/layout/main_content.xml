@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,15 +15,14 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:background="@color/primary">
-            <np.TextView
-                style="@style/FontAwesomeIcon"
+            <TextView
                 android:id="@+id/main_header_show_menu_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="24sp"
-                android:paddingRight="12dp"
+                android:paddingEnd="12dp"
                 android:textColor="@color/white_on_primary"
-                android:text="@string/icon_bars" />
+                android:text="&#xf0c9;" />
             <TextView
                 android:id="@+id/main_header_folder_label"
                 android:layout_height="match_parent"
@@ -33,14 +33,13 @@
                 android:textStyle="bold"
                 android:text="@string/app_name"
                 android:textColor="@color/white_on_primary"/>
-            <np.TextView
-                style="@style/FontAwesomeIcon"
+            <ImageView
                 android:id="@+id/main_header_show_devices_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="24sp"
                 android:textColor="@color/white_on_primary"
-                android:text="@string/icon_laptop" />
+                android:src="@drawable/ic_laptop_white_24dp" />
         </LinearLayout>
     <!--top bar END-->
 
@@ -67,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:indeterminate="true"
-                    android:paddingLeft="12dp"/>
+                    android:paddingStart="12dp"/>
                 <TextView
                     android:id="@+id/main_index_progress_bar_label"
                     android:layout_width="0dp"
@@ -76,7 +75,7 @@
                     android:textSize="18sp"
                     android:textColor="@color/white_on_primary"
                     android:text="@string/index_update_progress_message"
-                    android:layout_gravity="left"
+                    android:layout_gravity="start"
                     android:textAlignment="gravity"
                     />
             </LinearLayout>
@@ -102,68 +101,21 @@
                 android:visibility="gone" />
             <!--main list view END-->
 
-            <!--file upload footer BEGIN-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/file_upload_intent_footer"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:visibility="gone"
-                android:background="@drawable/footer_background">
-                <TextView
-                    android:id="@+id/file_upload_intent_footer_label"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:text="@string/file_upload_default_label"
-                    android:textSize="20sp"
-                    android:layout_gravity="center_vertical"
-                    android:textAlignment="gravity"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="12dp"
-                    />
-                <np.TextView
-                    style="@style/FontAwesomeIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/file_upload_intent_footer_cancel_button"
-                    android:textSize="40sp"
-                    android:textColor="@color/primary"
-                    android:background="?selectableItemBackground"
-                    android:text="@string/icon_times"
-                    android:layout_marginRight="12dp"/>
-                <np.TextView
-                    style="@style/FontAwesomeIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/file_upload_intent_footer_confirm_button"
-                    android:textSize="40sp"
-                    android:textColor="@color/primary"
-                    android:background="?selectableItemBackground"
-                    android:text="@string/icon_cloud_upload"/>
-            </LinearLayout>
-            <!--file upload footer END-->
-
         </LinearLayout>
     <!--center content END-->
 
     <!--upload here overlay button BEGIN-->
-        <np.TextView
-            style="@style/FontAwesomeIcon"
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/main_list_view_upload_here_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="24dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:textSize="48sp"
-            android:textColor="@color/primary"
-            android:background="?android:windowBackground"
-            android:text="@string/icon_cloud_upload"/>
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            android:src="@drawable/ic_file_upload_white_24dp"/>
     <!--upload here overlay button END-->
 
     <!--main progress mask BEGIN-->

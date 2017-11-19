@@ -18,18 +18,15 @@
             android:background="?selectableItemBackground"
             android:orientation="horizontal"
             android:padding="12dp">
-            <np.TextView
-                style="@style/FontAwesomeIcon"
-                android:layout_width="32dp"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:text="@string/icon_qrcode"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_qr_code_gray_24dp"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:textSize="14sp"
                 android:text="@string/add_device_label"
                 android:layout_gravity="center_vertical"
@@ -43,18 +40,15 @@
             android:background="?selectableItemBackground"
             android:orientation="horizontal"
             android:padding="12dp">
-            <np.TextView
-                style="@style/FontAwesomeIcon"
-                android:layout_width="32dp"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:text="@string/icon_trash_o"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete_gray_24dp"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:textSize="14sp"
                 android:text="@string/clear_local_cache_index_label"
                 android:layout_gravity="center_vertical"
@@ -68,48 +62,19 @@
             android:background="?selectableItemBackground"
             android:orientation="horizontal"
             android:padding="12dp">
-            <np.TextView
-                style="@style/FontAwesomeIcon"
-                android:layout_width="32dp"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:text="@string/icon_refresh"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_refresh_gray_24dp" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:textSize="14sp"
                 android:text="@string/update_remote_index_label"
                 android:layout_gravity="center_vertical"
-                android:textAlignment="gravity"
-                />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/main_menu_exit_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:orientation="horizontal"
-            android:padding="12dp">
-            <np.TextView
-                style="@style/FontAwesomeIcon"
-                android:layout_width="32dp"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:text="@string/icon_sign_out"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:textSize="14sp"
-                android:text="@string/exit_menu_label"
-                android:layout_gravity="center_vertical"
-                android:textAlignment="gravity"
-                />
+                android:textAlignment="gravity" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

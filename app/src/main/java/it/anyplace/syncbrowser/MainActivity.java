@@ -17,6 +17,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -94,12 +96,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         checkPermissions();
 
-        findViewById(R.id.main_header_show_menu_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.LEFT));
-        findViewById(R.id.main_header_show_devices_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.RIGHT));
-        findViewById(R.id.main_menu_exit_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT));
+        findViewById(R.id.main_header_show_menu_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.START));
+        findViewById(R.id.main_header_show_devices_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.END));
         findViewById(R.id.main_menu_add_device_qrcode_button).setOnClickListener(view -> {
             openQrcode();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
+            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
         });
         findViewById(R.id.devices_list_view_add_device_here_qrcode_button).setOnClickListener(view -> openQrcode());
         findViewById(R.id.main_menu_cleanup_button).setOnClickListener(view -> {
@@ -110,11 +111,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setPositiveButton("yes", (dialog, which) -> cleanCacheAndIndex())
                     .setNegativeButton("no", null)
                     .show();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
+            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
         });
         findViewById(R.id.main_menu_update_index_button).setOnClickListener(view -> {
             updateIndexFromRemote();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.LEFT);
+            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
         });
         findViewById(R.id.main_list_view_upload_here_button).setOnClickListener(view -> showUploadHereDialog());
         ((DrawerLayout) findViewById(R.id.main_drawer_layout)).addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_DRAGGING) {
-                    if (!((DrawerLayout) findViewById(R.id.main_drawer_layout)).isDrawerOpen(Gravity.RIGHT)) {
+                    if (!((DrawerLayout) findViewById(R.id.main_drawer_layout)).isDrawerOpen(Gravity.END)) {
                          updateDeviceList();
                     }
                 }
@@ -237,7 +238,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         } else {
             findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
         }
-        findViewById(R.id.file_upload_intent_footer).setVisibility(View.GONE);
     }
 
     private void doUpload(final String syncthingFolder, final String syncthingSubFolder, final Uri fileToUpload) {
@@ -297,10 +297,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 FileInfo fileInfo = getItem(position);
                 ((TextView) v.findViewById(R.id.file_label)).setText(fileInfo.getFileName());
                 if (fileInfo.isDirectory()) {
-                    ((TextView) v.findViewById(R.id.file_icon)).setText(R.string.icon_folder_o);
+                    ((ImageView) v.findViewById(R.id.file_icon)).setImageResource(R.drawable.ic_folder_black_24dp);
                     v.findViewById(R.id.file_size).setVisibility(View.GONE);
                 } else {
-                    ((TextView) v.findViewById(R.id.file_icon)).setText(R.string.icon_file_o);
+                    ((ImageView) v.findViewById(R.id.file_icon)).setImageResource(R.drawable.ic_image_black_24dp);
                     v.findViewById(R.id.file_size).setVisibility(View.VISIBLE);
                     ((TextView) v.findViewById(R.id.file_size)).setText(FileUtils.byteCountToDisplaySize(fileInfo.getSize())
                             +" - last modified "
@@ -420,17 +420,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
                 DeviceStats deviceStats = getItem(position);
                 ((TextView) v.findViewById(R.id.device_name)).setText(deviceStats.getName());
+                int color = 0;
                 switch (deviceStats.getStatus()) {
                     case OFFLINE:
-                        ((TextView) v.findViewById(R.id.device_icon)).setTextColor(getResources().getColor(R.color.device_offline));
+                        color = R.color.device_offline;
                         break;
                     case ONLINE_INACTIVE:
-                        ((TextView) v.findViewById(R.id.device_icon)).setTextColor(getResources().getColor(R.color.device_online_inactive));
+                        color = R.color.device_online_inactive;
                         break;
                     case ONLINE_ACTIVE:
-                        ((TextView) v.findViewById(R.id.device_icon)).setTextColor(getResources().getColor(R.color.device_online_active));
+                        color = R.color.device_online_active;
                         break;
                 }
+                // TODO: this is not working (and will also break on API 19
+                ((ImageView) v.findViewById(R.id.device_icon))
+                        .setColorFilter(ContextCompat.getColor(MainActivity.this, color), PorterDuff.Mode.SRC_IN);
                 return v;
             }
         };

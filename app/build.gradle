@@ -23,6 +23,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:27.0.1'
     compile 'com.android.support:recyclerview-v7:27.0.1'
     compile 'com.android.support:support-v4:27.0.1'
+    compile 'com.android.support:design:27.0.1'
     compile ('it.anyplace.sync:a-sync-client:1.3') {
         exclude group: 'commons-logging', module:'commons-logging'
         exclude group: 'commons-cli'
@@ -35,5 +36,4 @@ dependencies {
     compile 'org.slf4j:slf4j-android:1.7.13'
     compile 'com.google.zxing:android-integration:3.3.0'
     compile 'com.nononsenseapps:filepicker:2.5.2'
-    compile 'com.github.neopixl:PixlUI:v1.1.0'
 }
