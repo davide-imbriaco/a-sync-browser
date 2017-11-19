@@ -15,8 +15,6 @@ package it.anyplace.syncbrowser;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -35,7 +33,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -53,7 +50,6 @@ import com.google.zxing.integration.android.IntentResult;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -67,7 +63,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 
-import it.anyplace.sync.bep.BlockPuller;
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.bep.IndexBrowser;
 import it.anyplace.sync.bep.IndexHandler;
@@ -308,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void doUpload(final String syncthingFolder, final String syncthingSubFolder, final Uri fileToUpload) {
         new UploadFileTask(this, syncthingClient, fileToUpload, syncthingFolder,
-                    syncthingSubFolder, this::updateFolderListView).execute();
+                    syncthingSubFolder, this::updateFolderListView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private FolderBrowser folderBrowser;
@@ -549,87 +544,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void pullFile(final FileInfo fileInfo) {
         Log.i("pullFile", "pulling file = " + fileInfo);
-        new AsyncTask<Void, BlockPuller.FileDownloadObserver, Pair<File, Exception>>() {
-            private ProgressDialog progressDialog;
-            private Thread thread;
-            private boolean cancelled = false;
-
-            @Override
-            protected void onPreExecute() {
-                progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setMessage("downloading file " + fileInfo.getFileName());
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressDialog.setCancelable(true);
-                progressDialog.setOnCancelListener(dialogInterface -> {
-                    cancelled = true;
-                    if (thread != null) {
-                        thread.interrupt();
-                    }
-                    Toast.makeText(MainActivity.this, "download aborted by user", Toast.LENGTH_SHORT).show();
-                });
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
-            }
-
-            @Override
-            protected Pair<File, Exception> doInBackground(Void... voidd) {
-                try {
-                    try (BlockPuller.FileDownloadObserver fileDownloadObserver = syncthingClient.pullFile(fileInfo.getFolder(), fileInfo.getPath())) {
-                        publishProgress(fileDownloadObserver);
-                        while (!fileDownloadObserver.isCompleted() && !cancelled) {
-                            fileDownloadObserver.waitForProgressUpdate();
-                            Log.i("pullFile", "download progress = " + fileDownloadObserver.getProgressMessage());
-                            publishProgress(fileDownloadObserver);
-                        }
-                        if (cancelled) {
-                            return null;
-                        }
-                        File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                        File outputFile = new File(outputDir, fileInfo.getFileName());
-                        FileUtils.copyInputStreamToFile(fileDownloadObserver.getInputStream(), outputFile);
-                        Log.i("pullFile", "downloaded file = " + fileInfo.getPath());
-                        return Pair.of(outputFile, null);
-                    }
-                } catch (IOException | InterruptedException ex) {
-                    if (cancelled) {
-                        return null;
-                    }
-                    Log.e("pullFile", "file download exception", ex);
-                    return Pair.of(null, ex);
-                }
-            }
-
-            @Override
-            protected void onProgressUpdate(BlockPuller.FileDownloadObserver... fileDownloadObserver) {
-                if (fileDownloadObserver[0].getProgress() > 0) {
-                    progressDialog.setIndeterminate(false);
-                    progressDialog.setMax((int) (long) fileInfo.getSize());
-                    progressDialog.setProgress((int) (fileDownloadObserver[0].getProgress() * fileInfo.getSize()));
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Pair<File, Exception> res) {
-                progressDialog.dismiss();
-                if (cancelled) {
-                    // do nothing
-                } else if (res.getLeft() == null) {
-                    Toast.makeText(MainActivity.this, "error downloading file: " + res.getRight(), Toast.LENGTH_LONG).show();
-                } else {
-                    String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(FilenameUtils.getExtension(res.getLeft().getName()));
-                    Intent newIntent = new Intent(Intent.ACTION_VIEW);
-                    Log.i("Main", "open file = " + res.getLeft().getName() + " (" + mimeType + ")");
-                    newIntent.setDataAndType(Uri.fromFile(res.getLeft()), mimeType);
-                    newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Intent chooser = Intent.createChooser(newIntent, null);
-                    try {
-                        startActivity(chooser);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(MainActivity.this, "no handler found for this file: " + res.getLeft().getName() + " (" + mimeType + ")", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new DownloadFileTask(this, syncthingClient, fileInfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private final static String LAST_INDEX_UPDATE_TS_PREF = "LAST_INDEX_UPDATE_TS";
@@ -751,5 +666,4 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Toast.makeText(this, "device already present: " + deviceId, Toast.LENGTH_SHORT).show();
         }
     }
-
 }
