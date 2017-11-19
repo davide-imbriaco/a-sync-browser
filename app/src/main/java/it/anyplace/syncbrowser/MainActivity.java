@@ -15,8 +15,10 @@ package it.anyplace.syncbrowser;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,18 +28,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.base.Function;
@@ -70,11 +68,15 @@ import it.anyplace.sync.core.beans.FolderStats;
 import it.anyplace.sync.core.security.KeystoreHandler;
 import it.anyplace.sync.core.utils.FileInfoOrdering;
 import it.anyplace.sync.core.utils.PathUtils;
+import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
+import it.anyplace.syncbrowser.databinding.ListviewDeviceBinding;
+import it.anyplace.syncbrowser.databinding.ListviewFileBinding;
+import it.anyplace.syncbrowser.databinding.ListviewFolderBinding;
+import it.anyplace.syncbrowser.databinding.MainContainerBinding;
 import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Strings.nullToEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -83,27 +85,29 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private static final int REQUEST_WRITE_STORAGE = 142;
 
     private LibraryHandler mLibraryHandler;
+    private AlertDialog mLoadingDialog;
+    private MainContainerBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.main_container);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.main_container);
 
         mLibraryHandler = new LibraryHandler();
 
-        ((ListView) findViewById(R.id.main_folder_and_files_list_view)).setEmptyView(findViewById(R.id.main_list_view_empty_element));
+        mBinding.mainContent.mainFolderAndFilesListView.setEmptyView(mBinding.mainContent.mainListViewEmptyElement);
 
         checkPermissions();
 
-        findViewById(R.id.main_header_show_menu_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.START));
-        findViewById(R.id.main_header_show_devices_button).setOnClickListener(view -> ((DrawerLayout) findViewById(R.id.main_drawer_layout)).openDrawer(Gravity.END));
-        findViewById(R.id.main_menu_add_device_qrcode_button).setOnClickListener(view -> {
+        mBinding.mainContent.mainHeaderShowMenuButton.setOnClickListener(view -> mBinding.mainDrawerLayout.openDrawer(Gravity.START));
+        mBinding.mainContent.mainHeaderShowDevicesButton.setOnClickListener(view -> mBinding.mainDrawerLayout.openDrawer(Gravity.END));
+        mBinding.mainDevices.devicesListViewAddDeviceHereQrcodeButton.setOnClickListener(view -> {
             openQrcode();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
+            mBinding.mainDrawerLayout.closeDrawer(Gravity.START);
         });
-        findViewById(R.id.devices_list_view_add_device_here_qrcode_button).setOnClickListener(view -> openQrcode());
-        findViewById(R.id.main_menu_cleanup_button).setOnClickListener(view -> {
+        mBinding.mainDevices.devicesListViewAddDeviceHereQrcodeButton.setOnClickListener(view -> openQrcode());
+        mBinding.mainMenu.mainMenuCleanupButton.setOnClickListener(view -> {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("clear cache and index")
                     .setMessage("clear all cache data and index data?")
@@ -111,14 +115,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setPositiveButton("yes", (dialog, which) -> cleanCacheAndIndex())
                     .setNegativeButton("no", null)
                     .show();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
+            mBinding.mainDrawerLayout.closeDrawer(Gravity.START);
         });
-        findViewById(R.id.main_menu_update_index_button).setOnClickListener(view -> {
+        mBinding.mainMenu.mainMenuUpdateIndexButton.setOnClickListener(view -> {
             updateIndexFromRemote();
-            ((DrawerLayout) findViewById(R.id.main_drawer_layout)).closeDrawer(Gravity.START);
+            mBinding.mainDrawerLayout.closeDrawer(Gravity.START);
         });
-        findViewById(R.id.main_list_view_upload_here_button).setOnClickListener(view -> showUploadHereDialog());
-        ((DrawerLayout) findViewById(R.id.main_drawer_layout)).addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        mBinding.mainContent.mainListViewUploadHereButton.setOnClickListener(view -> showUploadHereDialog());
+        mBinding.mainDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
                 if (drawerView.getId() == R.id.devices_right_drawer) {
@@ -129,20 +133,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_DRAGGING) {
-                    if (!((DrawerLayout) findViewById(R.id.main_drawer_layout)).isDrawerOpen(Gravity.END)) {
+                    if (!mBinding.mainDrawerLayout.isDrawerOpen(Gravity.END)) {
                          updateDeviceList();
                     }
                 }
             }
         });
 
-
         new AsyncTask<Void, Void, Void>() {
-
 
             @Override
             protected void onPreExecute() {
-                updateMainProgressBar(true,"loading config, starting syncthing client");
+                showLoadingDialog("loading config, starting syncthing client");
             }
 
             @Override
@@ -151,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     @Override
                     public void onIndexUpdateProgress(FolderInfo folder, int percentage) {
                         runOnUiThread(() -> {
-                            ((TextView) findViewById(R.id.main_index_progress_bar_label)).setText("index update, folder "
+                            mBinding.mainContent.mainIndexProgressBarLabel.setText("index update, folder "
                                     + folder.getLabel() + " " + percentage + "% synchronized");
                                 updateFolderListView();
                         });
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     @Override
                     public void onIndexUpdateComplete() {
                         runOnUiThread(() -> {
-                            findViewById(R.id.main_index_progress_bar).setVisibility(View.GONE);
+                            mBinding.mainContent.mainIndexProgressBar.setVisibility(View.GONE);
                             updateFolderListView();
                         });
                     }
@@ -170,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             @Override
             protected void onPostExecute(Void voidd) {
-                updateMainProgressBar(false,null);
+                cancelLoadingDialog();
                 if (mLibraryHandler.getSyncthingClient() == null) {
                     Toast.makeText(MainActivity.this, "error starting syncthing client", Toast.LENGTH_LONG).show();
                     MainActivity.this.finish();
@@ -232,11 +234,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void updateButtonsVisibility() {
-        findViewById(R.id.main_folder_and_files_list_view).setVisibility(View.VISIBLE);
+        mBinding.mainContent.mainFolderAndFilesListView.setVisibility(View.VISIBLE);
         if (isBrowsingFolder) {
-            findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.VISIBLE);
+            mBinding.mainContent.mainListViewUploadHereButton.setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.main_list_view_upload_here_button).setVisibility(View.GONE);
+            mBinding.mainContent.mainListViewUploadHereButton.setVisibility(View.GONE);
         }
     }
 
@@ -255,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             indexBrowser.close();
             indexBrowser = null;
         }
-        ListView listView = findViewById(R.id.main_folder_and_files_list_view);
+
         List<Pair<FolderInfo, FolderStats>> list = Lists.newArrayList(mLibraryHandler.getFolderBrowser().getFolderInfoAndStatsList());
         Collections.sort(list, Ordering.natural().onResultOf(input -> input.getLeft().getLabel()));
         Log.i(TAG, "list folders = " + list + " (" + list.size() + " records");
@@ -263,26 +265,28 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @NonNull
             @Override
             public View getView(int position, View v, @NonNull ViewGroup parent) {
+                ListviewFolderBinding binding;
                 if (v == null) {
-                    v = LayoutInflater.from(getContext()).inflate(R.layout.listview_folder, parent, false);
+                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_folder, parent, false);
+                } else {
+                    binding = DataBindingUtil.bind(v);
                 }
                 FolderInfo folderInfo = getItem(position).getLeft();
                 FolderStats folderStats = getItem(position).getRight();
-                ((TextView) v.findViewById(R.id.folder_name)).setText(folderInfo.getLabel() + " (" + folderInfo.getFolder() + ")");
-                ((TextView) v.findViewById(R.id.folder_lastmod_info)).setText(folderStats.getLastUpdate() == null ? "last modified: unknown" : ("last modified: " + DateUtils.getRelativeDateTimeString(MainActivity.this,folderStats.getLastUpdate().getTime(),DateUtils.MINUTE_IN_MILLIS,DateUtils.WEEK_IN_MILLIS,0)));
-                ((TextView) v.findViewById(R.id.folder_content_info)).setText(folderStats.describeSize() + ", " + folderStats.getFileCount() + " files, " + folderStats.getDirCount() + " dirs");
-                return v;
+                binding.folderName.setText(folderInfo.getLabel() + " (" + folderInfo.getFolder() + ")");
+                binding.folderLastmodInfo.setText(folderStats.getLastUpdate() == null ? "last modified: unknown" : ("last modified: " + DateUtils.getRelativeDateTimeString(MainActivity.this,folderStats.getLastUpdate().getTime(),DateUtils.MINUTE_IN_MILLIS,DateUtils.WEEK_IN_MILLIS,0)));
+                binding.folderContentInfo.setText(folderStats.describeSize() + ", " + folderStats.getFileCount() + " files, " + folderStats.getDirCount() + " dirs");
+                return binding.getRoot();
             }
 
         };
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((adapterView, view, position, l) -> {
-            String folder = ((Pair<FolderInfo, FolderStats>) listView.getItemAtPosition(position)).getLeft().getFolder();
+        mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
+        mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
+            String folder = adapter.getItem(position).getLeft().getFolder();
             showFolderListView(folder, null);
         });
         isBrowsingFolder = false;
         updateButtonsVisibility();
-        ((TextView) findViewById(R.id.main_header_folder_label)).setText(R.string.app_name);
         Log.d(TAG, "showAllFoldersListView END");
     }
 
@@ -291,22 +295,25 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @NonNull
             @Override
             public View getView(int position, View v, @NonNull ViewGroup parent) {
+                ListviewFileBinding binding;
                 if (v == null) {
-                    v = LayoutInflater.from(getContext()).inflate(R.layout.listview_file, parent, false);
+                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_file, parent, false);
+                } else {
+                    binding = DataBindingUtil.bind(v);
                 }
                 FileInfo fileInfo = getItem(position);
-                ((TextView) v.findViewById(R.id.file_label)).setText(fileInfo.getFileName());
+                binding.fileLabel.setText(fileInfo.getFileName());
                 if (fileInfo.isDirectory()) {
-                    ((ImageView) v.findViewById(R.id.file_icon)).setImageResource(R.drawable.ic_folder_black_24dp);
-                    v.findViewById(R.id.file_size).setVisibility(View.GONE);
+                    binding.fileIcon.setImageResource(R.drawable.ic_folder_black_24dp);
+                    binding.fileSize.setVisibility(View.GONE);
                 } else {
-                    ((ImageView) v.findViewById(R.id.file_icon)).setImageResource(R.drawable.ic_image_black_24dp);
-                    v.findViewById(R.id.file_size).setVisibility(View.VISIBLE);
-                    ((TextView) v.findViewById(R.id.file_size)).setText(FileUtils.byteCountToDisplaySize(fileInfo.getSize())
+                    binding.fileIcon.setImageResource(R.drawable.ic_image_black_24dp);
+                    binding.fileSize.setVisibility(View.VISIBLE);
+                    binding.fileSize.setText(FileUtils.byteCountToDisplaySize(fileInfo.getSize())
                             +" - last modified "
                             + DateUtils.getRelativeDateTimeString(MainActivity.this,fileInfo.getLastModified().getTime(),DateUtils.MINUTE_IN_MILLIS,DateUtils.WEEK_IN_MILLIS,0));
                 }
-                return v;
+                return binding.getRoot();
             }
         };
     }
@@ -328,11 +335,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setFolder(folder)
                     .buildToNearestPath(previousPath);
         }
-        ListView listView = findViewById(R.id.main_folder_and_files_list_view);
         ArrayAdapter<FileInfo> adapter = createFileInfoArrayAdapter();
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((adapterView, view, position, l) -> {
-            FileInfo fileInfo = (FileInfo) listView.getItemAtPosition(position);
+        mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
+        mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
+            FileInfo fileInfo = (FileInfo) mBinding.mainContent.mainFolderAndFilesListView.getItemAtPosition(position);
             Log.d(TAG, "navigate to path = '" + fileInfo.getPath() + "' from path = '" + indexBrowser.getCurrentPath() + "'");
             navigateToFolder(fileInfo);
         });
@@ -342,9 +348,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d(TAG, "showFolderListView END");
     }
 
-    private void updateMainProgressBar(boolean visible, String message){
-        findViewById(R.id.main_progress_bar_container).setVisibility(visible?View.VISIBLE:View.GONE);
-        ((TextView) findViewById(R.id.main_progress_bar_label)).setText(nullToEmpty(message));
+    private void showLoadingDialog(String message) {
+        DialogLoadingBinding binding = DataBindingUtil.inflate(
+                getLayoutInflater(), R.layout.dialog_loading, null, false);
+        binding.loadingText.setText(message);
+        mLoadingDialog = new android.app.AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setView(binding.getRoot())
+                .show();
+    }
+
+    private void cancelLoadingDialog() {
+        mLoadingDialog.cancel();
+        mLoadingDialog = null;
     }
 
     private void navigateToFolder(FileInfo fileInfo) {
@@ -360,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected void onPreExecute() {
-                            updateMainProgressBar(true,"open directory: " + (indexBrowser.isRoot() ? mLibraryHandler.getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel() : indexBrowser.getCurrentPathFileName()));
+                            showLoadingDialog("open directory: " + (indexBrowser.isRoot() ? mLibraryHandler.getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel() : indexBrowser.getCurrentPathFileName()));
                         }
 
                         @Override
@@ -372,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         @Override
                         protected void onPostExecute(Void aVoid) {
                             Log.d(TAG, "cache ready, navigate to folder");
-                            updateMainProgressBar(false,null);
+                            cancelLoadingDialog();
                             navigateToFolder(newFileInfo);
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -381,13 +397,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     Log.i("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list.size() + " records");
                     Log.d("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list);
                     checkArgument(!list.isEmpty());//list must contain at least the 'parent' path
-                    ListView listView = findViewById(R.id.main_folder_and_files_list_view);
-                    ArrayAdapter<FileInfo> adapter = (ArrayAdapter<FileInfo>) listView.getAdapter();
+                    ArrayAdapter<FileInfo> adapter = (ArrayAdapter<FileInfo>) mBinding.mainContent.mainFolderAndFilesListView.getAdapter();
                     adapter.clear();
                     adapter.addAll(list);
                     adapter.notifyDataSetChanged();
-                    listView.setSelection(0);
-                    ((TextView) findViewById(R.id.main_header_folder_label)).setText(indexBrowser.isRoot()
+                    mBinding.mainContent.mainFolderAndFilesListView.setSelection(0);
+                    mBinding.mainContent.mainHeaderFolderLabel.setText(indexBrowser.isRoot()
                             ?mLibraryHandler.getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel()
                             :newFileInfo.getFileName());
                 }
@@ -409,17 +424,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void initDeviceList() {
-        ListView listView = findViewById(R.id.devices_list_view);
-        listView.setEmptyView(findViewById(R.id.devices_list_view_empty_element));
+        mBinding.mainDevices.devicesListView.setEmptyView(mBinding.mainDevices.devicesListViewEmptyElement);
         ArrayAdapter<DeviceStats> adapter = new ArrayAdapter<DeviceStats>(this, R.layout.listview_device, Lists.newArrayList()) {
             @NonNull
             @Override
             public View getView(int position, View v, @NonNull ViewGroup parent) {
+                ListviewDeviceBinding binding;
                 if (v == null) {
-                    v = LayoutInflater.from(getContext()).inflate(R.layout.listview_device, parent, false);
+                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_device, parent, false);
+                } else {
+                    binding = DataBindingUtil.bind(v);
                 }
                 DeviceStats deviceStats = getItem(position);
-                ((TextView) v.findViewById(R.id.device_name)).setText(deviceStats.getName());
+                binding.deviceName.setText(deviceStats.getName());
                 int color = 0;
                 switch (deviceStats.getStatus()) {
                     case OFFLINE:
@@ -433,12 +450,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         break;
                 }
                 // TODO: this is not working (and will also break on API 19
-                ((ImageView) v.findViewById(R.id.device_icon))
+                binding.deviceIcon
                         .setColorFilter(ContextCompat.getColor(MainActivity.this, color), PorterDuff.Mode.SRC_IN);
-                return v;
+                return binding.getRoot();
             }
         };
-        listView.setAdapter(adapter);
+        mBinding.mainDevices.devicesListView.setAdapter(adapter);
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -446,8 +463,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //TODO show device detail
 //            }
 //        });
-        listView.setOnItemLongClickListener((adapterView, view, position, l) -> {
-            String deviceId = ((DeviceStats) listView.getItemAtPosition(position)).getDeviceId();
+        mBinding.mainDevices.devicesListView.setOnItemLongClickListener((adapterView, view, position, l) -> {
+            String deviceId = ((DeviceStats) mBinding.mainDevices.devicesListView.getItemAtPosition(position)).getDeviceId();
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("remove device " + deviceId.substring(0, 7))
                     .setMessage("remove device" + deviceId.substring(0, 7) + " from list of known devices?")
@@ -477,11 +494,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 return ComparisonChain.start().compare(fun.apply(a.getStatus()),fun.apply(b.getStatus())).compare(a.getName(),b.getName()).result();
             }
         });
-        ListView listView = findViewById(R.id.devices_list_view);
-        ((ArrayAdapter) listView.getAdapter()).clear();
-        ((ArrayAdapter<DeviceStats>) listView.getAdapter()).addAll(list);
-        ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-        listView.setSelection(0);
+        ArrayAdapter<DeviceStats> adapter = (ArrayAdapter<DeviceStats>) mBinding.mainDevices.devicesListView.getAdapter();
+        adapter.clear();
+        adapter.addAll(list);
+        adapter.notifyDataSetChanged();
+        mBinding.mainDevices.devicesListView.setSelection(0);
     }
 
     private void pullFile(final FileInfo fileInfo) {
@@ -507,11 +524,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         } else {
             indexUpdateInProgress = true;
             new AsyncTask<Void, Void, Exception>() {
-                private final View indexLoadingBar = (View) findViewById(R.id.main_index_progress_bar);
 
                 @Override
                 protected void onPreExecute() {
-                    indexLoadingBar.setVisibility(View.VISIBLE);
+                    mBinding.mainContent.mainIndexProgressBar.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -527,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                 @Override
                 protected void onPostExecute(Exception ex) {
-                    indexLoadingBar.setVisibility(View.GONE);
+                    mBinding.mainContent.mainIndexProgressBar.setVisibility(View.GONE);
                     if (ex != null) {
                         Toast.makeText(MainActivity.this, "error updating index: " + ex.toString(), Toast.LENGTH_LONG).show();
                     }
@@ -552,6 +568,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 indexBrowser = null;
             }
         }).start();
+        cancelLoadingDialog();
     }
 
     private void openQrcode() {
@@ -581,7 +598,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onBackPressed() {
         if (indexBrowser != null) {
-            ListView listView = findViewById(R.id.main_folder_and_files_list_view);
+            ListView listView = mBinding.mainContent.mainFolderAndFilesListView;
             listView.performItemClick(listView.getAdapter().getView(0, null, null), 0, listView.getItemIdAtPosition(0)); //click item '0', ie '..' (go to parent)
         } else {
             super.onBackPressed();

@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/devices_right_drawer"
-        android:background="?android:windowBackground"
-        android:layout_width="280dp"
-        android:layout_gravity="end">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/devices_list_view"
-                android:divider="@color/divider"
-                android:dividerHeight="2dp">
-            </ListView>
-            <TextView
-                android:id="@+id/devices_list_view_empty_element"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/devices_list_view_empty_message"
-                android:textSize="20sp"
-                android:visibility="gone" />
-            <ImageView
-                android:id="@+id/devices_list_view_add_device_here_qrcode_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="18dp"
-                android:layout_marginBottom="18dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:textColor="@color/primary"
-                android:src="@drawable/ic_qr_code_black_24dp"/>
+    <RelativeLayout
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/devices_right_drawer"
+            android:background="?android:windowBackground"
+            android:layout_width="280dp"
+            android:layout_gravity="end">
 
-</RelativeLayout>
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/devices_list_view"
+                    android:divider="@color/divider"
+                    android:dividerHeight="2dp">
+                </ListView>
+                <TextView
+                    android:id="@+id/devices_list_view_empty_element"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/devices_list_view_empty_message"
+                    android:textSize="20sp"
+                    android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/devices_list_view_add_device_here_qrcode_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="18dp"
+                    android:layout_marginBottom="18dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:textColor="@color/primary"
+                    android:src="@drawable/ic_qr_code_black_24dp"/>
 
+    </RelativeLayout>
 
+</layout>

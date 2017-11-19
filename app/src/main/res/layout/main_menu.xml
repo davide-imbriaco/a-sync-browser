@@ -1,80 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="?android:windowBackground"
-    android:layout_width="240dp"
-    android:layout_height="match_parent"
-    android:layout_gravity="start"
-    android:fadeScrollbars="false">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <ScrollView
+        android:background="?android:windowBackground"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fadeScrollbars="false">
+
         <LinearLayout
-            android:id="@+id/main_menu_add_device_qrcode_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:orientation="horizontal"
-            android:padding="12dp">
-            <ImageView
-                android:layout_width="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/main_menu_add_device_qrcode_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_qr_code_gray_24dp"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:textSize="14sp"
-                android:text="@string/add_device_label"
-                android:layout_gravity="center_vertical"
-                android:textAlignment="gravity"
-                />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/main_menu_cleanup_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:orientation="horizontal"
-            android:padding="12dp">
-            <ImageView
-                android:layout_width="wrap_content"
+                android:background="?selectableItemBackground"
+                android:orientation="horizontal"
+                android:padding="12dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_qr_code_gray_24dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
+                    android:textSize="14sp"
+                    android:text="@string/add_device_label"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/main_menu_cleanup_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_delete_gray_24dp"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:textSize="14sp"
-                android:text="@string/clear_local_cache_index_label"
-                android:layout_gravity="center_vertical"
-                android:textAlignment="gravity"
-                />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/main_menu_update_index_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:orientation="horizontal"
-            android:padding="12dp">
-            <ImageView
-                android:layout_width="wrap_content"
+                android:background="?selectableItemBackground"
+                android:orientation="horizontal"
+                android:padding="12dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_delete_gray_24dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
+                    android:textSize="14sp"
+                    android:text="@string/clear_local_cache_index_label"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/main_menu_update_index_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_refresh_gray_24dp" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:layout_marginStart="12dp"
-                android:textSize="14sp"
-                android:text="@string/update_remote_index_label"
-                android:layout_gravity="center_vertical"
-                android:textAlignment="gravity" />
+                android:background="?selectableItemBackground"
+                android:orientation="horizontal"
+                android:padding="12dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_refresh_gray_24dp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
+                    android:textSize="14sp"
+                    android:text="@string/update_remote_index_label"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+</layout>
