@@ -19,7 +19,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,11 +28,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -48,10 +45,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -68,10 +63,10 @@ import it.anyplace.sync.core.beans.FolderStats;
 import it.anyplace.sync.core.security.KeystoreHandler;
 import it.anyplace.sync.core.utils.FileInfoOrdering;
 import it.anyplace.sync.core.utils.PathUtils;
+import it.anyplace.syncbrowser.adapters.DevicesAdapter;
+import it.anyplace.syncbrowser.adapters.FolderContentsAdapter;
+import it.anyplace.syncbrowser.adapters.FoldersListAdapter;
 import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
-import it.anyplace.syncbrowser.databinding.ListviewDeviceBinding;
-import it.anyplace.syncbrowser.databinding.ListviewFileBinding;
-import it.anyplace.syncbrowser.databinding.ListviewFolderBinding;
 import it.anyplace.syncbrowser.databinding.MainContainerBinding;
 import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 
@@ -112,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setTitle("clear cache and index")
                     .setMessage("clear all cache data and index data?")
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton("yes", (dialog, which) -> cleanCacheAndIndex())
-                    .setNegativeButton("no", null)
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> cleanCacheAndIndex())
+                    .setNegativeButton(android.R.string.no, null)
                     .show();
             mBinding.mainDrawerLayout.closeDrawer(Gravity.START);
         });
@@ -261,25 +256,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         List<Pair<FolderInfo, FolderStats>> list = Lists.newArrayList(mLibraryHandler.getFolderBrowser().getFolderInfoAndStatsList());
         Collections.sort(list, Ordering.natural().onResultOf(input -> input.getLeft().getLabel()));
         Log.i(TAG, "list folders = " + list + " (" + list.size() + " records");
-        ArrayAdapter<Pair<FolderInfo, FolderStats>> adapter = new ArrayAdapter<Pair<FolderInfo, FolderStats>>(this, R.layout.listview_folder, list) {
-            @NonNull
-            @Override
-            public View getView(int position, View v, @NonNull ViewGroup parent) {
-                ListviewFolderBinding binding;
-                if (v == null) {
-                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_folder, parent, false);
-                } else {
-                    binding = DataBindingUtil.bind(v);
-                }
-                FolderInfo folderInfo = getItem(position).getLeft();
-                FolderStats folderStats = getItem(position).getRight();
-                binding.folderName.setText(folderInfo.getLabel() + " (" + folderInfo.getFolder() + ")");
-                binding.folderLastmodInfo.setText(folderStats.getLastUpdate() == null ? "last modified: unknown" : ("last modified: " + DateUtils.getRelativeDateTimeString(MainActivity.this,folderStats.getLastUpdate().getTime(),DateUtils.MINUTE_IN_MILLIS,DateUtils.WEEK_IN_MILLIS,0)));
-                binding.folderContentInfo.setText(folderStats.describeSize() + ", " + folderStats.getFileCount() + " files, " + folderStats.getDirCount() + " dirs");
-                return binding.getRoot();
-            }
-
-        };
+        ArrayAdapter<Pair<FolderInfo, FolderStats>> adapter = new FoldersListAdapter(this, list);
         mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
         mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
             String folder = adapter.getItem(position).getLeft().getFolder();
@@ -288,34 +265,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         isBrowsingFolder = false;
         updateButtonsVisibility();
         Log.d(TAG, "showAllFoldersListView END");
-    }
-
-    private ArrayAdapter<FileInfo> createFileInfoArrayAdapter(){
-        return new ArrayAdapter<FileInfo>(this, R.layout.listview_file, Lists.newArrayList()) {
-            @NonNull
-            @Override
-            public View getView(int position, View v, @NonNull ViewGroup parent) {
-                ListviewFileBinding binding;
-                if (v == null) {
-                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_file, parent, false);
-                } else {
-                    binding = DataBindingUtil.bind(v);
-                }
-                FileInfo fileInfo = getItem(position);
-                binding.fileLabel.setText(fileInfo.getFileName());
-                if (fileInfo.isDirectory()) {
-                    binding.fileIcon.setImageResource(R.drawable.ic_folder_black_24dp);
-                    binding.fileSize.setVisibility(View.GONE);
-                } else {
-                    binding.fileIcon.setImageResource(R.drawable.ic_image_black_24dp);
-                    binding.fileSize.setVisibility(View.VISIBLE);
-                    binding.fileSize.setText(FileUtils.byteCountToDisplaySize(fileInfo.getSize())
-                            +" - last modified "
-                            + DateUtils.getRelativeDateTimeString(MainActivity.this,fileInfo.getLastModified().getTime(),DateUtils.MINUTE_IN_MILLIS,DateUtils.WEEK_IN_MILLIS,0));
-                }
-                return binding.getRoot();
-            }
-        };
     }
 
     private void showFolderListView(String folder, @Nullable String previousPath) {
@@ -330,12 +279,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Log.d(TAG, "open new index browser");
             indexBrowser = mLibraryHandler.getSyncthingClient().getIndexHandler()
                     .newIndexBrowserBuilder()
-                    .setOrdering(fileInfoOrdering)
+                    .setOrdering(FileInfoOrdering.ALPHA_ASC_DIR_FIRST)
                     .includeParentInList(true).allowParentInRoot(true)
                     .setFolder(folder)
                     .buildToNearestPath(previousPath);
         }
-        ArrayAdapter<FileInfo> adapter = createFileInfoArrayAdapter();
+        ArrayAdapter<FileInfo> adapter = new FolderContentsAdapter(this);
         mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
         mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
             FileInfo fileInfo = (FileInfo) mBinding.mainContent.mainFolderAndFilesListView.getItemAtPosition(position);
@@ -425,36 +374,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void initDeviceList() {
         mBinding.mainDevices.devicesListView.setEmptyView(mBinding.mainDevices.devicesListViewEmptyElement);
-        ArrayAdapter<DeviceStats> adapter = new ArrayAdapter<DeviceStats>(this, R.layout.listview_device, Lists.newArrayList()) {
-            @NonNull
-            @Override
-            public View getView(int position, View v, @NonNull ViewGroup parent) {
-                ListviewDeviceBinding binding;
-                if (v == null) {
-                    binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.listview_device, parent, false);
-                } else {
-                    binding = DataBindingUtil.bind(v);
-                }
-                DeviceStats deviceStats = getItem(position);
-                binding.deviceName.setText(deviceStats.getName());
-                int color = 0;
-                switch (deviceStats.getStatus()) {
-                    case OFFLINE:
-                        color = R.color.device_offline;
-                        break;
-                    case ONLINE_INACTIVE:
-                        color = R.color.device_online_inactive;
-                        break;
-                    case ONLINE_ACTIVE:
-                        color = R.color.device_online_active;
-                        break;
-                }
-                // TODO: this is not working (and will also break on API 19
-                binding.deviceIcon
-                        .setColorFilter(ContextCompat.getColor(MainActivity.this, color), PorterDuff.Mode.SRC_IN);
-                return binding.getRoot();
-            }
-        };
+        ArrayAdapter<DeviceStats> adapter = new DevicesAdapter(this);
         mBinding.mainDevices.devicesListView.setAdapter(adapter);
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -468,21 +388,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("remove device " + deviceId.substring(0, 7))
                     .setMessage("remove device" + deviceId.substring(0, 7) + " from list of known devices?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton("yes", (dialog, which) -> {
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                         mLibraryHandler.getConfiguration().edit().removePeer(deviceId).persistLater();
                         updateDeviceList();
                     })
-                    .setNegativeButton("no", null)
+                    .setNegativeButton(android.R.string.no, null)
                     .show();
             Log.d(TAG, "showFolderListView delete device = '" + deviceId + "'");
             return false;
         });
         updateDeviceList();
     }
-
-    private final List<Comparator<FileInfo>> availableFileInfoOrderings=Collections.unmodifiableList(Arrays.asList(FileInfoOrdering.ALPHA_ASC_DIR_FIRST, FileInfoOrdering.LAST_MOD_DESC));
-    private Comparator<FileInfo> fileInfoOrdering=availableFileInfoOrderings.iterator().next();
 
     private void updateDeviceList() {
         //TODO fix npe when opening drawer before app has fully started (no synclient)
@@ -617,4 +533,5 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Toast.makeText(this, "device already present: " + deviceId, Toast.LENGTH_SHORT).show();
         }
     }
+
 }
