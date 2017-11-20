@@ -32,8 +32,7 @@ public class LibraryHandler {
     private SyncthingClient mSyncthingClient;
     private FolderBrowser mFolderBrowser;
 
-    public void init(Context context, OnIndexUpdatedListener onIndexUpdatedListener) {
-        mOnIndexUpdatedListener = onIndexUpdatedListener;
+    public void init(Context context) {
         mConfiguration = ConfigurationService.newLoader()
                 .setCache(new File(context.getExternalCacheDir(), "cache"))
                 .setDatabase(new File(context.getExternalFilesDir(null), "database"))
@@ -50,6 +49,12 @@ public class LibraryHandler {
         Log.i(TAG, "loaded mConfiguration = " + mConfiguration.newWriter().dumpToString());
         Log.i(TAG, "storage space = " + mConfiguration.getStorageInfo().dumpAvailableSpace());
         mSyncthingClient = new it.anyplace.sync.client.SyncthingClient(mConfiguration);
+        //TODO listen for device events, update device list
+        mFolderBrowser = mSyncthingClient.getIndexHandler().newFolderBrowser();
+    }
+
+    public void setOnIndexUpdatedListener(OnIndexUpdatedListener onIndexUpdatedListener) {
+        mOnIndexUpdatedListener = onIndexUpdatedListener;
         mSyncthingClient.getIndexHandler().getEventBus().register(new Object() {
 
             @Subscribe
@@ -69,8 +74,6 @@ public class LibraryHandler {
                 mOnIndexUpdatedListener.onIndexUpdateComplete();
             }
         });
-        //TODO listen for device events, update device list
-        mFolderBrowser = mSyncthingClient.getIndexHandler().newFolderBrowser();
     }
 
     public void destroy() {

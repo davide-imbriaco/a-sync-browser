@@ -27,7 +27,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -74,12 +73,11 @@ import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends SyncbrowserActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_WRITE_STORAGE = 142;
 
-    private LibraryHandler mLibraryHandler;
     private AlertDialog mLoadingDialog;
     private MainContainerBinding mBinding;
 
@@ -88,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.main_container);
-
-        mLibraryHandler = new LibraryHandler();
 
         mBinding.mainContent.mainFolderAndFilesListView.setEmptyView(mBinding.mainContent.mainListViewEmptyElement);
 
@@ -134,54 +130,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             }
         });
-
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected void onPreExecute() {
-                showLoadingDialog("loading config, starting syncthing client");
-            }
-
-            @Override
-            protected Void doInBackground(Void... voidd) {
-                mLibraryHandler.init(MainActivity.this, new LibraryHandler.OnIndexUpdatedListener() {
-                    @Override
-                    public void onIndexUpdateProgress(FolderInfo folder, int percentage) {
-                        runOnUiThread(() -> {
-                            mBinding.mainContent.mainIndexProgressBarLabel.setText("index update, folder "
-                                    + folder.getLabel() + " " + percentage + "% synchronized");
-                                updateFolderListView();
-                        });
-                    }
-
-                    @Override
-                    public void onIndexUpdateComplete() {
-                        runOnUiThread(() -> {
-                            mBinding.mainContent.mainIndexProgressBar.setVisibility(View.GONE);
-                            updateFolderListView();
-                        });
-                    }
-                });
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void voidd) {
-                cancelLoadingDialog();
-                if (mLibraryHandler.getSyncthingClient() == null) {
-                    Toast.makeText(MainActivity.this, "error starting syncthing client", Toast.LENGTH_LONG).show();
-                    MainActivity.this.finish();
-                } else {
-                    showAllFoldersListView();
-                    Date lastUpdate = getLastIndexUpdateFromPref();
-                    if (lastUpdate == null || new Date().getTime() - lastUpdate.getTime() > 10 * 60 * 1000) { //trigger update if last was more than 10mins ago
-                        Log.d("onCreate", "trigger index update, last was " + lastUpdate);
-                        updateIndexFromRemote();
-                    }
-                    initDeviceList();
-                }
-            }
-        }.execute();
     }
 
     private void checkPermissions() {
@@ -224,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void cleanCacheAndIndex() {
-        mLibraryHandler.getSyncthingClient().clearCacheAndIndex();
+        getSyncthingClient().clearCacheAndIndex();
         recreate();
     }
 
@@ -238,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void doUpload(final String syncthingFolder, final String syncthingSubFolder, final Uri fileToUpload) {
-        new UploadFileTask(this, mLibraryHandler.getSyncthingClient(), fileToUpload, syncthingFolder,
+        new UploadFileTask(this, getSyncthingClient(), fileToUpload, syncthingFolder,
                     syncthingSubFolder, this::updateFolderListView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -253,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             indexBrowser = null;
         }
 
-        List<Pair<FolderInfo, FolderStats>> list = Lists.newArrayList(mLibraryHandler.getFolderBrowser().getFolderInfoAndStatsList());
+        List<Pair<FolderInfo, FolderStats>> list = Lists.newArrayList(getFolderBrowser().getFolderInfoAndStatsList());
         Collections.sort(list, Ordering.natural().onResultOf(input -> input.getLeft().getLabel()));
         Log.i(TAG, "list folders = " + list + " (" + list.size() + " records");
         ArrayAdapter<Pair<FolderInfo, FolderStats>> adapter = new FoldersListAdapter(this, list);
@@ -277,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 indexBrowser.close();
             }
             Log.d(TAG, "open new index browser");
-            indexBrowser = mLibraryHandler.getSyncthingClient().getIndexHandler()
+            indexBrowser = getSyncthingClient().getIndexHandler()
                     .newIndexBrowserBuilder()
                     .setOrdering(FileInfoOrdering.ALPHA_ASC_DIR_FIRST)
                     .includeParentInList(true).allowParentInRoot(true)
@@ -308,8 +256,34 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void cancelLoadingDialog() {
-        mLoadingDialog.cancel();
-        mLoadingDialog = null;
+        if (mLoadingDialog != null) {
+            mLoadingDialog.cancel();
+            mLoadingDialog = null;
+        }
+    }
+
+    @Override
+    public void onIndexUpdateProgress(FolderInfo folder, int percentage) {
+        mBinding.mainContent.mainIndexProgressBarLabel.setText("index update, folder "
+                + folder.getLabel() + " " + percentage + "% synchronized");
+        updateFolderListView();
+    }
+
+    @Override
+    public void onIndexUpdateComplete() {
+        mBinding.mainContent.mainIndexProgressBar.setVisibility(View.GONE);
+        updateFolderListView();
+    }
+
+    @Override
+    public void onLibraryLoaded() {
+        showAllFoldersListView();
+        Date lastUpdate = getLastIndexUpdateFromPref();
+        if (lastUpdate == null || new Date().getTime() - lastUpdate.getTime() > 10 * 60 * 1000) { //trigger update if last was more than 10mins ago
+            Log.d("onCreate", "trigger index update, last was " + lastUpdate);
+            updateIndexFromRemote();
+        }
+        initDeviceList();
     }
 
     private void navigateToFolder(FileInfo fileInfo) {
@@ -325,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected void onPreExecute() {
-                            showLoadingDialog("open directory: " + (indexBrowser.isRoot() ? mLibraryHandler.getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel() : indexBrowser.getCurrentPathFileName()));
+                            showLoadingDialog("open directory: " + (indexBrowser.isRoot() ? getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel() : indexBrowser.getCurrentPathFileName()));
                         }
 
                         @Override
@@ -352,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     adapter.notifyDataSetChanged();
                     mBinding.mainContent.mainFolderAndFilesListView.setSelection(0);
                     mBinding.mainContent.mainHeaderFolderLabel.setText(indexBrowser.isRoot()
-                            ?mLibraryHandler.getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel()
+                            ?getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel()
                             :newFileInfo.getFileName());
                 }
             } else {
@@ -389,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     .setTitle("remove device " + deviceId.substring(0, 7))
                     .setMessage("remove device" + deviceId.substring(0, 7) + " from list of known devices?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                        mLibraryHandler.getConfiguration().edit().removePeer(deviceId).persistLater();
+                        getConfiguration().edit().removePeer(deviceId).persistLater();
                         updateDeviceList();
                     })
                     .setNegativeButton(android.R.string.no, null)
@@ -402,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void updateDeviceList() {
         //TODO fix npe when opening drawer before app has fully started (no synclient)
-        List<DeviceStats> list = Lists.newArrayList(mLibraryHandler.getSyncthingClient().getDevicesHandler().getDeviceStatsList());
+        List<DeviceStats> list = Lists.newArrayList(getSyncthingClient().getDevicesHandler().getDeviceStatsList());
         Collections.sort(list, new Comparator<DeviceStats>() {
             final Function<DeviceStats.DeviceStatus,Integer> fun= Functions.forMap(ImmutableMap.of(DeviceStats.DeviceStatus.OFFLINE,3, DeviceStats.DeviceStatus.ONLINE_INACTIVE,2, DeviceStats.DeviceStatus.ONLINE_ACTIVE,1));
             @Override
@@ -419,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void pullFile(final FileInfo fileInfo) {
         Log.i(TAG, "pulling file = " + fileInfo);
-        new DownloadFileTask(this, mLibraryHandler.getSyncthingClient(), fileInfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new DownloadFileTask(this, getSyncthingClient(), fileInfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private final static String LAST_INDEX_UPDATE_TS_PREF = "LAST_INDEX_UPDATE_TS";
@@ -449,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 @Override
                 protected Exception doInBackground(Void... voidd) {
                     try {
-                        mLibraryHandler.getSyncthingClient().waitForRemoteIndexAquired();
+                        getSyncthingClient().waitForRemoteIndexAquired();
                         return null;
                     } catch (InterruptedException ex) {
                         Log.e(TAG, "index dump exception", ex);
@@ -478,7 +452,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onDestroy() {
         super.onDestroy();
         new Thread(() -> {
-            mLibraryHandler.destroy();
             if (indexBrowser != null) {
                 indexBrowser.close();
                 indexBrowser = null;
@@ -523,9 +496,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void importDeviceId(String deviceId) {
         KeystoreHandler.validateDeviceId(deviceId);
-        boolean modified = mLibraryHandler.getConfiguration().edit().addPeers(new DeviceInfo(deviceId, null));
+        boolean modified = getConfiguration().edit().addPeers(new DeviceInfo(deviceId, null));
         if (modified) {
-            mLibraryHandler.getConfiguration().edit().persistLater();
+            getConfiguration().edit().persistLater();
             Toast.makeText(this, "successfully imported device: " + deviceId, Toast.LENGTH_SHORT).show();
             updateDeviceList();//TODO remove this if event triggered (and handler trigger update)
             updateIndexFromRemote();
