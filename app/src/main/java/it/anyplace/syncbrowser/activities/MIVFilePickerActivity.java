@@ -1,9 +1,11 @@
-package it.anyplace.syncbrowser.filepicker;
+package it.anyplace.syncbrowser.activities;
 
 import com.nononsenseapps.filepicker.AbstractFilePickerActivity;
 import com.nononsenseapps.filepicker.AbstractFilePickerFragment;
 
 import java.io.File;
+
+import it.anyplace.syncbrowser.fragments.MIVFilePickerFragment;
 
 public class MIVFilePickerActivity extends AbstractFilePickerActivity<File> {
 

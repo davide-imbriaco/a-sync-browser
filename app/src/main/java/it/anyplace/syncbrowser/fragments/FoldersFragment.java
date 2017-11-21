@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.fragments;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -22,6 +22,9 @@ import java.util.List;
 
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.beans.FolderStats;
+import it.anyplace.syncbrowser.R;
+import it.anyplace.syncbrowser.activities.FolderBrowserActivity;
+import it.anyplace.syncbrowser.activities.SyncbrowserActivity;
 import it.anyplace.syncbrowser.adapters.FoldersListAdapter;
 import it.anyplace.syncbrowser.databinding.FragmentFoldersBinding;
 

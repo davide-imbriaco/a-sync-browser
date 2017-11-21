@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.activities;
 
 import android.app.AlertDialog;
 import android.content.res.Configuration;
@@ -13,6 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import it.anyplace.sync.core.beans.FolderInfo;
+import it.anyplace.syncbrowser.fragments.DevicesFragment;
+import it.anyplace.syncbrowser.fragments.FoldersFragment;
+import it.anyplace.syncbrowser.R;
+import it.anyplace.syncbrowser.utils.UpdateIndexTask;
 import it.anyplace.syncbrowser.databinding.ActivityMainBinding;
 
 public class MainActivity extends SyncbrowserActivity {
@@ -90,8 +94,7 @@ public class MainActivity extends SyncbrowserActivity {
         return true;
     }
 
-    private <T extends Fragment & SyncbrowserActivity.OnLibraryLoadedListener>
-    void setContentFragment(T fragment) {
+    private void setContentFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)

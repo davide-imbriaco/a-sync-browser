@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -20,6 +20,9 @@ import com.google.zxing.integration.android.IntentResult;
 import it.anyplace.sync.core.beans.DeviceInfo;
 import it.anyplace.sync.core.beans.DeviceStats;
 import it.anyplace.sync.core.security.KeystoreHandler;
+import it.anyplace.syncbrowser.R;
+import it.anyplace.syncbrowser.utils.UpdateIndexTask;
+import it.anyplace.syncbrowser.activities.SyncbrowserActivity;
 import it.anyplace.syncbrowser.adapters.DevicesAdapter;
 import it.anyplace.syncbrowser.databinding.FragmentDevicesBinding;
 

@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.filepicker;
+package it.anyplace.syncbrowser.fragments;
 
 import android.view.View;
 

@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.utils;
 
 import android.content.Context;
 import android.database.Cursor;

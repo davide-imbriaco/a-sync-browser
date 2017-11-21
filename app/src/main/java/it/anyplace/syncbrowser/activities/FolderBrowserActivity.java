@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -27,10 +27,12 @@ import it.anyplace.sync.core.beans.FileInfo;
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.utils.FileInfoOrdering;
 import it.anyplace.sync.core.utils.PathUtils;
+import it.anyplace.syncbrowser.utils.DownloadFileTask;
+import it.anyplace.syncbrowser.R;
+import it.anyplace.syncbrowser.utils.UploadFileTask;
 import it.anyplace.syncbrowser.adapters.FolderContentsAdapter;
 import it.anyplace.syncbrowser.databinding.ActivityFolderBrowserBinding;
 import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
-import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -227,6 +229,7 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
                         grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, R.string.toast_write_storage_permission_required,
                             Toast.LENGTH_LONG).show();
+                    mRunWhenPermissionsReceived = null;
                 } else {
                     mRunWhenPermissionsReceived.run();
                     mRunWhenPermissionsReceived = null;

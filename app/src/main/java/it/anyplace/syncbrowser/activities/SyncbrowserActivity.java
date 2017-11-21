@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser;
+package it.anyplace.syncbrowser.activities;
 
 import android.app.AlertDialog;
 import android.databinding.DataBindingUtil;
@@ -15,6 +15,9 @@ import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.configuration.ConfigurationService;
+import it.anyplace.syncbrowser.utils.LibraryHandler;
+import it.anyplace.syncbrowser.R;
+import it.anyplace.syncbrowser.utils.UpdateIndexTask;
 import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 
 public abstract class SyncbrowserActivity extends AppCompatActivity {
