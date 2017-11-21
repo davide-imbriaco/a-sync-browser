@@ -29,7 +29,7 @@ public class DownloadFileTask extends AsyncTask<Void, BlockPuller.FileDownloadOb
     private final Context mContext;
     private final SyncthingClient mSyncthingClient;
     private final FileInfo mFileInfo;
-    private ProgressDialog progressDialog;
+    private ProgressDialog mProgressDialog;
     private boolean cancelled;
 
     public DownloadFileTask(Context context, SyncthingClient syncthingClient, FileInfo fileInfo) {
@@ -41,16 +41,16 @@ public class DownloadFileTask extends AsyncTask<Void, BlockPuller.FileDownloadOb
 
     @Override
     protected void onPreExecute() {
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setMessage("downloading file " + mFileInfo.getFileName());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(true);
-        progressDialog.setOnCancelListener(dialogInterface -> {
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage("downloading file " + mFileInfo.getFileName());
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setOnCancelListener(dialogInterface -> {
             cancelled = true;
             Toast.makeText(mContext, "download aborted by user", Toast.LENGTH_SHORT).show();
         });
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.show();
     }
 
     @Override
@@ -84,15 +84,15 @@ public class DownloadFileTask extends AsyncTask<Void, BlockPuller.FileDownloadOb
     @Override
     protected void onProgressUpdate(BlockPuller.FileDownloadObserver... fileDownloadObserver) {
         if (fileDownloadObserver[0].getProgress() > 0) {
-            progressDialog.setIndeterminate(false);
-            progressDialog.setMax((int) (long) mFileInfo.getSize());
-            progressDialog.setProgress((int) (fileDownloadObserver[0].getProgress() * mFileInfo.getSize()));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax((int) (long) mFileInfo.getSize());
+            mProgressDialog.setProgress((int) (fileDownloadObserver[0].getProgress() * mFileInfo.getSize()));
         }
     }
 
     @Override
     protected void onPostExecute(Pair<File, Exception> res) {
-        progressDialog.dismiss();
+        mProgressDialog.dismiss();
         if (cancelled)
             return;
 

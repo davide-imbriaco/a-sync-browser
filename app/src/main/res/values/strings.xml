@@ -2,14 +2,8 @@
     <string name="app_name">a-sync-browser</string>
     <string name="index_update_progress_message">index update...</string>
     <string name="folder_list_empty_message">no folder avaliable</string>
-    <string name="no_search_result_message">0 results found</string>
-    <string name="too_many_search_results_message">too many results found</string>
-    <string name="search_hint">search...</string>
-    <string name="file_upload_default_label">file upload...</string>
-    <string name="add_device_label">add device</string>
     <string name="clear_local_cache_index_label">clear local cache/index</string>
     <string name="update_remote_index_label">update remote index</string>
-    <string name="exit_menu_label">exit menu</string>
     <string name="devices_list_view_empty_message">no devices avaliable</string>
-    <string name="toast_write_storage_permission_required">Write storage permission is required for this app</string>
+    <string name="toast_write_storage_permission_required">Write storage permission is required for this functionality</string>
 </resources>

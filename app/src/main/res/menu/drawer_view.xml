@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/folders"
+            android:icon="@drawable/ic_folder_gray_24dp"
+            android:title="Folders"
+            android:checked="true"/>
+
+        <item
+            android:id="@+id/devices"
+            android:icon="@drawable/ic_laptop_gray_24dp"
+            android:title="Devices" />
+
+        <item
+            android:id="@+id/update_index"
+            android:icon="@drawable/ic_refresh_gray_24dp"
+            android:title="@string/update_remote_index_label"
+            android:checkable="false"/>
+
+        <item
+            android:id="@+id/clear_index"
+            android:icon="@drawable/ic_delete_gray_24dp"
+            android:title="@string/clear_local_cache_index_label"
+            android:checkable="false"/>
+
+    </group>
+
+</menu>

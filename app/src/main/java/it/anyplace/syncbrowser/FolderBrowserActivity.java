@@ -1,16 +1,22 @@
 package it.anyplace.syncbrowser;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
@@ -32,12 +38,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class FolderBrowserActivity extends SyncbrowserActivity {
 
     private static final String TAG = "FolderBrowserActivity";
+    private static final int REQUEST_WRITE_STORAGE = 142;
+
     public static final String EXTRA_FOLDER_NAME = "folder_name";
 
     private ActivityFolderBrowserBinding mBinding;
     private IndexBrowser indexBrowser;
     private AlertDialog mLoadingDialog;
     private FolderContentsAdapter mAdapter;
+    private Runnable mRunWhenPermissionsReceived;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,8 +100,7 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
         }
     }
 
-    private void showFolderListView(String folder, @javax.annotation.Nullable String previousPath) {
-        Log.d(TAG, "showFolderListView BEGIN");
+    private void showFolderListView(String folder, @Nullable String previousPath) {
         if (indexBrowser != null && equal(folder, indexBrowser.getFolder())) {
             Log.d(TAG, "reuse current index browser");
             indexBrowser.navigateToNearestPath(previousPath);
@@ -116,11 +124,9 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
             navigateToFolder(fileInfo);
         });
         navigateToFolder(indexBrowser.getCurrentPathInfo());
-        Log.d(TAG, "showFolderListView END");
     }
 
     private void navigateToFolder(FileInfo fileInfo) {
-        Log.d(TAG, "BEGIN");
         if (indexBrowser.isRoot() && PathUtils.isParent(fileInfo.getPath())) {
             finish();
         } else {
@@ -164,10 +170,12 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
                 }
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo);
-                new DownloadFileTask(this, getSyncthingClient(), fileInfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                executeWithPermissions(() -> {
+                    new DownloadFileTask(this, getSyncthingClient(), fileInfo)
+                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                });
             }
         }
-        Log.d(TAG, "navigate to folder END");
     }
 
     private void updateFolderListView() {
@@ -175,11 +183,13 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
     }
 
     private void showUploadHereDialog() {
-        Intent i = new Intent(this, MIVFilePickerActivity.class);
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-        Log.i(TAG, "showUploadHereDialog path = " + path);
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, path);
-        startActivityForResult(i, 0);
+        executeWithPermissions(() -> {
+            Intent i = new Intent(this, MIVFilePickerActivity.class);
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            Log.i(TAG, "showUploadHereDialog path = " + path);
+            i.putExtra(FilePickerActivity.EXTRA_START_PATH, path);
+            startActivityForResult(i, 0);
+        });
     }
 
     @Override
@@ -193,5 +203,37 @@ public class FolderBrowserActivity extends SyncbrowserActivity {
     public void onIndexUpdateComplete() {
         mBinding.mainIndexProgressBar.setVisibility(View.GONE);
         updateFolderListView();
+    }
+
+    private void executeWithPermissions(Runnable runnable) {
+        int permissionState = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionState != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
+            mRunWhenPermissionsReceived = runnable;
+        } else {
+            runnable.run();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_WRITE_STORAGE:
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.toast_write_storage_permission_required,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    mRunWhenPermissionsReceived.run();
+                    mRunWhenPermissionsReceived = null;
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }

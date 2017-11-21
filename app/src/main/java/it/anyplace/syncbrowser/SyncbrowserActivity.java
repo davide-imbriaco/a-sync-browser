@@ -4,9 +4,12 @@ import android.app.AlertDialog;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import java.util.Date;
 
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.client.SyncthingClient;
@@ -15,6 +18,8 @@ import it.anyplace.sync.core.configuration.ConfigurationService;
 import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 
 public abstract class SyncbrowserActivity extends AppCompatActivity {
+
+    private static final String TAG = "SyncbrowserActivity";
 
     private static int mActivityCount = 0;
     private static LibraryHandler mLibraryHandler;
@@ -26,7 +31,6 @@ public abstract class SyncbrowserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mActivityCount++;
         if (mLibraryHandler == null) {
-            Log.d("xxx", "init");
             initLibrary();
         }
     }
@@ -37,7 +41,6 @@ public abstract class SyncbrowserActivity extends AppCompatActivity {
         mActivityCount--;
         new Thread(() -> {
             if (mActivityCount == 0) {
-                Log.d("xxx", "destroy");
                 mLibraryHandler.destroy();
                 mLibraryHandler = null;
             }
@@ -109,5 +112,18 @@ public abstract class SyncbrowserActivity extends AppCompatActivity {
     }
 
     public void onLibraryLoaded() {
+        Date lastUpdate;
+        long lastUpdateMillis = PreferenceManager.getDefaultSharedPreferences(this)
+                .getLong(UpdateIndexTask.LAST_INDEX_UPDATE_TS_PREF, -1);
+        if (lastUpdateMillis < 0) {
+            lastUpdate = null;
+        } else {
+            lastUpdate = new Date(lastUpdateMillis);
+        }
+        //trigger update if last was more than 10mins ago
+        if (lastUpdate == null || new Date().getTime() - lastUpdate.getTime() > 10 * 60 * 1000) {
+            Log.d(TAG, "trigger index update, last was " + lastUpdate);
+            new UpdateIndexTask(this, getSyncthingClient()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 }
