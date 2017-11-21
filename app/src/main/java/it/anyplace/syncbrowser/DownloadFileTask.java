@@ -23,6 +23,7 @@ import it.anyplace.sync.bep.BlockPuller;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.beans.FileInfo;
 
+// TODO: this should be an IntentService
 public class DownloadFileTask extends AsyncTask<Void, BlockPuller.FileDownloadObserver, Pair<File, Exception>> {
 
     private final Context mContext;

@@ -7,7 +7,6 @@ import java.io.File;
 
 public class MIVFilePickerActivity extends AbstractFilePickerActivity<File> {
 
-
         @Override
         protected AbstractFilePickerFragment<File> getFragment(
                 final String startPath, final int mode, final boolean allowMultiple,
@@ -17,5 +16,4 @@ public class MIVFilePickerActivity extends AbstractFilePickerActivity<File> {
             fragment.setArgs(startPath, mode, allowMultiple, allowCreateDir);
             return fragment;
         }
-
 }

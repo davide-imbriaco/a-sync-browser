@@ -14,15 +14,12 @@
 package it.anyplace.syncbrowser;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +28,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.common.base.Function;
@@ -42,7 +38,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -53,24 +48,15 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import it.anyplace.sync.bep.IndexBrowser;
 import it.anyplace.sync.core.beans.DeviceInfo;
 import it.anyplace.sync.core.beans.DeviceStats;
-import it.anyplace.sync.core.beans.FileInfo;
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.beans.FolderStats;
 import it.anyplace.sync.core.security.KeystoreHandler;
-import it.anyplace.sync.core.utils.FileInfoOrdering;
-import it.anyplace.sync.core.utils.PathUtils;
 import it.anyplace.syncbrowser.adapters.DevicesAdapter;
-import it.anyplace.syncbrowser.adapters.FolderContentsAdapter;
 import it.anyplace.syncbrowser.adapters.FoldersListAdapter;
-import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 import it.anyplace.syncbrowser.databinding.MainContainerBinding;
-import it.anyplace.syncbrowser.filepicker.MIVFilePickerActivity;
 
-import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class MainActivity extends SyncbrowserActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -112,7 +98,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
             updateIndexFromRemote();
             mBinding.mainDrawerLayout.closeDrawer(Gravity.START);
         });
-        mBinding.mainContent.mainListViewUploadHereButton.setOnClickListener(view -> showUploadHereDialog());
         mBinding.mainDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -159,48 +144,15 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
         }
     }
 
-    private void showUploadHereDialog() {
-        if (indexBrowser == null) {
-            Log.w(TAG, "showUploadHereDialog unable to open dialog, null index browser");
-        } else {
-            Intent i = new Intent(this, MIVFilePickerActivity.class);
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            Log.i(TAG, "showUploadHereDialog path = " + path);
-            i.putExtra(FilePickerActivity.EXTRA_START_PATH, path);
-            startActivityForResult(i, 0);
-        }
-    }
-
     private void cleanCacheAndIndex() {
         getSyncthingClient().clearCacheAndIndex();
         recreate();
     }
 
-    private void updateButtonsVisibility() {
-        mBinding.mainContent.mainFolderAndFilesListView.setVisibility(View.VISIBLE);
-        if (isBrowsingFolder) {
-            mBinding.mainContent.mainListViewUploadHereButton.setVisibility(View.VISIBLE);
-        } else {
-            mBinding.mainContent.mainListViewUploadHereButton.setVisibility(View.GONE);
-        }
-    }
-
-    private void doUpload(final String syncthingFolder, final String syncthingSubFolder, final Uri fileToUpload) {
-        new UploadFileTask(this, getSyncthingClient(), fileToUpload, syncthingFolder,
-                    syncthingSubFolder, this::updateFolderListView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private IndexBrowser indexBrowser;
-    private boolean isBrowsingFolder = false;
     private boolean indexUpdateInProgress = false;
 
     private void showAllFoldersListView() {
         Log.d(TAG, "showAllFoldersListView BEGIN");
-        if (indexBrowser != null) {
-            indexBrowser.close();
-            indexBrowser = null;
-        }
-
         List<Pair<FolderInfo, FolderStats>> list = Lists.newArrayList(getFolderBrowser().getFolderInfoAndStatsList());
         Collections.sort(list, Ordering.natural().onResultOf(input -> input.getLeft().getLabel()));
         Log.i(TAG, "list folders = " + list + " (" + list.size() + " records");
@@ -208,71 +160,22 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
         mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
         mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
             String folder = adapter.getItem(position).getLeft().getFolder();
-            showFolderListView(folder, null);
+            Intent intent = new Intent(this, FolderBrowserActivity.class);
+            intent.putExtra(FolderBrowserActivity.EXTRA_FOLDER_NAME, folder);
+            startActivity(intent);
         });
-        isBrowsingFolder = false;
-        updateButtonsVisibility();
         Log.d(TAG, "showAllFoldersListView END");
-    }
-
-    private void showFolderListView(String folder, @Nullable String previousPath) {
-        Log.d(TAG, "showFolderListView BEGIN");
-        if (indexBrowser != null && equal(folder, indexBrowser.getFolder())) {
-            Log.d(TAG, "reuse current index browser");
-            indexBrowser.navigateToNearestPath(previousPath);
-        } else {
-            if (indexBrowser != null) {
-                indexBrowser.close();
-            }
-            Log.d(TAG, "open new index browser");
-            indexBrowser = getSyncthingClient().getIndexHandler()
-                    .newIndexBrowserBuilder()
-                    .setOrdering(FileInfoOrdering.ALPHA_ASC_DIR_FIRST)
-                    .includeParentInList(true).allowParentInRoot(true)
-                    .setFolder(folder)
-                    .buildToNearestPath(previousPath);
-        }
-        ArrayAdapter<FileInfo> adapter = new FolderContentsAdapter(this);
-        mBinding.mainContent.mainFolderAndFilesListView.setAdapter(adapter);
-        mBinding.mainContent.mainFolderAndFilesListView.setOnItemClickListener((adapterView, view, position, l) -> {
-            FileInfo fileInfo = (FileInfo) mBinding.mainContent.mainFolderAndFilesListView.getItemAtPosition(position);
-            Log.d(TAG, "navigate to path = '" + fileInfo.getPath() + "' from path = '" + indexBrowser.getCurrentPath() + "'");
-            navigateToFolder(fileInfo);
-        });
-        isBrowsingFolder = true;
-        navigateToFolder(indexBrowser.getCurrentPathInfo());
-        updateButtonsVisibility();
-        Log.d(TAG, "showFolderListView END");
-    }
-
-    private void showLoadingDialog(String message) {
-        DialogLoadingBinding binding = DataBindingUtil.inflate(
-                getLayoutInflater(), R.layout.dialog_loading, null, false);
-        binding.loadingText.setText(message);
-        mLoadingDialog = new android.app.AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setView(binding.getRoot())
-                .show();
-    }
-
-    private void cancelLoadingDialog() {
-        if (mLoadingDialog != null) {
-            mLoadingDialog.cancel();
-            mLoadingDialog = null;
-        }
     }
 
     @Override
     public void onIndexUpdateProgress(FolderInfo folder, int percentage) {
         mBinding.mainContent.mainIndexProgressBarLabel.setText("index update, folder "
                 + folder.getLabel() + " " + percentage + "% synchronized");
-        updateFolderListView();
     }
 
     @Override
     public void onIndexUpdateComplete() {
         mBinding.mainContent.mainIndexProgressBar.setVisibility(View.GONE);
-        updateFolderListView();
     }
 
     @Override
@@ -284,66 +187,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
             updateIndexFromRemote();
         }
         initDeviceList();
-    }
-
-    private void navigateToFolder(FileInfo fileInfo) {
-        Log.d(TAG, "BEGIN");
-        if (indexBrowser.isRoot() && PathUtils.isParent(fileInfo.getPath())) {
-            showAllFoldersListView(); //navigate back to folder list
-        } else {
-            if (fileInfo.isDirectory()) {
-                indexBrowser.navigateTo(fileInfo);
-                FileInfo newFileInfo=PathUtils.isParent(fileInfo.getPath())?indexBrowser.getCurrentPathInfo():fileInfo;
-                if (!indexBrowser.isCacheReadyAfterALittleWait()) {
-                    Log.d(TAG, "load folder cache bg");
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected void onPreExecute() {
-                            showLoadingDialog("open directory: " + (indexBrowser.isRoot() ? getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel() : indexBrowser.getCurrentPathFileName()));
-                        }
-
-                        @Override
-                        protected Void doInBackground(Void... voids) {
-                            indexBrowser.waitForCacheReady();
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            Log.d(TAG, "cache ready, navigate to folder");
-                            cancelLoadingDialog();
-                            navigateToFolder(newFileInfo);
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else {
-                    List<FileInfo> list = indexBrowser.listFiles();
-                    Log.i("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list.size() + " records");
-                    Log.d("navigateToFolder", "list for path = '" + indexBrowser.getCurrentPath() + "' list = " + list);
-                    checkArgument(!list.isEmpty());//list must contain at least the 'parent' path
-                    ArrayAdapter<FileInfo> adapter = (ArrayAdapter<FileInfo>) mBinding.mainContent.mainFolderAndFilesListView.getAdapter();
-                    adapter.clear();
-                    adapter.addAll(list);
-                    adapter.notifyDataSetChanged();
-                    mBinding.mainContent.mainFolderAndFilesListView.setSelection(0);
-                    mBinding.mainContent.mainHeaderFolderLabel.setText(indexBrowser.isRoot()
-                            ?getFolderBrowser().getFolderInfo(indexBrowser.getFolder()).getLabel()
-                            :newFileInfo.getFileName());
-                }
-            } else {
-                pullFile(fileInfo);
-            }
-        }
-        Log.d(TAG, "navigate to folder END");
-    }
-
-    private void updateFolderListView() {
-        Log.d(TAG, "updateFolderListView BEGIN");
-        if (indexBrowser == null) {
-            showAllFoldersListView();
-        } else {
-            showFolderListView(indexBrowser.getFolder(), indexBrowser.getCurrentPath());
-        }
-        Log.d(TAG, "updateFolderListView END");
     }
 
     private void initDeviceList() {
@@ -391,11 +234,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
         mBinding.mainDevices.devicesListView.setSelection(0);
     }
 
-    private void pullFile(final FileInfo fileInfo) {
-        Log.i(TAG, "pulling file = " + fileInfo);
-        new DownloadFileTask(this, getSyncthingClient(), fileInfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     private final static String LAST_INDEX_UPDATE_TS_PREF = "LAST_INDEX_UPDATE_TS";
 
     private @Nullable Date getLastIndexUpdateFromPref() {
@@ -437,7 +275,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
                     if (ex != null) {
                         Toast.makeText(MainActivity.this, "error updating index: " + ex.toString(), Toast.LENGTH_LONG).show();
                     }
-                    updateFolderListView();
                     indexUpdateInProgress = false;
                     getPreferences(MODE_PRIVATE).edit()
                             .putLong(LAST_INDEX_UPDATE_TS_PREF, new Date().getTime())
@@ -446,18 +283,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         Log.d(TAG, "updateIndexFromRemote END (running bg)");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        new Thread(() -> {
-            if (indexBrowser != null) {
-                indexBrowser.close();
-                indexBrowser = null;
-            }
-        }).start();
-        cancelLoadingDialog();
     }
 
     private void openQrcode() {
@@ -475,22 +300,6 @@ public class MainActivity extends SyncbrowserActivity implements ActivityCompat.
                 Log.i(TAG, "qrcode text = " + deviceId);
                 importDeviceId(deviceId);
             }
-        }
-        // Otherwise, it was a file upload.
-        else {
-            if (resultCode == Activity.RESULT_OK) {
-                doUpload(indexBrowser.getFolder(), indexBrowser.getCurrentPath(), intent.getData());
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (indexBrowser != null) {
-            ListView listView = mBinding.mainContent.mainFolderAndFilesListView;
-            listView.performItemClick(listView.getAdapter().getView(0, null, null), 0, listView.getItemIdAtPosition(0)); //click item '0', ie '..' (go to parent)
-        } else {
-            super.onBackPressed();
         }
     }
 

@@ -3,8 +3,10 @@ package it.anyplace.syncbrowser;
 import android.app.AlertDialog;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.client.SyncthingClient;
@@ -14,27 +16,32 @@ import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 
 public abstract class SyncbrowserActivity extends AppCompatActivity {
 
-    private static final int SHUTDOWN_LIBRARY_DELAY = 60 * 1000;
-
     private static int mActivityCount = 0;
     private static LibraryHandler mLibraryHandler;
 
     private AlertDialog mLoadingDialog;
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mActivityCount++;
         if (mLibraryHandler == null) {
+            Log.d("xxx", "init");
             initLibrary();
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         mActivityCount--;
-        new Handler().postDelayed(this::tryShutdownLibrary, SHUTDOWN_LIBRARY_DELAY);
+        new Thread(() -> {
+            if (mActivityCount == 0) {
+                Log.d("xxx", "destroy");
+                mLibraryHandler.destroy();
+                mLibraryHandler = null;
+            }
+        }).start();
     }
 
     private void initLibrary() {
@@ -69,15 +76,6 @@ public abstract class SyncbrowserActivity extends AppCompatActivity {
                 onLibraryLoaded();
             }
         }.execute();
-    }
-
-    private void tryShutdownLibrary() {
-        new Thread(() -> {
-            if (mActivityCount == 0) {
-                mLibraryHandler.destroy();
-                mLibraryHandler = null;
-            }
-        }).start();
     }
 
     public SyncthingClient getSyncthingClient() {

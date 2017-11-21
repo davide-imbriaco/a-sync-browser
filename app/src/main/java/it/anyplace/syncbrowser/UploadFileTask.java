@@ -14,6 +14,7 @@ import it.anyplace.sync.bep.BlockPusher;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.utils.PathUtils;
 
+// TODO: this should be an IntentService
 public class UploadFileTask extends AsyncTask<Void, BlockPusher.FileUploadObserver, Exception> {
 
     private static final String TAG = "UploadFileTask";
