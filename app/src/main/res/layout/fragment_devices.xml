@@ -22,17 +22,12 @@
                 android:textSize="20sp"
                 android:visibility="gone" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/scan_qr_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            app:elevation="6dp"
-            app:pressedTranslationZ="12dp"
-            android:src="@drawable/ic_qr_code_white_24dp"/>
+        <uk.co.markormesher.android_fab.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:buttonIcon="@drawable/ic_add_white_24dp"
+            app:buttonBackgroundColour="@color/accent"/>
 
     </RelativeLayout>
 

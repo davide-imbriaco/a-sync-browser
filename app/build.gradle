@@ -36,4 +36,5 @@ dependencies {
     compile 'org.slf4j:slf4j-android:1.7.13'
     compile 'com.google.zxing:android-integration:3.3.0'
     compile 'com.nononsenseapps:filepicker:2.5.2'
+    compile 'uk.co.markormesher:android-fab:2.0.0'
 }

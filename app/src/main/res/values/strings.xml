@@ -6,4 +6,8 @@
     <string name="update_remote_index_label">update remote index</string>
     <string name="devices_list_view_empty_message">no devices avaliable</string>
     <string name="toast_write_storage_permission_required">Write storage permission is required for this functionality</string>
+    <string name="scan_qr_code">Scan QR code</string>
+    <string name="enter_device_id">Enter device ID</string>
+    <string name="invalid_device_id">Invalid device ID</string>
+    <string name="device_id_dialog_title">Enter Device ID</string>
 </resources>
