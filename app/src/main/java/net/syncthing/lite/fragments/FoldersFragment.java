@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.fragments;
+package net.syncthing.lite.fragments;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -15,6 +15,12 @@ import android.widget.ArrayAdapter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.activities.FolderBrowserActivity;
+import net.syncthing.lite.activities.SyncthingActivity;
+import net.syncthing.lite.adapters.FoldersListAdapter;
+import net.syncthing.lite.databinding.FragmentFoldersBinding;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collections;
@@ -22,17 +28,12 @@ import java.util.List;
 
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.beans.FolderStats;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.activities.FolderBrowserActivity;
-import it.anyplace.syncbrowser.activities.SyncbrowserActivity;
-import it.anyplace.syncbrowser.adapters.FoldersListAdapter;
-import it.anyplace.syncbrowser.databinding.FragmentFoldersBinding;
 
 public class FoldersFragment extends Fragment {
 
     private static final String TAG = "FoldersFragment";
 
-    private SyncbrowserActivity mActivity;
+    private SyncthingActivity mActivity;
     private FragmentFoldersBinding mBinding;
 
     @Nullable
@@ -40,13 +41,14 @@ public class FoldersFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.fragment_folders, container, false);
+        mBinding.list.setEmptyView(mBinding.empty);
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = (SyncbrowserActivity) getActivity();
+        mActivity = (SyncthingActivity) getActivity();
         showAllFoldersListView();
     }
 

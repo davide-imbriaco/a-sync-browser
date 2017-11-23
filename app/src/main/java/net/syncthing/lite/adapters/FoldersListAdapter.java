@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.adapters;
+package net.syncthing.lite.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -9,14 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.databinding.ListviewFolderBinding;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.beans.FolderStats;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.databinding.ListviewFolderBinding;
 
 public class FoldersListAdapter extends ArrayAdapter<Pair<FolderInfo, FolderStats>> {
 

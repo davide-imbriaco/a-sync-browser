@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.activities;
+package net.syncthing.lite.activities;
 
 import android.app.AlertDialog;
 import android.databinding.DataBindingUtil;
@@ -9,20 +9,21 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.databinding.DialogLoadingBinding;
+import net.syncthing.lite.utils.LibraryHandler;
+import net.syncthing.lite.utils.UpdateIndexTask;
+
 import java.util.Date;
 
 import it.anyplace.sync.bep.FolderBrowser;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.configuration.ConfigurationService;
-import it.anyplace.syncbrowser.utils.LibraryHandler;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.utils.UpdateIndexTask;
-import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 
-public abstract class SyncbrowserActivity extends AppCompatActivity {
+public abstract class SyncthingActivity extends AppCompatActivity {
 
-    private static final String TAG = "SyncbrowserActivity";
+    private static final String TAG = "SyncthingActivity";
 
     private static int mActivityCount = 0;
     private static LibraryHandler mLibraryHandler;
@@ -61,7 +62,7 @@ public abstract class SyncbrowserActivity extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... voidd) {
                 mLibraryHandler = new LibraryHandler();
-                mLibraryHandler.init(SyncbrowserActivity.this);
+                mLibraryHandler.init(SyncthingActivity.this);
                 return null;
             }
 

@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.adapters;
+package net.syncthing.lite.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -11,11 +11,12 @@ import android.widget.ArrayAdapter;
 
 import com.google.common.collect.Lists;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.databinding.ListviewFileBinding;
+
 import org.apache.commons.io.FileUtils;
 
 import it.anyplace.sync.core.beans.FileInfo;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.databinding.ListviewFileBinding;
 
 public class FolderContentsAdapter extends ArrayAdapter<FileInfo> {
 

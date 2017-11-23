@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">a-sync-browser</string>
+    <string name="app_name">Syncthing Lite</string>
     <string name="index_update_progress_message">index update...</string>
     <string name="folder_list_empty_message">no folder avaliable</string>
     <string name="clear_local_cache_index_label">clear local cache/index</string>

@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.utils;
+package net.syncthing.lite.utils;
 
 import android.content.Context;
 import android.util.Log;

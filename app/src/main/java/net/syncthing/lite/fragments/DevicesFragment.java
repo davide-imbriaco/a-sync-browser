@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.fragments;
+package net.syncthing.lite.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -17,14 +17,15 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.activities.SyncthingActivity;
+import net.syncthing.lite.adapters.DevicesAdapter;
+import net.syncthing.lite.databinding.FragmentDevicesBinding;
+import net.syncthing.lite.utils.UpdateIndexTask;
+
 import it.anyplace.sync.core.beans.DeviceInfo;
 import it.anyplace.sync.core.beans.DeviceStats;
 import it.anyplace.sync.core.security.KeystoreHandler;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.utils.UpdateIndexTask;
-import it.anyplace.syncbrowser.activities.SyncbrowserActivity;
-import it.anyplace.syncbrowser.adapters.DevicesAdapter;
-import it.anyplace.syncbrowser.databinding.FragmentDevicesBinding;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -32,7 +33,7 @@ public class DevicesFragment extends Fragment {
 
     private static final String TAG = "DevicesFragment";
 
-    private SyncbrowserActivity mActivity;
+    private SyncthingActivity mActivity;
     private FragmentDevicesBinding mBinding;
     private DevicesAdapter mAdapter;
 
@@ -41,6 +42,7 @@ public class DevicesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.fragment_devices, container, false);
+        mBinding.list.setEmptyView(mBinding.empty);
         mBinding.scanQrCode.setOnClickListener(view -> new FragmentIntentIntegrator(this).initiateScan());
         return mBinding.getRoot();
     }
@@ -48,7 +50,7 @@ public class DevicesFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = (SyncbrowserActivity) getActivity();
+        mActivity = (SyncthingActivity) getActivity();
         initDeviceList();
         updateDeviceList();
     }

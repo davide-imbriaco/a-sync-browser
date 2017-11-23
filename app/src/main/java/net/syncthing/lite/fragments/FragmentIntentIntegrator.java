@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.fragments;
+package net.syncthing.lite.fragments;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 

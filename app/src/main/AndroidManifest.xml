@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="it.anyplace.syncbrowser">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="net.syncthing.lite">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Syncbrowser"
+        android:theme="@style/Theme.Syncthing"
         android:supportsRtl="true">
         <activity
-            android:name="it.anyplace.syncbrowser.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.adapters;
+package net.syncthing.lite.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -12,9 +12,10 @@ import android.widget.ArrayAdapter;
 
 import com.google.common.collect.Lists;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.databinding.ListviewDeviceBinding;
+
 import it.anyplace.sync.core.beans.DeviceStats;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.databinding.ListviewDeviceBinding;
 
 public class DevicesAdapter extends ArrayAdapter<DeviceStats> {
 

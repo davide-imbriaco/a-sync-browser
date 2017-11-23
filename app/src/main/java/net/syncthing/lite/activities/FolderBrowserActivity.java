@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.activities;
+package net.syncthing.lite.activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -20,6 +20,13 @@ import android.widget.Toast;
 
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
+import net.syncthing.lite.R;
+import net.syncthing.lite.adapters.FolderContentsAdapter;
+import net.syncthing.lite.databinding.ActivityFolderBrowserBinding;
+import net.syncthing.lite.databinding.DialogLoadingBinding;
+import net.syncthing.lite.utils.DownloadFileTask;
+import net.syncthing.lite.utils.UploadFileTask;
+
 import java.util.List;
 
 import it.anyplace.sync.bep.IndexBrowser;
@@ -27,17 +34,11 @@ import it.anyplace.sync.core.beans.FileInfo;
 import it.anyplace.sync.core.beans.FolderInfo;
 import it.anyplace.sync.core.utils.FileInfoOrdering;
 import it.anyplace.sync.core.utils.PathUtils;
-import it.anyplace.syncbrowser.utils.DownloadFileTask;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.utils.UploadFileTask;
-import it.anyplace.syncbrowser.adapters.FolderContentsAdapter;
-import it.anyplace.syncbrowser.databinding.ActivityFolderBrowserBinding;
-import it.anyplace.syncbrowser.databinding.DialogLoadingBinding;
 
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class FolderBrowserActivity extends SyncbrowserActivity {
+public class FolderBrowserActivity extends SyncthingActivity {
 
     private static final String TAG = "FolderBrowserActivity";
     private static final int REQUEST_WRITE_STORAGE = 142;

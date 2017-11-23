@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.activities;
+package net.syncthing.lite.activities;
 
 import android.app.AlertDialog;
 import android.content.res.Configuration;
@@ -12,14 +12,15 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
-import it.anyplace.sync.core.beans.FolderInfo;
-import it.anyplace.syncbrowser.fragments.DevicesFragment;
-import it.anyplace.syncbrowser.fragments.FoldersFragment;
-import it.anyplace.syncbrowser.R;
-import it.anyplace.syncbrowser.utils.UpdateIndexTask;
-import it.anyplace.syncbrowser.databinding.ActivityMainBinding;
+import net.syncthing.lite.R;
+import net.syncthing.lite.databinding.ActivityMainBinding;
+import net.syncthing.lite.fragments.DevicesFragment;
+import net.syncthing.lite.fragments.FoldersFragment;
+import net.syncthing.lite.utils.UpdateIndexTask;
 
-public class MainActivity extends SyncbrowserActivity {
+import it.anyplace.sync.core.beans.FolderInfo;
+
+public class MainActivity extends SyncthingActivity {
 
     private ActivityMainBinding mBinding;
     private ActionBarDrawerToggle mDrawerToggle;

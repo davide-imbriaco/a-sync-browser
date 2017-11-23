@@ -1,4 +1,4 @@
-package it.anyplace.syncbrowser.fragments;
+package net.syncthing.lite.fragments;
 
 import android.view.View;
 
@@ -6,9 +6,6 @@ import com.nononsenseapps.filepicker.FilePickerFragment;
 
 import java.io.File;
 
-/**
- * Created by aleph on 27/05/16.
- */
 public class MIVFilePickerFragment extends FilePickerFragment {
 
     @Override
