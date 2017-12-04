@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Date;
@@ -39,13 +38,8 @@ public class UpdateIndexTask extends AsyncTask<Void, Void, Exception> {
 
     @Override
     protected Exception doInBackground(Void... voidd) {
-        try {
-            mSyncthingClient.waitForRemoteIndexAquired();
-            return null;
-        } catch (InterruptedException ex) {
-            Log.e(TAG, "index dump exception", ex);
-            return ex;
-        }
+        mSyncthingClient.waitForRemoteIndexAquired();
+        return null;
     }
 
     @Override
