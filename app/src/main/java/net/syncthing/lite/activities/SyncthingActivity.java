@@ -9,10 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import net.syncthing.lite.BuildConfig;
 import net.syncthing.lite.R;
 import net.syncthing.lite.databinding.DialogLoadingBinding;
 import net.syncthing.lite.utils.LibraryHandler;
 import net.syncthing.lite.utils.UpdateIndexTask;
+
+import org.slf4j.impl.HandroidLoggerAdapter;
 
 import java.util.Date;
 
@@ -33,6 +36,7 @@ public abstract class SyncthingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG;
         mActivityCount++;
         if (mLibraryHandler == null) {
             initLibrary();
@@ -127,7 +131,7 @@ public abstract class SyncthingActivity extends AppCompatActivity {
         //trigger update if last was more than 10mins ago
         if (lastUpdate == null || new Date().getTime() - lastUpdate.getTime() > 10 * 60 * 1000) {
             Log.d(TAG, "trigger index update, last was " + lastUpdate);
-            new UpdateIndexTask(this, getSyncthingClient()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new UpdateIndexTask(this, getSyncthingClient()).updateIndex();
         }
     }
 }

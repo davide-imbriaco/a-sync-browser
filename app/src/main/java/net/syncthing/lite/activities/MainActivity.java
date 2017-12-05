@@ -3,7 +3,6 @@ package net.syncthing.lite.activities;
 import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -79,7 +78,7 @@ public class MainActivity extends SyncthingActivity {
                 setContentFragment(new DevicesFragment());
                 break;
             case R.id.update_index:
-                new UpdateIndexTask(this, getSyncthingClient()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new UpdateIndexTask(this, getSyncthingClient()).updateIndex();
                 break;
             case R.id.clear_index:
                 new AlertDialog.Builder(this)

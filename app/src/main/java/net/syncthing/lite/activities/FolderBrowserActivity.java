@@ -81,8 +81,8 @@ public class FolderBrowserActivity extends SyncthingActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == Activity.RESULT_OK) {
-            new UploadFileTask(this, getSyncthingClient(), intent.getData(), indexBrowser.getCurrentPath(),
-                    indexBrowser.getFolder(), this::updateFolderListView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new UploadFileTask(this, getSyncthingClient(), intent.getData(), indexBrowser.getFolder(),
+                    indexBrowser.getCurrentPath(), this::updateFolderListView).uploadFile();
         }
     }
 
@@ -173,10 +173,8 @@ public class FolderBrowserActivity extends SyncthingActivity {
                 }
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo);
-                executeWithPermissions(() -> {
-                    new DownloadFileTask(this, getSyncthingClient(), fileInfo)
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                });
+                executeWithPermissions(() ->
+                        new DownloadFileTask(this, getSyncthingClient(), fileInfo).downloadFile());
             }
         }
     }

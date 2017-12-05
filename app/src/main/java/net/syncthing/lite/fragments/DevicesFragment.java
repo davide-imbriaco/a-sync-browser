@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -113,8 +112,7 @@ public class DevicesFragment extends Fragment {
             mActivity.getConfiguration().edit().persistLater();
             Toast.makeText(getContext(), "successfully imported device: " + deviceId, Toast.LENGTH_SHORT).show();
             updateDeviceList();//TODO remove this if event triggered (and handler trigger update)
-            new UpdateIndexTask(getActivity(), mActivity.getSyncthingClient())
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new UpdateIndexTask(getActivity(), mActivity.getSyncthingClient()).updateIndex();
         } else {
             Toast.makeText(getContext(), "device already present: " + deviceId, Toast.LENGTH_SHORT).show();
         }

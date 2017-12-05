@@ -1,21 +1,23 @@
 package net.syncthing.lite.utils;
 
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import net.syncthing.lite.R;
+
 import java.io.IOException;
+import java.io.InputStream;
 
 import it.anyplace.sync.bep.BlockPusher;
 import it.anyplace.sync.client.SyncthingClient;
 import it.anyplace.sync.core.utils.PathUtils;
 
-// TODO: this should be an IntentService
-public class UploadFileTask extends AsyncTask<Void, BlockPusher.FileUploadObserver, Exception> {
+// TODO: this should be an IntentService with notification
+public class UploadFileTask {
 
     private static final String TAG = "UploadFileTask";
 
@@ -29,10 +31,11 @@ public class UploadFileTask extends AsyncTask<Void, BlockPusher.FileUploadObserv
     private final Uri mLocalFile;
     private final String mFileName;
     private final String mSyncthingPath;
-    private OnUploadCompleteListener mOnUploadCompleteListener;
+    private final OnUploadCompleteListener mOnUploadCompleteListener;
+    private final Handler mMainHandler;
 
-    private ProgressDialog progressDialog;
-    private boolean cancelled = false;
+    private ProgressDialog mProgressDialog;
+    private boolean mCancelled = false;
 
     public UploadFileTask(Context context, SyncthingClient syncthingClient, Uri localFile,
                           String syncthingFolder, String syncthingSubFolder, OnUploadCompleteListener onUploadCompleteListener) {
@@ -43,69 +46,68 @@ public class UploadFileTask extends AsyncTask<Void, BlockPusher.FileUploadObserv
         mFileName = Util.getContentFileName(context, mLocalFile);
         mSyncthingPath = PathUtils.buildPath(syncthingSubFolder, mFileName);
         mOnUploadCompleteListener = onUploadCompleteListener;
+        mMainHandler = new Handler();
     }
 
-    @Override
-    protected void onPreExecute() {
-        Log.i(TAG, "upload of file " + mLocalFile + " to folder " + mSyncthingFolder + ":" + mSyncthingPath);
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setMessage("uploading file " + mFileName);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(true);
-        progressDialog.setOnCancelListener(dialogInterface -> {
-            cancelled = true;
-            Log.d(TAG, "upload aborted by user");
-        });
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
-    }
-
-    @Override
-    protected Exception doInBackground(Void... voidd) {
+    public void uploadFile() {
+        createDialog();
+        Log.i(TAG, "Uploading file " + mLocalFile + " to folder " + mSyncthingFolder + ":" + mSyncthingPath);
         try {
-            try (BlockPusher.FileUploadObserver observer = mSyncthingClient.pushFile(mContext.getContentResolver().openInputStream(mLocalFile), mSyncthingFolder, mSyncthingPath)) {
-                Log.i(TAG, "pushing file " + mFileName + " to folder " + mSyncthingFolder + ":" + mSyncthingPath);
-                publishProgress(observer);
-                while (!observer.isCompleted()) {
-                    if (cancelled) {
-                        return null;
+            InputStream uploadStream = mContext.getContentResolver().openInputStream(mLocalFile);
+            mSyncthingClient.pushFile(uploadStream, mSyncthingFolder, mSyncthingPath, observer -> {
+                onProgress(observer);
+                try {
+                    while (!observer.isCompleted()) {
+                        if (mCancelled)
+                            return;
+
+                        observer.waitForProgressUpdate();
+                        Log.i(TAG, "upload progress = " + observer.getProgressMessage());
+                        onProgress(observer);
                     }
-
-                    observer.waitForProgressUpdate();
-                    Log.i(TAG, "upload progress = " + observer.getProgressMessage());
-                    publishProgress(observer);
+                } catch (InterruptedException e) {
+                    onError();
                 }
-                return null;
-            }
-        } catch (InterruptedException | IOException ex) {
-            Log.e(TAG, "file upload exception", ex);
-            return ex;
+                onComplete();
+            }, this::onError);
+        } catch (IOException e) {
+            onError();
         }
     }
 
-    @Override
-    protected void onProgressUpdate(BlockPusher.FileUploadObserver... observer) {
-        if (observer[0].getProgress() > 0) {
-            progressDialog.setIndeterminate(false);
-            progressDialog.setMax((int) observer[0].getDataSource().getSize());
-            progressDialog.setProgress((int) (observer[0].getProgress() * observer[0].getDataSource().getSize()));
-        }
+    private void createDialog() {
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(mContext.getString(R.string.dialog_uploading_file, mFileName));
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setOnCancelListener(dialogInterface -> mCancelled = true);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.show();
     }
 
-    @Override
-    protected void onPostExecute(Exception res) {
-        progressDialog.dismiss();
-        if (cancelled) {
-            mOnUploadCompleteListener.onUploadComplete();
+    private void onProgress(BlockPusher.FileUploadObserver observer) {
+        mMainHandler.post(() -> {
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax((int) observer.getDataSource().getSize());
+            mProgressDialog.setProgress((int) (observer.getProgress() * observer.getDataSource().getSize()));
+        });
+    }
+
+    private void onComplete() {
+        mProgressDialog.dismiss();
+        if (mCancelled)
             return;
-        }
 
-        if (res != null) {
-            Toast.makeText(mContext, "error uploading file: " + res, Toast.LENGTH_LONG).show();
-        } else {
-            Log.i(TAG, "uploaded file " + mFileName + " to folder " + mSyncthingFolder + ":" + mSyncthingPath);
-            Toast.makeText(mContext, "uploaded file: " + mFileName, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Uploaded file " + mFileName + " to folder " + mSyncthingFolder + ":" + mSyncthingPath);
+        mMainHandler.post(() -> {
+            Toast.makeText(mContext, R.string.toast_upload_complete, Toast.LENGTH_SHORT).show();
             mOnUploadCompleteListener.onUploadComplete();
-        }
+        });
+    }
+
+    private void onError() {
+        mProgressDialog.dismiss();
+        mMainHandler.post(() ->
+                Toast.makeText(mContext, R.string.toast_file_upload_failed, Toast.LENGTH_SHORT).show());
     }
 }

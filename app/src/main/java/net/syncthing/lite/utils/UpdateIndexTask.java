@@ -2,17 +2,18 @@ package net.syncthing.lite.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+
+import net.syncthing.lite.R;
 
 import java.util.Date;
 
 import it.anyplace.sync.client.SyncthingClient;
 
-public class UpdateIndexTask extends AsyncTask<Void, Void, Exception> {
+public class UpdateIndexTask {
 
-    private static final String TAG = "UpdateIndexTask";
     public static final String LAST_INDEX_UPDATE_TS_PREF = "LAST_INDEX_UPDATE_TS";
 
     private static boolean sIndexUpdateInProgress;
@@ -20,36 +21,35 @@ public class UpdateIndexTask extends AsyncTask<Void, Void, Exception> {
     private final Context mContext;
     private final SyncthingClient mSyncthingClient;
     private final SharedPreferences mPreferences;
+    private final Handler mMainHandler;
 
     public UpdateIndexTask(Context context, SyncthingClient syncthingClient) {
         mContext = context;
         mSyncthingClient = syncthingClient;
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mMainHandler = new Handler();
     }
 
-    @Override
-    protected void onPreExecute() {
-        if (sIndexUpdateInProgress) {
-            cancel(true);
-        } else {
-            sIndexUpdateInProgress = true;
-        }
+    public void updateIndex() {
+        if (sIndexUpdateInProgress)
+            return;
+
+        sIndexUpdateInProgress = true;
+        mSyncthingClient.updateIndexFromPeers((successes, failures) -> {
+            sIndexUpdateInProgress = false;
+            if (failures.isEmpty()) {
+                showToast(mContext.getString(R.string.toast_index_update_successful));
+            } else {
+                showToast(mContext.getString(R.string.toast_index_update_failed, failures.size()));
+            }
+            mPreferences.edit()
+                    .putLong(LAST_INDEX_UPDATE_TS_PREF, new Date().getTime())
+                    .apply();
+        });
     }
 
-    @Override
-    protected Exception doInBackground(Void... voidd) {
-        mSyncthingClient.waitForRemoteIndexAquired();
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Exception ex) {
-        sIndexUpdateInProgress = false;
-        if (ex != null) {
-            Toast.makeText(mContext, "error updating index: " + ex.toString(), Toast.LENGTH_LONG).show();
-        }
-        mPreferences.edit()
-                .putLong(LAST_INDEX_UPDATE_TS_PREF, new Date().getTime())
-                .apply();
+    private void showToast(String message) {
+        mMainHandler.post(() ->
+                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show());
     }
 }
