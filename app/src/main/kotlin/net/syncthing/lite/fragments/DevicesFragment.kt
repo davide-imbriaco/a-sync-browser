@@ -126,7 +126,7 @@ class DevicesFragment : Fragment() {
                     val dialog = AlertDialog.Builder(context)
                             .setTitle(R.string.device_id_dialog_title)
                             .setView(editText)
-                            .setPositiveButton(android.R.string.ok) { dialogInterface, i -> importDeviceId(editText.text.toString()) }
+                            .setPositiveButton(android.R.string.ok) { _, _ -> importDeviceId(editText.text.toString()) }
                             .setNegativeButton(android.R.string.cancel, null)
                             .create()
                     dialog.setOnShowListener {

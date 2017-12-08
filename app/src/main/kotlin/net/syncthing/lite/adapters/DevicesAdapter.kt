@@ -25,15 +25,13 @@ class DevicesAdapter(context: Context) :
             }
         val deviceStats = getItem(position)
         binding.deviceName.text = deviceStats!!.name
-        var color =
+        val icon =
             when (deviceStats.status) {
-                DeviceStats.DeviceStatus.OFFLINE -> R.color.device_offline
-                DeviceStats.DeviceStatus.ONLINE_INACTIVE -> R.color.device_online_inactive
-                DeviceStats.DeviceStatus.ONLINE_ACTIVE -> R.color.device_online_active
+                DeviceStats.DeviceStatus.OFFLINE -> R.drawable.ic_laptop_red_24dp
+                DeviceStats.DeviceStatus.ONLINE_INACTIVE,
+                DeviceStats.DeviceStatus.ONLINE_ACTIVE -> R.drawable.ic_laptop_green_24dp
             }
-        // TODO: this is not working (and will also break on API 19
-        binding.deviceIcon
-                .setColorFilter(ContextCompat.getColor(context, color), PorterDuff.Mode.SRC_IN)
+        binding.deviceIcon.setImageResource(icon)
         return binding.root
     }
 }

@@ -62,7 +62,7 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
         mProgressDialog.setMessage(context.getString(R.string.dialog_uploading_file, fileName))
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
         mProgressDialog.setCancelable(true)
-        mProgressDialog.setOnCancelListener { dialogInterface -> mCancelled = true }
+        mProgressDialog.setOnCancelListener { mCancelled = true }
         mProgressDialog.isIndeterminate = true
         mProgressDialog.show()
     }

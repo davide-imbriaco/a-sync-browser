@@ -69,7 +69,7 @@ class MainActivity : SyncthingActivity() {
                     .setTitle("clear cache and index")
                     .setMessage("clear all cache data and index data?")
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes) { d, w -> cleanCacheAndIndex() }
+                    .setPositiveButton(android.R.string.yes) { _, _ -> cleanCacheAndIndex() }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
         }

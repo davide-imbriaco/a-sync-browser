@@ -63,7 +63,7 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
         progressDialog.setMessage(mContext.getString(R.string.dialog_downloading_file, mFileInfo.fileName))
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
         progressDialog.setCancelable(true)
-        progressDialog.setOnCancelListener { dialogInterface -> cancelled = true }
+        progressDialog.setOnCancelListener { cancelled = true }
         progressDialog.isIndeterminate = true
         progressDialog.show()
     }

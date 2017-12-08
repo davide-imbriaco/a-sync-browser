@@ -107,7 +107,7 @@ class FolderBrowserActivity : SyncthingActivity() {
         }
         adapter = FolderContentsAdapter(this)
         binding.mainFolderAndFilesListView.adapter = adapter
-        binding.mainFolderAndFilesListView.setOnItemClickListener { adapterView, view, position, l ->
+        binding.mainFolderAndFilesListView.setOnItemClickListener { _, _, position, _ ->
             val fileInfo = binding.mainFolderAndFilesListView.getItemAtPosition(position) as FileInfo
             Log.d(TAG, "navigate to path = '" + fileInfo.path + "' from path = '" + indexBrowser!!.currentPath + "'")
             navigateToFolder(fileInfo)
