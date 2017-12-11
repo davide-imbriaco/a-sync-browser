@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
-import it.anyplace.sync.core.beans.FolderInfo
+import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.fragments.DevicesFragment

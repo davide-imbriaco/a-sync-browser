@@ -17,11 +17,11 @@ import android.widget.Toast
 import com.google.common.base.Objects.equal
 import com.google.common.base.Preconditions.checkArgument
 import com.nononsenseapps.filepicker.FilePickerActivity
-import it.anyplace.sync.bep.IndexBrowser
-import it.anyplace.sync.core.beans.FileInfo
-import it.anyplace.sync.core.beans.FolderInfo
-import it.anyplace.sync.core.utils.FileInfoOrdering
-import it.anyplace.sync.core.utils.PathUtils
+import net.syncthing.java.bep.IndexBrowser
+import net.syncthing.java.core.beans.FileInfo
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.java.core.utils.FileInfoOrdering
+import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding

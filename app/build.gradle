@@ -31,7 +31,7 @@ dependencies {
     implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:cardview-v7:$support_version"
-    implementation ('it.anyplace.sync:a-sync-client:1.3') {
+    implementation ('net.syncthing.java:a-sync-client:1.3') {
         exclude group: 'commons-logging', module:'commons-logging'
         exclude group: 'commons-codec'
         exclude group: 'org.apache.httpcomponents', module:'httpclient'

@@ -9,10 +9,10 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
-import it.anyplace.sync.bep.FolderBrowser
-import it.anyplace.sync.client.SyncthingClient
-import it.anyplace.sync.core.beans.FolderInfo
-import it.anyplace.sync.core.configuration.ConfigurationService
+import net.syncthing.java.bep.FolderBrowser
+import net.syncthing.java.client.SyncthingClient
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.java.core.configuration.ConfigurationService
 import net.syncthing.lite.BuildConfig
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.DialogLoadingBinding

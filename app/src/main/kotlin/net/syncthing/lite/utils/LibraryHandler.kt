@@ -3,12 +3,12 @@ package net.syncthing.lite.utils
 import android.content.Context
 import android.util.Log
 import com.google.common.eventbus.Subscribe
-import it.anyplace.sync.bep.FolderBrowser
-import it.anyplace.sync.bep.IndexHandler
-import it.anyplace.sync.client.SyncthingClient
-import it.anyplace.sync.core.beans.FolderInfo
-import it.anyplace.sync.core.configuration.ConfigurationService
-import it.anyplace.sync.core.security.KeystoreHandler
+import net.syncthing.java.bep.FolderBrowser
+import net.syncthing.java.bep.IndexHandler
+import net.syncthing.java.client.SyncthingClient
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.java.core.configuration.ConfigurationService
+import net.syncthing.java.core.security.KeystoreHandler
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
@@ -45,7 +45,7 @@ class LibraryHandler {
         configuration!!.edit().persistLater()
         Log.i(TAG, "loaded mConfiguration = " + configuration!!.newWriter().dumpToString())
         Log.i(TAG, "storage space = " + configuration!!.storageInfo.dumpAvailableSpace())
-        syncthingClient = it.anyplace.sync.client.SyncthingClient(configuration!!)
+        syncthingClient = net.syncthing.java.client.SyncthingClient(configuration!!)
         //TODO listen for device events, update device list
         folderBrowser = syncthingClient!!.indexHandler.newFolderBrowser()
     }

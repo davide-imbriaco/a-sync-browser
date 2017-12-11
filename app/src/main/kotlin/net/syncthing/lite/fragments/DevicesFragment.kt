@@ -14,9 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
-import it.anyplace.sync.core.beans.DeviceInfo
-import it.anyplace.sync.core.beans.DeviceStats
-import it.anyplace.sync.core.security.KeystoreHandler
+import net.syncthing.java.core.beans.DeviceInfo
+import net.syncthing.java.core.beans.DeviceStats
+import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.R
 import net.syncthing.lite.activities.SyncthingActivity
 import net.syncthing.lite.adapters.DevicesAdapter

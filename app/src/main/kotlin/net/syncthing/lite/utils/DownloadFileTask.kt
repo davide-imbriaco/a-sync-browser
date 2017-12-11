@@ -11,9 +11,9 @@ import android.support.annotation.StringRes
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
-import it.anyplace.sync.bep.BlockPuller
-import it.anyplace.sync.client.SyncthingClient
-import it.anyplace.sync.core.beans.FileInfo
+import net.syncthing.java.bep.BlockPuller
+import net.syncthing.java.client.SyncthingClient
+import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.lite.R
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils

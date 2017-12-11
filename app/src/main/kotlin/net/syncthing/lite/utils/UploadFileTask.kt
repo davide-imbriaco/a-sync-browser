@@ -6,9 +6,9 @@ import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import it.anyplace.sync.bep.BlockPusher
-import it.anyplace.sync.client.SyncthingClient
-import it.anyplace.sync.core.utils.PathUtils
+import net.syncthing.java.bep.BlockPusher
+import net.syncthing.java.client.SyncthingClient
+import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import java.io.IOException
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.widget.Toast
-import it.anyplace.sync.client.SyncthingClient
+import net.syncthing.java.client.SyncthingClient
 import net.syncthing.lite.R
 import java.util.*
 

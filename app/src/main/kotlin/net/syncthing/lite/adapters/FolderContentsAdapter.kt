@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.google.common.collect.Lists
-import it.anyplace.sync.core.beans.FileInfo
+import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewFileBinding
 import org.apache.commons.io.FileUtils

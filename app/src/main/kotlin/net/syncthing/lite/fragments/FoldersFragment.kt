@@ -10,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.common.collect.Lists
 import com.google.common.collect.Ordering
-import it.anyplace.sync.core.beans.FolderInfo
-import it.anyplace.sync.core.beans.FolderStats
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.java.core.beans.FolderStats
 import net.syncthing.lite.R
 import net.syncthing.lite.activities.FolderBrowserActivity
 import net.syncthing.lite.activities.SyncthingActivity

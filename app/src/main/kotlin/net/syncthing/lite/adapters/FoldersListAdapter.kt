@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import it.anyplace.sync.core.beans.FolderInfo
-import it.anyplace.sync.core.beans.FolderStats
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.java.core.beans.FolderStats
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewFolderBinding
 import org.apache.commons.lang3.tuple.Pair
