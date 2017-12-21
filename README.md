@@ -13,6 +13,8 @@ example, mobile devices with limited storage available, wishing to access a sync
 
 This project is based on [syncthing-java][3], a java implementation of Syncthing protocols.
 
+[<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80">](https://play.google.com/store/apps/details?id=net.syncthing.lite)
+
 ## Building
 
 The project uses a standard Android build, and requires the Android SDK. The easiest option is if
