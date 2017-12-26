@@ -89,14 +89,12 @@ abstract class SyncthingActivity : AppCompatActivity() {
                 }
             })
 
+            //trigger update if last was more than 10mins ago
             val lastUpdateMillis = PreferenceManager.getDefaultSharedPreferences(context)
                     .getLong(UpdateIndexTask.LAST_INDEX_UPDATE_TS_PREF, -1)
-            val lastUpdate =
-                    if (lastUpdateMillis < 0) null
-                    else                      Date(lastUpdateMillis)
-            //trigger update if last was more than 10mins ago
-            if (lastUpdate == null || Date().time - lastUpdate.time > 10 * 60 * 1000) {
-                Log.d(TAG, "trigger index update, last was " + lastUpdate!!)
+            val lastUpdateTimeAgo = Date().time - lastUpdateMillis
+            if (lastUpdateMillis == -1L || lastUpdateTimeAgo > 10 * 60 * 1000) {
+                Log.d(TAG, "trigger index update, last was " + Date(lastUpdateMillis))
                 UpdateIndexTask(context, libraryHandler!!.syncthingClient!!).updateIndex()
             }
             onLibraryLoaded()
