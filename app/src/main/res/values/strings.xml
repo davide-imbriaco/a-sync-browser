@@ -18,4 +18,5 @@
     <string name="toast_file_upload_failed">File upload failed</string>
     <string name="toast_upload_complete">File upload complete</string>
     <string name="dialog_uploading_file">Uploading file %1$s</string>
+    <string name="directory_empty">Directory is empty</string>
 </resources>

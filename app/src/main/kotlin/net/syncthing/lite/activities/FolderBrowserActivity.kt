@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
@@ -16,7 +15,6 @@ import android.view.View
 import android.widget.Toast
 import com.google.common.base.Objects.equal
 import com.google.common.base.Preconditions.checkArgument
-import com.nononsenseapps.filepicker.FilePickerActivity
 import net.syncthing.java.bep.IndexBrowser
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.beans.FolderInfo
@@ -35,6 +33,7 @@ class FolderBrowserActivity : SyncthingActivity() {
 
         private val TAG = "FolderBrowserActivity"
         private val REQUEST_WRITE_STORAGE = 142
+        private val REQUEST_SELECT_UPLOAD_FILE = 171
 
         val EXTRA_FOLDER_NAME = "folder_name"
     }
@@ -67,9 +66,9 @@ class FolderBrowserActivity : SyncthingActivity() {
         listView.performItemClick(adapter!!.getView(0, null, listView), 0, listView.getItemIdAtPosition(0))
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent) {
-        if (resultCode == Activity.RESULT_OK) {
-            UploadFileTask(this, syncthingClient(), intent.data, indexBrowser!!.folder,
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (requestCode == REQUEST_SELECT_UPLOAD_FILE && resultCode == Activity.RESULT_OK) {
+            UploadFileTask(this, syncthingClient(), intent!!.data, indexBrowser!!.folder,
                     indexBrowser!!.currentPath, { this.updateFolderListView() }).uploadFile()
         }
     }
@@ -171,11 +170,7 @@ class FolderBrowserActivity : SyncthingActivity() {
 
     private fun showUploadHereDialog() {
         executeWithPermissions(Runnable {
-            val i = Intent(this, MIVFilePickerActivity::class.java)
-            val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
-            Log.i(TAG, "showUploadHereDialog path = " + path)
-            i.putExtra(FilePickerActivity.EXTRA_START_PATH, path)
-            startActivityForResult(i, 0)
+            startActivityForResult(Intent(this, FilePickerActivity::class.java), REQUEST_SELECT_UPLOAD_FILE)
         })
     }
 
