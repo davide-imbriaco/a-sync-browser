@@ -1,4 +1,4 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.library
 
 import android.content.Context
 import android.util.Log
@@ -9,6 +9,7 @@ import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.configuration.ConfigurationService
 import net.syncthing.java.core.security.KeystoreHandler
+import net.syncthing.lite.utils.Util
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException

@@ -1,4 +1,4 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.library
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -10,6 +10,7 @@ import net.syncthing.java.bep.BlockPusher
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
+import net.syncthing.lite.utils.Util
 import java.io.IOException
 
 // TODO: this should be an IntentService with notification

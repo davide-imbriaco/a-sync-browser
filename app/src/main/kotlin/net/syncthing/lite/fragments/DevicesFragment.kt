@@ -19,7 +19,8 @@ import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
-import net.syncthing.lite.utils.UpdateIndexTask
+import net.syncthing.lite.library.UpdateIndexTask
+import net.syncthing.lite.utils.FragmentIntentIntegrator
 import org.apache.commons.lang3.StringUtils.isBlank
 import uk.co.markormesher.android_fab.SpeedDialMenuAdapter
 import uk.co.markormesher.android_fab.SpeedDialMenuItem

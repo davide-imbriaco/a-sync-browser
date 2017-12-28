@@ -1,4 +1,4 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.library
 
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
@@ -20,7 +20,8 @@ import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.IOException
 
-class DownloadFileTask(private val mContext: Context, private val mSyncthingClient: SyncthingClient, private val mFileInfo: FileInfo) {
+class DownloadFileTask(private val mContext: Context, private val mSyncthingClient: SyncthingClient,
+                       private val mFileInfo: FileInfo) {
     private val mMainHandler: Handler = Handler()
 
     private lateinit var progressDialog: ProgressDialog

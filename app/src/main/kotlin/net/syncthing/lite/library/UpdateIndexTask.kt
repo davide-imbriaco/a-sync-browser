@@ -1,4 +1,4 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.library
 
 import android.content.Context
 import android.os.Handler

@@ -1,4 +1,4 @@
-package net.syncthing.lite.fragments
+package net.syncthing.lite.utils
 
 import android.content.Intent
 import android.support.v4.app.Fragment

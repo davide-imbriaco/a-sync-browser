@@ -24,8 +24,8 @@ import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
 import net.syncthing.lite.databinding.DialogLoadingBinding
-import net.syncthing.lite.utils.DownloadFileTask
-import net.syncthing.lite.utils.UploadFileTask
+import net.syncthing.lite.library.DownloadFileTask
+import net.syncthing.lite.library.UploadFileTask
 
 class FolderBrowserActivity : SyncthingActivity() {
 

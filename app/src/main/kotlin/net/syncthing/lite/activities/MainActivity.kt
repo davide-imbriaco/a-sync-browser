@@ -14,7 +14,7 @@ import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
 import net.syncthing.lite.fragments.SyncthingFragment
-import net.syncthing.lite.utils.UpdateIndexTask
+import net.syncthing.lite.library.UpdateIndexTask
 
 class MainActivity : SyncthingActivity() {
 
