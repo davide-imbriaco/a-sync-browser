@@ -13,7 +13,7 @@ import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewFolderBinding
 import org.apache.commons.lang3.tuple.Pair
 
-class FoldersListAdapter(context: Context, list: List<Pair<FolderInfo, FolderStats>>) :
+class FoldersListAdapter(context: Context?, list: List<Pair<FolderInfo, FolderStats>>) :
         ArrayAdapter<Pair<FolderInfo, FolderStats>>(context, R.layout.listview_folder, list) {
 
     override fun getView(position: Int, v: View?, parent: ViewGroup): View {

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Gravity
 import android.view.MenuItem
@@ -14,12 +13,14 @@ import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
+import net.syncthing.lite.fragments.SyncthingFragment
 import net.syncthing.lite.utils.UpdateIndexTask
 
 class MainActivity : SyncthingActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var drawerToggle: ActionBarDrawerToggle? = null
+    private var currentFragment: SyncthingFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,15 +35,23 @@ class MainActivity : SyncthingActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Sync the toggle state and fragment after onRestoreInstanceState has occurred.
+     */
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        // Sync the toggle state after onRestoreInstanceState has occurred.
+
         drawerToggle!!.syncState()
+        val menu = binding.navigation.menu
+        val selection = (0 until menu.size())
+                .map { menu.getItem(it) }
+                .find { it.isChecked }
+                ?: menu.getItem(0)
+        onNavigationItemSelectedListener(selection)
     }
 
     override fun onLibraryLoaded() {
-        super.onLibraryLoaded()
-        setContentFragment(FoldersFragment())
+        currentFragment?.onLibraryLoaded()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -57,7 +66,6 @@ class MainActivity : SyncthingActivity() {
             true
         } else super.onOptionsItemSelected(item)
         // Handle your other action bar items...
-
     }
 
     private fun onNavigationItemSelectedListener(menuItem: MenuItem): Boolean {
@@ -77,7 +85,8 @@ class MainActivity : SyncthingActivity() {
         return true
     }
 
-    private fun setContentFragment(fragment: Fragment) {
+    private fun setContentFragment(fragment: SyncthingFragment) {
+        currentFragment = fragment
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)

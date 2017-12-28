@@ -127,7 +127,7 @@ class FolderBrowserActivity : SyncthingActivity() {
                         override fun onPreExecute() {
                             // TODO: show ProgressBar in ListView instead of dialog
                             showLoadingDialog("open directory: " +
-                                    if (indexBrowser!!.isRoot) folderBrowser().getFolderInfo(indexBrowser!!.folder).label
+                                    if (indexBrowser!!.isRoot) folderBrowser()?.getFolderInfo(indexBrowser!!.folder)?.label
                                     else indexBrowser!!.currentPathFileName)
                         }
 
@@ -152,7 +152,7 @@ class FolderBrowserActivity : SyncthingActivity() {
                     adapter!!.notifyDataSetChanged()
                     binding.mainFolderAndFilesListView.setSelection(0)
                     supportActionBar!!.setTitle(if (indexBrowser!!.isRoot)
-                        folderBrowser().getFolderInfo(indexBrowser!!.folder).label
+                        folderBrowser()?.getFolderInfo(indexBrowser!!.folder)?.label
                     else
                         newFileInfo.fileName)
                 }

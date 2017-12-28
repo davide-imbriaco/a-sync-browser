@@ -8,8 +8,8 @@ import net.syncthing.java.client.SyncthingClient
 import net.syncthing.lite.R
 import java.util.*
 
-class UpdateIndexTask(private val mContext: Context, private val mSyncthingClient: SyncthingClient) {
-    private val mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
+class UpdateIndexTask(private val context: Context, private val syncthingClient: SyncthingClient) {
+    private val mPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val mMainHandler = Handler()
 
     fun updateIndex() {
@@ -17,12 +17,12 @@ class UpdateIndexTask(private val mContext: Context, private val mSyncthingClien
             return
 
         sIndexUpdateInProgress = true
-        mSyncthingClient.updateIndexFromPeers { _, failures ->
+        syncthingClient.updateIndexFromPeers { _, failures ->
             sIndexUpdateInProgress = false
             if (failures.isEmpty()) {
-                showToast(mContext.getString(R.string.toast_index_update_successful))
+                showToast(context.getString(R.string.toast_index_update_successful))
             } else {
-                showToast(mContext.getString(R.string.toast_index_update_failed, failures.size))
+                showToast(context.getString(R.string.toast_index_update_failed, failures.size))
             }
             mPreferences.edit()
                     .putLong(LAST_INDEX_UPDATE_TS_PREF, Date().time)
@@ -31,7 +31,7 @@ class UpdateIndexTask(private val mContext: Context, private val mSyncthingClien
     }
 
     private fun showToast(message: String) {
-        mMainHandler.post { Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show() }
+        mMainHandler.post { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     }
 
     companion object {

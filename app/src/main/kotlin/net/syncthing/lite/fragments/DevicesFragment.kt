@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,6 @@ import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.java.core.beans.DeviceStats
 import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.R
-import net.syncthing.lite.activities.SyncthingActivity
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
 import net.syncthing.lite.utils.UpdateIndexTask
@@ -27,13 +25,12 @@ import uk.co.markormesher.android_fab.SpeedDialMenuAdapter
 import uk.co.markormesher.android_fab.SpeedDialMenuItem
 import java.security.InvalidParameterException
 
-class DevicesFragment : Fragment() {
+class DevicesFragment : SyncthingFragment() {
 
     companion object {
         private val TAG = "DevicesFragment"
     }
 
-    private lateinit var syncthingActivity: SyncthingActivity
     private lateinit var binding: FragmentDevicesBinding
     private lateinit var adapter: DevicesAdapter
 
@@ -45,23 +42,21 @@ class DevicesFragment : Fragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        syncthingActivity = activity as SyncthingActivity
+    override fun onLibraryLoadedAndActivityCreated() {
         initDeviceList()
         updateDeviceList()
     }
 
     private fun initDeviceList() {
-        adapter = DevicesAdapter(syncthingActivity)
+        adapter = DevicesAdapter(context!!)
         binding.list.adapter = adapter
         binding.list.setOnItemLongClickListener { _, _, position, _ ->
             val deviceId = (binding.list.getItemAtPosition(position) as DeviceStats).deviceId
-            AlertDialog.Builder(syncthingActivity)
+            AlertDialog.Builder(context)
                     .setTitle("remove device " + deviceId.substring(0, 7))
                     .setMessage("remove device" + deviceId.substring(0, 7) + " from list of known devices?")
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-                        syncthingActivity.configuration().edit().removePeer(deviceId).persistLater() }
+                        getSyncthingActivity().configuration().edit().removePeer(deviceId).persistLater() }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
             Log.d(TAG, "showFolderListView delete device = '$deviceId'")
@@ -71,7 +66,7 @@ class DevicesFragment : Fragment() {
 
     private fun updateDeviceList() {
         adapter.clear()
-        adapter.addAll(syncthingActivity.syncthingClient().devicesHandler.deviceStatsList)
+        adapter.addAll(getSyncthingActivity().syncthingClient().devicesHandler.deviceStatsList)
         adapter.notifyDataSetChanged()
     }
 
@@ -94,12 +89,12 @@ class DevicesFragment : Fragment() {
             return
         }
 
-        val modified = syncthingActivity.configuration().edit().addPeers(DeviceInfo(deviceId, null))
+        val modified = getSyncthingActivity().configuration().edit().addPeers(DeviceInfo(deviceId, null))
         if (modified) {
-            syncthingActivity.configuration().edit().persistLater()
+            getSyncthingActivity().configuration().edit().persistLater()
             Toast.makeText(context, "successfully imported device: " + deviceId, Toast.LENGTH_SHORT).show()
             updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
-            UpdateIndexTask(syncthingActivity, syncthingActivity.syncthingClient()).updateIndex()
+            UpdateIndexTask(context!!, getSyncthingActivity().syncthingClient()).updateIndex()
         } else {
             Toast.makeText(context, "device already present: " + deviceId, Toast.LENGTH_SHORT).show()
         }

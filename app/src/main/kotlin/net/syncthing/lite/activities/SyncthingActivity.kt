@@ -34,7 +34,7 @@ abstract class SyncthingActivity : AppCompatActivity() {
 
     fun configuration(): ConfigurationService = libraryHandler!!.configuration!!
 
-    fun folderBrowser(): FolderBrowser = libraryHandler!!.folderBrowser!!
+    fun folderBrowser(): FolderBrowser? = libraryHandler!!.folderBrowser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ abstract class SyncthingActivity : AppCompatActivity() {
             val binding = DataBindingUtil.inflate<DialogLoadingBinding>(
                     LayoutInflater.from(context), R.layout.dialog_loading, null, false)
             binding.loadingText.text = "loading config, starting syncthing client"
-            loadingDialog = android.app.AlertDialog.Builder(context)
+            loadingDialog = AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setView(binding.root)
                     .show()
@@ -78,6 +78,7 @@ abstract class SyncthingActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(voidd: Void?) {
+            Log.d(TAG, "xxx onPostExecute()")
             loadingDialog!!.cancel()
             libraryHandler!!.setOnIndexUpdatedListener(object : LibraryHandler.OnIndexUpdatedListener {
                 override fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {
