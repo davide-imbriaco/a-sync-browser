@@ -20,8 +20,9 @@ This project is based on [syncthing-java][3], a java implementation of Syncthing
 The project uses a standard Android build, and requires the Android SDK. The easiest option is if
 you install [Android Studio][4] and import the project.
 
-The syncthing-java library is not stable yet. If you encounter any build errors, you probably have
-to build it from source. To do this, clone the repo and run `gradle install`.
+To compile with a development version of the [syncthing-java][3] library, you have to install it to
+the local maven repository. To do this, clone the repo and run `gradle install` in the
+syncthing-java project folder.
 
 ## License
 All code is licensed under the [MPLv2 License][5].
