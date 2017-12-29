@@ -22,7 +22,7 @@ object Util {
                 capitalize(manufacturer) + " " + model
             }
         return deviceName ?: "android"
-        }
+    }
 
     fun getContentFileName(context: Context, contentUri: Uri): String {
         var fileName = File(contentUri.lastPathSegment).name

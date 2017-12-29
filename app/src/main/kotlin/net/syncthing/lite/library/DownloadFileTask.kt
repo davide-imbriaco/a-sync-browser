@@ -31,8 +31,7 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
 
     fun downloadFile() {
         showDialog()
-        // TODO: can just pass FileInfo directly?
-        mSyncthingClient.pullFile(mFileInfo.folder, mFileInfo.path, { observer ->
+        mSyncthingClient.pullFile(mFileInfo, { observer ->
             onProgress(observer)
             try {
                 while (!observer.isCompleted) {
