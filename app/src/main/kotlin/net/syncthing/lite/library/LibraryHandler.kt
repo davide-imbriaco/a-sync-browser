@@ -16,6 +16,8 @@ import java.io.IOException
 
 class LibraryHandler {
 
+    private val TAG = "LibConnectionHandler"
+
     private var mOnIndexUpdatedListener: OnIndexUpdatedListener? = null
     var configuration: ConfigurationService? = null
         private set
@@ -76,10 +78,5 @@ class LibraryHandler {
         folderBrowser!!.close()
         syncthingClient!!.close()
         configuration!!.close()
-    }
-
-    companion object {
-
-        private val TAG = "LibConnectionHandler"
     }
 }

@@ -3,14 +3,15 @@ package net.syncthing.lite.library
 import android.app.ProgressDialog
 import android.content.Context
 import android.net.Uri
-import android.os.Handler
 import android.util.Log
-import android.widget.Toast
 import net.syncthing.java.bep.BlockPusher
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.utils.Util
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import java.io.IOException
 
 // TODO: this should be an IntentService with notification
@@ -25,7 +26,6 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
 
     private val fileName = Util.getContentFileName(context, localFile)
     private val syncthingPath = PathUtils.buildPath(syncthingSubFolder, fileName)
-    private val mainHandler = Handler()
 
     private lateinit var mProgressDialog: ProgressDialog
     private var mCancelled = false
@@ -69,27 +69,35 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
     }
 
     private fun onProgress(observer: BlockPusher.FileUploadObserver) {
-        mainHandler.post {
-            mProgressDialog.isIndeterminate = false
-            mProgressDialog.max = observer.dataSource.size.toInt()
-            mProgressDialog.progress = (observer.progress * observer.dataSource.size).toInt()
+        doAsync {
+            uiThread {
+                mProgressDialog.isIndeterminate = false
+                mProgressDialog.max = observer.dataSource.size.toInt()
+                mProgressDialog.progress = (observer.progress * observer.dataSource.size).toInt()
+            }
         }
     }
 
     private fun onComplete() {
-        mProgressDialog.dismiss()
         if (mCancelled)
             return
 
         Log.i(TAG, "Uploaded file $fileName to folder $syncthingFolder:$syncthingPath")
-        mainHandler.post {
-            Toast.makeText(context, R.string.toast_upload_complete, Toast.LENGTH_SHORT).show()
-            onUploadCompleteListener()
+        doAsync {
+            uiThread {
+                mProgressDialog.dismiss()
+                context.toast(R.string.toast_upload_complete)
+                onUploadCompleteListener()
+            }
         }
     }
 
     private fun onError() {
-        mProgressDialog.dismiss()
-        mainHandler.post { Toast.makeText(context, R.string.toast_file_upload_failed, Toast.LENGTH_SHORT).show() }
+        doAsync {
+            uiThread {
+                mProgressDialog.dismiss()
+                context.toast(R.string.toast_file_upload_failed)
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 package net.syncthing.lite.fragments
 
-import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +15,7 @@ import net.syncthing.lite.activities.FolderBrowserActivity
 import net.syncthing.lite.adapters.FoldersListAdapter
 import net.syncthing.lite.databinding.FragmentFoldersBinding
 import org.apache.commons.lang3.tuple.Pair
+import org.jetbrains.anko.intentFor
 import java.util.*
 
 class FoldersFragment : SyncthingFragment() {
@@ -46,8 +46,7 @@ class FoldersFragment : SyncthingFragment() {
         binding.list.adapter = adapter
         binding.list.setOnItemClickListener { _, _, position, _ ->
             val folder = adapter.getItem(position)!!.left.folder
-            val intent = Intent(context, FolderBrowserActivity::class.java)
-            intent.putExtra(FolderBrowserActivity.EXTRA_FOLDER_NAME, folder)
+            val intent = context?.intentFor<FolderBrowserActivity>(FolderBrowserActivity.EXTRA_FOLDER_NAME to folder)
             startActivity(intent)
         }
     }

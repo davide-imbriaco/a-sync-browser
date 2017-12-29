@@ -6,57 +6,57 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.os.Handler
 import android.support.annotation.StringRes
 import android.util.Log
 import android.webkit.MimeTypeMap
-import android.widget.Toast
 import net.syncthing.java.bep.BlockPuller
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.lite.R
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.IOException
 
 class DownloadFileTask(private val mContext: Context, private val mSyncthingClient: SyncthingClient,
                        private val mFileInfo: FileInfo) {
-    private val mMainHandler: Handler = Handler()
 
+    private val TAG = "DownloadFileTask"
     private lateinit var progressDialog: ProgressDialog
     private var cancelled = false
 
     fun downloadFile() {
         showDialog()
         // TODO: can just pass FileInfo directly?
-        Thread {
-            mSyncthingClient.pullFile(mFileInfo.folder, mFileInfo.path, { observer ->
-                onProgress(observer)
-                try {
-                    while (!observer.isCompleted) {
-                        if (cancelled)
-                            return@pullFile
+        mSyncthingClient.pullFile(mFileInfo.folder, mFileInfo.path, { observer ->
+            onProgress(observer)
+            try {
+                while (!observer.isCompleted) {
+                    if (cancelled)
+                        return@pullFile
 
-                        observer.waitForProgressUpdate()
-                        Log.i("pullFile", "download progress = " + observer.progressMessage)
-                        onProgress(observer)
-                    }
-
-                    val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    val outputFile = File(outputDir, mFileInfo.fileName)
-                    FileUtils.copyInputStreamToFile(observer.inputStream, outputFile)
-                    Log.i(TAG, "downloaded file = " + mFileInfo.path)
-                    onComplete(outputFile)
-                } catch (e: IOException) {
-                    onError(R.string.toast_file_download_failed)
-                    Log.w(TAG, "Failed to download file " + mFileInfo, e)
-                } catch (e: InterruptedException) {
-                    onError(R.string.toast_file_download_failed)
-                    Log.w(TAG, "Failed to download file " + mFileInfo, e)
+                    observer.waitForProgressUpdate()
+                    Log.i("pullFile", "download progress = " + observer.progressMessage)
+                    onProgress(observer)
                 }
-            }) { onError(R.string.toast_file_download_failed) }
-        }.start()
+
+                val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val outputFile = File(outputDir, mFileInfo.fileName)
+                FileUtils.copyInputStreamToFile(observer.inputStream, outputFile)
+                Log.i(TAG, "downloaded file = " + mFileInfo.path)
+                onComplete(outputFile)
+            } catch (e: IOException) {
+                onError(R.string.toast_file_download_failed)
+                Log.w(TAG, "Failed to download file " + mFileInfo, e)
+            } catch (e: InterruptedException) {
+                onError(R.string.toast_file_download_failed)
+                Log.w(TAG, "Failed to download file " + mFileInfo, e)
+            }
+        }) { onError(R.string.toast_file_download_failed) }
     }
 
     private fun showDialog() {
@@ -70,10 +70,12 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
     }
 
     private fun onProgress(fileDownloadObserver: BlockPuller.FileDownloadObserver) {
-        mMainHandler.post {
-            progressDialog.isIndeterminate = false
-            progressDialog.max = (mFileInfo.size as Long).toInt()
-            progressDialog.progress = (fileDownloadObserver.progress * mFileInfo.size!!).toInt()
+        doAsync {
+            uiThread {
+                progressDialog.isIndeterminate = false
+                progressDialog.max = (mFileInfo.size as Long).toInt()
+                progressDialog.progress = (fileDownloadObserver.progress * mFileInfo.size!!).toInt()
+            }
         }
     }
 
@@ -85,7 +87,7 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(FilenameUtils.getExtension(file.name))
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(Uri.fromFile(file), mimeType)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.newTask()
         try {
             mContext.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
@@ -96,12 +98,11 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
     }
 
     private fun onError(@StringRes error: Int) {
-        progressDialog.dismiss()
-        mMainHandler.post { Toast.makeText(mContext, error, Toast.LENGTH_SHORT).show() }
-    }
-
-    companion object {
-
-        private val TAG = "DownloadFileTask"
+        doAsync {
+            uiThread {
+                progressDialog.dismiss()
+                mContext.toast(error)
+            }
+        }
     }
 }

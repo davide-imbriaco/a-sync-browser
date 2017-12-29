@@ -26,6 +26,7 @@ import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
 import net.syncthing.lite.databinding.DialogLoadingBinding
 import net.syncthing.lite.library.DownloadFileTask
 import net.syncthing.lite.library.UploadFileTask
+import org.jetbrains.anko.intentFor
 
 class FolderBrowserActivity : SyncthingActivity() {
 
@@ -170,7 +171,7 @@ class FolderBrowserActivity : SyncthingActivity() {
 
     private fun showUploadHereDialog() {
         executeWithPermissions(Runnable {
-            startActivityForResult(Intent(this, FilePickerActivity::class.java), REQUEST_SELECT_UPLOAD_FILE)
+            startActivityForResult(intentFor<FilePickerActivity>(), REQUEST_SELECT_UPLOAD_FILE)
         })
     }
 
