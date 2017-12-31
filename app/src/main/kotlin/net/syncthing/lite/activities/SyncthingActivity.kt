@@ -25,11 +25,23 @@ abstract class SyncthingActivity : AppCompatActivity() {
 
     private var loadingDialog: AlertDialog? = null
 
-    fun syncthingClient(): SyncthingClient = libraryHandler!!.syncthingClient!!
+    fun syncthingClient(): SyncthingClient {
+        if (isDestroyed)
+            throw IllegalStateException("activity is already destroyed")
+        return libraryHandler!!.syncthingClient!!
+    }
 
-    fun configuration(): ConfigurationService = libraryHandler!!.configuration!!
+    fun configuration(): ConfigurationService {
+        if (isDestroyed)
+            throw IllegalStateException("activity is already destroyed")
+        return libraryHandler!!.configuration!!
+    }
 
-    fun folderBrowser(): FolderBrowser? = libraryHandler?.folderBrowser
+    fun folderBrowser(): FolderBrowser? {
+        if (isDestroyed)
+            throw IllegalStateException("activity is already destroyed")
+        return libraryHandler?.folderBrowser
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
