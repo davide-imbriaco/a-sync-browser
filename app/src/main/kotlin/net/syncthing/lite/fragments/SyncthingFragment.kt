@@ -16,10 +16,6 @@ abstract class SyncthingFragment : Fragment() {
         checkConditions()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-    }
-
     fun onLibraryLoaded() {
         checkConditions()
     }

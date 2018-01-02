@@ -99,12 +99,12 @@ class MainActivity : SyncthingActivity() {
     }
 
     override fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {
-        binding.mainIndexProgressBar.visibility = View.VISIBLE
-        binding.mainIndexProgressBarLabel.text = (getString(R.string.index_update_folder) + " "
+        binding.indexUpdate.visibility = View.VISIBLE
+        binding.indexUpdateLabel.text = (getString(R.string.index_update_folder) + " "
                 + folder.label + " " + percentage + getString(R.string.index_update_percent_synchronized))
     }
 
     override fun onIndexUpdateComplete() {
-        binding.mainIndexProgressBar.visibility = View.GONE
+        binding.indexUpdate.visibility = View.GONE
     }
 }

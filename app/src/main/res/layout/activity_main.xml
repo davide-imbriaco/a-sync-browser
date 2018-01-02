@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:padding="8dp"
-            android:id="@+id/main_index_progress_bar"
+            android:id="@+id/index_update"
             android:orientation="horizontal"
             android:background="@color/primary"
             android:visibility="gone">
@@ -22,7 +22,7 @@
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"/>
             <TextView
-                android:id="@+id/main_index_progress_bar_label"
+                android:id="@+id/index_update_label"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"

@@ -41,7 +41,7 @@ class FoldersFragment : SyncthingFragment() {
         val list = Lists.newArrayList(getSyncthingActivity().folderBrowser()!!.folderInfoAndStatsList)
         Collections.sort(list, Ordering.natural<Comparable<String>>()
                 .onResultOf<Pair<FolderInfo, FolderStats>> { input -> input?.left?.label })
-        Log.i(TAG, "list folders = " + list + " (" + list.size + " records")
+        Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")
         val adapter = FoldersListAdapter(context, list)
         binding.list.adapter = adapter
         binding.list.setOnItemClickListener { _, _, position, _ ->
