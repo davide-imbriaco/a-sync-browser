@@ -21,6 +21,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    signingConfigs {
+        release {
+            storeFile = {
+                def path = System.getenv("SYNCTHING_LITE_RELEASE_STORE_FILE")
+                return (path) ? file(path) : null
+            }()
+            storePassword System.getenv("SIGNING_PASSWORD") ?: ""
+            keyAlias System.getenv("SYNCTHING_LITE_RELEASE_KEY_ALIAS") ?: ""
+            keyPassword System.getenv("SIGNING_PASSWORD") ?: ""
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 dependencies {
