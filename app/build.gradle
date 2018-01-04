@@ -10,8 +10,8 @@ android {
         applicationId "net.syncthing.lite"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 3
-        versionName "0.1.1"
+        versionCode 4
+        versionName "0.1.2"
         multiDexEnabled true
     }
     sourceSets {
@@ -31,7 +31,7 @@ dependencies {
     implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:cardview-v7:$support_version"
-    implementation ("com.github.Nutomic:syncthing-java:0.1") {
+    implementation ("com.github.Nutomic:syncthing-java:0.1.2") {
         exclude group: 'commons-logging', module:'commons-logging'
         exclude group: 'commons-codec'
         exclude group: 'org.apache.httpcomponents', module:'httpclient'
