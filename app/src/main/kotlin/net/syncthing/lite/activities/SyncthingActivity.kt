@@ -68,6 +68,7 @@ abstract class SyncthingActivity : AppCompatActivity() {
                 libraryHandler = null
             }
         }.start()
+        loadingDialog?.dismiss()
     }
 
     private fun onLibraryLoaded(libraryHandler: LibraryHandler) {
@@ -75,7 +76,9 @@ abstract class SyncthingActivity : AppCompatActivity() {
             return
 
         SyncthingActivity.libraryHandler = libraryHandler
-        loadingDialog!!.cancel()
+        if (!isDestroyed) {
+            loadingDialog?.dismiss()
+        }
         onLibraryLoaded()
     }
 
