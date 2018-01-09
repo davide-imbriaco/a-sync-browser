@@ -13,6 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.java.core.beans.DeviceStats
 import net.syncthing.java.core.security.KeystoreHandler
@@ -35,6 +37,9 @@ class DevicesFragment : SyncthingFragment() {
     private lateinit var binding: FragmentDevicesBinding
     private lateinit var adapter: DevicesAdapter
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_devices, container, false)
@@ -43,7 +48,7 @@ class DevicesFragment : SyncthingFragment() {
         return binding.root
     }
 
-    override fun onLibraryLoadedAndActivityCreated() {
+    override fun onLibraryLoaded() {
         initDeviceList()
         updateDeviceList()
     }
@@ -57,7 +62,8 @@ class DevicesFragment : SyncthingFragment() {
                     .setTitle(getString(R.string.remove_device_title) + " " + deviceId.substring(0, 7) + "?")
                     .setMessage(getString(R.string.remove_device_body_1) + " " + deviceId.substring(0, 7) + " " + getString(R.string.remove_device_body_2))
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-                        getSyncthingActivity().configuration().edit().removePeer(deviceId).persistLater() }
+                        libraryHandler?.configuration { it.edit().removePeer(deviceId).persistLater() }
+                    }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
             Log.d(TAG, "showFolderListView delete device = '$deviceId'")
@@ -66,9 +72,11 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     private fun updateDeviceList() {
-        adapter.clear()
-        adapter.addAll(getSyncthingActivity().syncthingClient().devicesHandler.deviceStatsList)
-        adapter.notifyDataSetChanged()
+        libraryHandler?.syncthingClient { syncthingClient ->
+            adapter.clear()
+            adapter.addAll(syncthingClient.devicesHandler.deviceStatsList)
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -83,21 +91,25 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     private fun importDeviceId(deviceId: String) {
-        try {
-            KeystoreHandler.validateDeviceId(deviceId)
-        } catch (e: IllegalArgumentException) {
-            Toast.makeText(context, R.string.invalid_device_id, Toast.LENGTH_SHORT).show()
-            return
-        }
+        libraryHandler?.library() { configuration, syncthingClient, _ ->
+            async(UI) {
+                try {
+                    KeystoreHandler.validateDeviceId(deviceId)
+                } catch (e: IllegalArgumentException) {
+                    Toast.makeText(this@DevicesFragment.context, R.string.invalid_device_id, Toast.LENGTH_SHORT).show()
+                    return@async
+                }
 
-        val modified = getSyncthingActivity().configuration().edit().addPeers(DeviceInfo(deviceId, null))
-        if (modified) {
-            getSyncthingActivity().configuration().edit().persistLater()
-            Toast.makeText(context, getString(R.string.device_import_success) + " " + deviceId, Toast.LENGTH_SHORT).show()
-            updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
-            UpdateIndexTask(context!!, getSyncthingActivity().syncthingClient()).updateIndex()
-        } else {
-            Toast.makeText(context, getString(R.string.device_already_known) + " " + deviceId, Toast.LENGTH_SHORT).show()
+                val modified = configuration.edit().addPeers(DeviceInfo(deviceId, null))
+                if (modified) {
+                    configuration.edit().persistLater()
+                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_import_success) + " " + deviceId, Toast.LENGTH_SHORT).show()
+                    updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
+                    UpdateIndexTask(this@DevicesFragment.context!!, syncthingClient).updateIndex()
+                } else {
+                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_already_known) + " " + deviceId, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

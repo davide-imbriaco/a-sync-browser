@@ -8,6 +8,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ActivityMainBinding
@@ -50,10 +52,6 @@ class MainActivity : SyncthingActivity() {
         onNavigationItemSelectedListener(selection)
     }
 
-    override fun onLibraryLoaded() {
-        currentFragment?.onLibraryLoaded()
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         drawerToggle!!.onConfigurationChanged(newConfig)
@@ -72,7 +70,7 @@ class MainActivity : SyncthingActivity() {
         when (menuItem.itemId) {
             R.id.folders -> setContentFragment(FoldersFragment())
             R.id.devices -> setContentFragment(DevicesFragment())
-            R.id.update_index -> UpdateIndexTask(this, syncthingClient()).updateIndex()
+            R.id.update_index -> libraryHandler?.syncthingClient { UpdateIndexTask(this@MainActivity, it).updateIndex() }
             R.id.clear_index -> AlertDialog.Builder(this)
                     .setTitle(getString(R.string.clear_cache_and_index_title))
                     .setMessage(getString(R.string.clear_cache_and_index_body))
@@ -94,8 +92,10 @@ class MainActivity : SyncthingActivity() {
     }
 
     private fun cleanCacheAndIndex() {
-        syncthingClient().clearCacheAndIndex()
-        recreate()
+        async(UI) {
+            libraryHandler?.syncthingClient { it.clearCacheAndIndex() }
+            recreate()
+        }
     }
 
     override fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {

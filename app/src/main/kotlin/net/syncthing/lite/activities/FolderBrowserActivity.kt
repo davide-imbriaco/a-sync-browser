@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -52,14 +51,16 @@ class FolderBrowserActivity : SyncthingActivity() {
             navigateToFolder(fileInfo)
         }
         val folder = intent.getStringExtra(EXTRA_FOLDER_NAME)
-        indexBrowser = syncthingClient().indexHandler
+        libraryHandler?.syncthingClient {
+            indexBrowser = it.indexHandler
                 .newIndexBrowserBuilder()
                 .setOrdering(FileInfoOrdering.ALPHA_ASC_DIR_FIRST)
                 .includeParentInList(true)
                 .allowParentInRoot(true)
                 .setFolder(folder)
                 .build()
-        indexBrowser.setOnFolderChangedListener(this::onFolderChanged)
+            indexBrowser.setOnFolderChangedListener(this::onFolderChanged)
+        }
     }
 
     override fun onDestroy() {
@@ -78,8 +79,11 @@ class FolderBrowserActivity : SyncthingActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQUEST_SELECT_UPLOAD_FILE && resultCode == Activity.RESULT_OK) {
-            UploadFileTask(this, syncthingClient(), intent!!.data, indexBrowser.folder,
-                    indexBrowser.currentPath, { this.updateFolderListView() }).uploadFile()
+            libraryHandler?.syncthingClient { syncthingClient ->
+                UploadFileTask(this@FolderBrowserActivity, syncthingClient, intent!!.data,
+                        indexBrowser.folder, indexBrowser.currentPath,
+                        this@FolderBrowserActivity::showUploadHereDialog).uploadFile()
+            }
         }
     }
 
@@ -101,7 +105,7 @@ class FolderBrowserActivity : SyncthingActivity() {
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo)
                 executeWithPermissions(
-                        Runnable { DownloadFileTask(this, syncthingClient(), fileInfo).downloadFile() })
+                        Runnable { libraryHandler?.syncthingClient { DownloadFileTask(this, it, fileInfo).downloadFile() } })
             }
         }
     }
@@ -118,12 +122,12 @@ class FolderBrowserActivity : SyncthingActivity() {
             adapter.addAll(list)
             adapter.notifyDataSetChanged()
             binding.listView.setSelection(0)
-            val title =
-                if (indexBrowser.isRoot)
-                    folderBrowser()?.getFolderInfo(indexBrowser.folder)?.label
-                else
-                    indexBrowser.currentPathInfo.fileName
-            supportActionBar!!.setTitle(title)
+            if (indexBrowser.isRoot)
+                libraryHandler?.folderBrowser {
+                    supportActionBar?.title = it.getFolderInfo(indexBrowser.folder).label
+                }
+            else
+                supportActionBar?.title = indexBrowser.currentPathInfo.fileName
         }
 }
 

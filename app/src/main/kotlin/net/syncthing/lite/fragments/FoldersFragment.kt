@@ -20,9 +20,7 @@ import java.util.*
 
 class FoldersFragment : SyncthingFragment() {
 
-    companion object {
-        private val TAG = "FoldersFragment"
-    }
+    private val TAG = "FoldersFragment"
 
     private lateinit var binding: FragmentFoldersBinding
 
@@ -33,21 +31,23 @@ class FoldersFragment : SyncthingFragment() {
         return binding.root
     }
 
-    override fun onLibraryLoadedAndActivityCreated() {
+    override fun onLibraryLoaded() {
         showAllFoldersListView()
     }
 
     private fun showAllFoldersListView() {
-        val list = Lists.newArrayList(getSyncthingActivity().folderBrowser()!!.folderInfoAndStatsList)
-        Collections.sort(list, Ordering.natural<Comparable<String>>()
-                .onResultOf<Pair<FolderInfo, FolderStats>> { input -> input?.left?.label })
-        Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")
-        val adapter = FoldersListAdapter(context, list)
-        binding.list.adapter = adapter
-        binding.list.setOnItemClickListener { _, _, position, _ ->
-            val folder = adapter.getItem(position)!!.left.folder
-            val intent = context?.intentFor<FolderBrowserActivity>(FolderBrowserActivity.EXTRA_FOLDER_NAME to folder)
-            startActivity(intent)
+        libraryHandler?.folderBrowser { folderBrowser ->
+            val list = Lists.newArrayList(folderBrowser.folderInfoAndStatsList)
+            Collections.sort(list, Ordering.natural<Comparable<String>>()
+                    .onResultOf<Pair<FolderInfo, FolderStats>> { input -> input?.left?.label })
+            Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")
+            val adapter = FoldersListAdapter(context, list)
+            binding.list.adapter = adapter
+            binding.list.setOnItemClickListener { _, _, position, _ ->
+                val folder = adapter.getItem(position)!!.left.folder
+                val intent = context?.intentFor<FolderBrowserActivity>(FolderBrowserActivity.EXTRA_FOLDER_NAME to folder)
+                startActivity(intent)
+            }
         }
     }
 }

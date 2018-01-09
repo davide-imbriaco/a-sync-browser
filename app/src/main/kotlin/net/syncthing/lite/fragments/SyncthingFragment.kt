@@ -2,30 +2,33 @@ package net.syncthing.lite.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import net.syncthing.lite.activities.SyncthingActivity
+import net.syncthing.java.core.beans.FolderInfo
+import net.syncthing.lite.library.LibraryHandler
 
-/**
- * Handle connection to [[SyncthingActivity]], and make sure device rotation are handled correctly.
- */
 abstract class SyncthingFragment : Fragment() {
 
-    protected fun getSyncthingActivity() = activity as SyncthingActivity
+    var libraryHandler: LibraryHandler? = null
+        private set
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        checkConditions()
+        LibraryHandler(context!!, this::onLibraryLoadedInternal, this::onIndexUpdateProgress,
+                this::onIndexUpdateComplete)
     }
 
-    fun onLibraryLoaded() {
-        checkConditions()
+    private fun onLibraryLoadedInternal(libraryHandler: LibraryHandler) {
+        this.libraryHandler = libraryHandler
+        onLibraryLoaded()
     }
 
-    private fun checkConditions() {
-        if (activity != null && getSyncthingActivity().folderBrowser() != null ) {
-            onLibraryLoadedAndActivityCreated()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        libraryHandler?.close()
     }
 
-    open fun onLibraryLoadedAndActivityCreated() {
-    }
+    open fun onLibraryLoaded() {}
+
+    open fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {}
+
+    open fun onIndexUpdateComplete() {}
 }
