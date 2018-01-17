@@ -10,7 +10,6 @@ import kotlinx.coroutines.experimental.async
 import net.syncthing.java.bep.FolderBrowser
 import net.syncthing.java.bep.IndexHandler
 import net.syncthing.java.client.SyncthingClient
-import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.configuration.ConfigurationService
 import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.utils.Util
@@ -22,7 +21,7 @@ import java.io.IOException
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
-                     onIndexUpdateProgressListener: (FolderInfo, Int) -> Unit,
+                     onIndexUpdateProgressListener: (String, Int) -> Unit,
                      onIndexUpdateCompleteListener: () -> Unit) {
 
     companion object {
@@ -62,11 +61,10 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         onIndexUpdateListener = object : Any() {
             @Subscribe
             fun handleIndexRecordAquiredEvent(event: IndexHandler.IndexRecordAquiredEvent) {
-                val folder = syncthingClient!!.indexHandler.getFolderInfo(event.folder)
-                val indexInfo = event.indexInfo
-                event.newRecords.size
+                val indexInfo = event.indexInfo()
+                event.newRecords().size
                 Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
-                onIndexUpdateProgressListener(folder, (indexInfo.completed * 100).toInt())
+                onIndexUpdateProgressListener(event.folder(), (indexInfo.completed * 100).toInt())
             }
 
             @Subscribe

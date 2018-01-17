@@ -2,7 +2,6 @@ package net.syncthing.lite.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.library.LibraryHandler
 
 abstract class SyncthingFragment : Fragment() {
@@ -28,7 +27,7 @@ abstract class SyncthingFragment : Fragment() {
 
     open fun onLibraryLoaded() {}
 
-    open fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {}
+    open fun onIndexUpdateProgress(folder: String, percentage: Int) {}
 
     open fun onIndexUpdateComplete() {}
 }

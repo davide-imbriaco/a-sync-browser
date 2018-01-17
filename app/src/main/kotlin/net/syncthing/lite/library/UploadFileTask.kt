@@ -38,12 +38,12 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
             syncthingClient.pushFile(uploadStream, syncthingFolder, syncthingPath, { observer ->
                 onProgress(observer)
                 try {
-                    while (!observer.isCompleted) {
+                    while (!observer.isCompleted()) {
                         if (mCancelled)
                             return@pushFile
 
                         observer.waitForProgressUpdate()
-                        Log.i(TAG, "upload progress = " + observer.progressMessage)
+                        Log.i(TAG, "upload progress = " + observer.progressMessage())
                         onProgress(observer)
                     }
                 } catch (e: InterruptedException) {
@@ -72,8 +72,8 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
         doAsync {
             uiThread {
                 mProgressDialog.isIndeterminate = false
-                mProgressDialog.max = observer.dataSource.size.toInt()
-                mProgressDialog.progress = (observer.progress * observer.dataSource.size).toInt()
+                mProgressDialog.max = observer.dataSource().getSize().toInt()
+                mProgressDialog.progress = (observer.progress() * observer.dataSource().getSize()).toInt()
             }
         }
     }

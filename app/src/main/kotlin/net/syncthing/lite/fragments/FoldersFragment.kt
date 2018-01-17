@@ -37,7 +37,7 @@ class FoldersFragment : SyncthingFragment() {
 
     private fun showAllFoldersListView() {
         libraryHandler?.folderBrowser { folderBrowser ->
-            val list = Lists.newArrayList(folderBrowser.folderInfoAndStatsList)
+            val list = Lists.newArrayList(folderBrowser.folderInfoAndStatsList())
             Collections.sort(list, Ordering.natural<Comparable<String>>()
                     .onResultOf<Pair<FolderInfo, FolderStats>> { input -> input?.left?.label })
             Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")

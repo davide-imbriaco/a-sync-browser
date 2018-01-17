@@ -14,8 +14,6 @@ import android.widget.Toast
 import com.google.common.base.Preconditions.checkArgument
 import net.syncthing.java.bep.IndexBrowser
 import net.syncthing.java.core.beans.FileInfo
-import net.syncthing.java.core.beans.FolderInfo
-import net.syncthing.java.core.utils.FileInfoOrdering
 import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
@@ -52,13 +50,7 @@ class FolderBrowserActivity : SyncthingActivity() {
         }
         val folder = intent.getStringExtra(EXTRA_FOLDER_NAME)
         libraryHandler?.syncthingClient {
-            indexBrowser = it.indexHandler
-                .newIndexBrowserBuilder()
-                .setOrdering(FileInfoOrdering.ALPHA_ASC_DIR_FIRST)
-                .includeParentInList(true)
-                .allowParentInRoot(true)
-                .setFolder(folder)
-                .build()
+            indexBrowser = it.indexHandler.newIndexBrowser(folder, true, true)
             indexBrowser.setOnFolderChangedListener(this::onFolderChanged)
         }
     }
@@ -89,12 +81,12 @@ class FolderBrowserActivity : SyncthingActivity() {
 
     private fun showFolderListView(path: String) {
         indexBrowser.navigateToNearestPath(path)
-        navigateToFolder(indexBrowser.currentPathInfo)
+        navigateToFolder(indexBrowser.currentPathInfo())
     }
 
     private fun navigateToFolder(fileInfo: FileInfo) {
         Log.d(TAG, "navigate to path = '" + fileInfo.path + "' from path = '" + indexBrowser.currentPath + "'")
-        if (indexBrowser.isRoot && PathUtils.isParent(fileInfo.path)) {
+        if (indexBrowser.isRoot() && PathUtils.isParent(fileInfo.path)) {
             finish()
         } else {
             if (fileInfo.isDirectory) {
@@ -122,12 +114,12 @@ class FolderBrowserActivity : SyncthingActivity() {
             adapter.addAll(list)
             adapter.notifyDataSetChanged()
             binding.listView.setSelection(0)
-            if (indexBrowser.isRoot)
+            if (indexBrowser.isRoot())
                 libraryHandler?.folderBrowser {
-                    supportActionBar?.title = it.getFolderInfo(indexBrowser.folder).label
+                    supportActionBar?.title = it.getFolderInfo(indexBrowser.folder)?.label
                 }
             else
-                supportActionBar?.title = indexBrowser.currentPathInfo.fileName
+                supportActionBar?.title = indexBrowser.currentPathInfo().fileName
         }
 }
 
@@ -141,10 +133,10 @@ class FolderBrowserActivity : SyncthingActivity() {
         })
     }
 
-    override fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {
+    override fun onIndexUpdateProgress(folder: String, percentage: Int) {
         binding.indexUpdate.visibility = View.VISIBLE
         binding.indexUpdateLabel.text = (getString(R.string.index_update_folder)
-                + folder.label + " " + percentage + getString(R.string.index_update_percent_synchronized))
+                + folder + " " + percentage + getString(R.string.index_update_percent_synchronized))
         updateFolderListView()
     }
 

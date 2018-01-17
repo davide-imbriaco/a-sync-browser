@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
-import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.BuildConfig
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.DialogLoadingBinding
@@ -47,7 +46,7 @@ abstract class SyncthingActivity : AppCompatActivity() {
         onLibraryLoaded()
     }
 
-    open fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {}
+    open fun onIndexUpdateProgress(folder: String, percentage: Int) {}
 
     open fun onIndexUpdateComplete() {}
 

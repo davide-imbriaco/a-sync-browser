@@ -34,18 +34,18 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
         mSyncthingClient.pullFile(mFileInfo, { observer ->
             onProgress(observer)
             try {
-                while (!observer.isCompleted) {
+                while (!observer.isCompleted()) {
                     if (cancelled)
                         return@pullFile
 
                     observer.waitForProgressUpdate()
-                    Log.i("pullFile", "download progress = " + observer.progressMessage)
+                    Log.i("pullFile", "download progress = " + observer.progressMessage())
                     onProgress(observer)
                 }
 
                 val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val outputFile = File(outputDir, mFileInfo.fileName)
-                FileUtils.copyInputStreamToFile(observer.inputStream, outputFile)
+                FileUtils.copyInputStreamToFile(observer.inputStream(), outputFile)
                 Log.i(TAG, "downloaded file = " + mFileInfo.path)
                 onComplete(outputFile)
             } catch (e: IOException) {
@@ -73,7 +73,7 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
             uiThread {
                 progressDialog.isIndeterminate = false
                 progressDialog.max = (mFileInfo.size as Long).toInt()
-                progressDialog.progress = (fileDownloadObserver.progress * mFileInfo.size!!).toInt()
+                progressDialog.progress = (fileDownloadObserver.progress() * mFileInfo.size!!).toInt()
             }
         }
     }

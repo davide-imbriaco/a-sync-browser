@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.fragments.DevicesFragment
@@ -98,10 +97,10 @@ class MainActivity : SyncthingActivity() {
         }
     }
 
-    override fun onIndexUpdateProgress(folder: FolderInfo, percentage: Int) {
+    override fun onIndexUpdateProgress(folder: String, percentage: Int) {
         binding.indexUpdate.visibility = View.VISIBLE
         binding.indexUpdateLabel.text = (getString(R.string.index_update_folder) + " "
-                + folder.label + " " + percentage + getString(R.string.index_update_percent_synchronized))
+                + folder + " " + percentage + getString(R.string.index_update_percent_synchronized))
     }
 
     override fun onIndexUpdateComplete() {

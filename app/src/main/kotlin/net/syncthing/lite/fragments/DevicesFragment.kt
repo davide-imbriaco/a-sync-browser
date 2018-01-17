@@ -37,9 +37,6 @@ class DevicesFragment : SyncthingFragment() {
     private lateinit var binding: FragmentDevicesBinding
     private lateinit var adapter: DevicesAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_devices, container, false)
@@ -91,7 +88,7 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     private fun importDeviceId(deviceId: String) {
-        libraryHandler?.library() { configuration, syncthingClient, _ ->
+        libraryHandler?.library { configuration, syncthingClient, _ ->
             async(UI) {
                 try {
                     KeystoreHandler.validateDeviceId(deviceId)
