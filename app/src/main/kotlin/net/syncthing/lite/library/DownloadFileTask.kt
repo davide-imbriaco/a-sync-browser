@@ -4,9 +4,8 @@ import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Environment
 import android.support.annotation.StringRes
+import android.support.v4.content.FileProvider
 import android.util.Log
 import android.webkit.MimeTypeMap
 import net.syncthing.java.bep.BlockPuller
@@ -43,8 +42,7 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
                     onProgress(observer)
                 }
 
-                val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val outputFile = File(outputDir, mFileInfo.fileName)
+                val outputFile = File("${mContext.externalCacheDir}/${mFileInfo.folder}/${mFileInfo.path}")
                 FileUtils.copyInputStreamToFile(observer.inputStream(), outputFile)
                 Log.i(TAG, "downloaded file = " + mFileInfo.path)
                 onComplete(outputFile)
@@ -85,15 +83,16 @@ class DownloadFileTask(private val mContext: Context, private val mSyncthingClie
 
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(FilenameUtils.getExtension(file.name))
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(Uri.fromFile(file), mimeType)
+        val uri = FileProvider.getUriForFile(mContext, "net.syncthing.lite.fileprovider", file)
+        intent.setDataAndType(uri, mimeType)
         intent.newTask()
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
             mContext.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             onError(R.string.toast_open_file_failed)
             Log.w(TAG, "No handler found for file " + file.name, e)
         }
-
     }
 
     private fun onError(@StringRes error: Int) {

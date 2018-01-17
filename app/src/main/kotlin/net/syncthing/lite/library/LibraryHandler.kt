@@ -81,7 +81,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
     private fun init(context: Context) {
         isLoading = true
         val configuration = ConfigurationService.newLoader()
-                .setCache(File(context.externalCacheDir, "cache"))
+                .setCache(File(context.externalCacheDir, ".cache"))
                 .setDatabase(File(context.getExternalFilesDir(null), "database"))
                 .loadFrom(File(context.getExternalFilesDir(null), "config.properties"))
         configuration.edit().setDeviceName(Util.getDeviceName())
