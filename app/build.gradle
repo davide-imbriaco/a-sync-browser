@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.ben-manes.versions'
 
 android {
     compileSdkVersion 27
@@ -45,7 +46,6 @@ dependencies {
     implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
     kapt "com.android.databinding:compiler:$build_tools_version"
     implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:cardview-v7:$support_version"
     implementation ("com.github.Nutomic:syncthing-java:0.1.3") {
@@ -55,9 +55,12 @@ dependencies {
         exclude group: 'org.slf4j'
         exclude group: 'ch.qos.logback'
     }
+    // NOTE: httpclient-android seems to be used via reflection somehow. Removing this dependency
+    //       silently breaks the app.
     implementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     implementation 'sk.baka.slf4j:slf4j-handroid:1.7.26'
     implementation 'com.google.zxing:android-integration:3.3.0'
-    implementation 'com.nononsenseapps:filepicker:2.5.2'
-    implementation 'uk.co.markormesher:android-fab:2.0.0'
+    implementation ('uk.co.markormesher:android-fab:2.0.0') {
+        exclude group: "org.jetbrains.kotlin"
+    }
 }
