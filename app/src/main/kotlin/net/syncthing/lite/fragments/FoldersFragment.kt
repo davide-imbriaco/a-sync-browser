@@ -6,17 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.common.collect.Lists
-import com.google.common.collect.Ordering
-import net.syncthing.java.core.beans.FolderInfo
-import net.syncthing.java.core.beans.FolderStats
 import net.syncthing.lite.R
 import net.syncthing.lite.activities.FolderBrowserActivity
 import net.syncthing.lite.adapters.FoldersListAdapter
 import net.syncthing.lite.databinding.FragmentFoldersBinding
-import org.apache.commons.lang3.tuple.Pair
 import org.jetbrains.anko.intentFor
-import java.util.*
 
 class FoldersFragment : SyncthingFragment() {
 
@@ -37,9 +31,7 @@ class FoldersFragment : SyncthingFragment() {
 
     private fun showAllFoldersListView() {
         libraryHandler?.folderBrowser { folderBrowser ->
-            val list = Lists.newArrayList(folderBrowser.folderInfoAndStatsList())
-            Collections.sort(list, Ordering.natural<Comparable<String>>()
-                    .onResultOf<Pair<FolderInfo, FolderStats>> { input -> input?.left?.label })
+            val list = folderBrowser.folderInfoAndStatsList().sortedBy { it.left.label }
             Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")
             val adapter = FoldersListAdapter(context, list)
             binding.list.adapter = adapter

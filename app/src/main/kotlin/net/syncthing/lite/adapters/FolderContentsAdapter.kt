@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import com.google.common.collect.Lists
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewFileBinding
 import org.apache.commons.io.FileUtils
 
 class FolderContentsAdapter(context: Context) :
-        ArrayAdapter<FileInfo>(context, R.layout.listview_file, Lists.newArrayList()) {
+        ArrayAdapter<FileInfo>(context, R.layout.listview_file, mutableListOf()) {
 
     override fun getView(position: Int, v: View?, parent: ViewGroup): View {
         val binding: ListviewFileBinding =
@@ -25,7 +24,7 @@ class FolderContentsAdapter(context: Context) :
             }
         val fileInfo = getItem(position)
         binding.fileLabel.text = fileInfo!!.fileName
-        if (fileInfo.isDirectory) {
+        if (fileInfo.isDirectory()) {
             binding.fileIcon.setImageResource(R.drawable.ic_folder_black_24dp)
             binding.fileSize.visibility = View.GONE
         } else {

@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import com.google.common.collect.Lists
 import net.syncthing.java.core.beans.DeviceStats
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewDeviceBinding
 
 class DevicesAdapter(context: Context) :
-        ArrayAdapter<DeviceStats>(context, R.layout.listview_device, Lists.newArrayList()) {
+        ArrayAdapter<DeviceStats>(context, R.layout.listview_device, mutableListOf()) {
 
     override fun getView(position: Int, v: View?, parent: ViewGroup): View {
         val binding: ListviewDeviceBinding

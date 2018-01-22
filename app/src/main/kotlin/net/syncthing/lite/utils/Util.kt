@@ -5,16 +5,14 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import com.google.common.base.Objects.equal
-import com.google.common.base.Strings.nullToEmpty
 import org.apache.commons.lang3.StringUtils.capitalize
 import java.io.File
 
 object Util {
 
     fun getDeviceName(): String {
-        val manufacturer = nullToEmpty(Build.MANUFACTURER)
-        val model = nullToEmpty(Build.MODEL)
+        val manufacturer = Build.MANUFACTURER ?: ""
+        val model = Build.MODEL ?: ""
         val deviceName =
             if (model.startsWith(manufacturer)) {
                 capitalize(model)
@@ -26,7 +24,7 @@ object Util {
 
     fun getContentFileName(context: Context, contentUri: Uri): String {
         var fileName = File(contentUri.lastPathSegment).name
-        if (equal(contentUri.scheme, "content")) {
+        if (contentUri.scheme == "content") {
             context.contentResolver.query(contentUri, arrayOf(MediaStore.Images.Media.DATA), null, null, null)!!.use { cursor ->
                 val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                 cursor.moveToFirst()

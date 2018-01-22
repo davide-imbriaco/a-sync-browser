@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.google.common.base.Preconditions.checkArgument
 import net.syncthing.java.bep.IndexBrowser
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.utils.PathUtils
@@ -89,7 +88,7 @@ class FolderBrowserActivity : SyncthingActivity() {
         if (indexBrowser.isRoot() && PathUtils.isParent(fileInfo.path)) {
             finish()
         } else {
-            if (fileInfo.isDirectory) {
+            if (fileInfo.isDirectory()) {
                 indexBrowser.navigateTo(fileInfo)
                 Log.d(TAG, "load folder cache bg")
                 binding.listView.visibility = View.GONE
@@ -109,7 +108,7 @@ class FolderBrowserActivity : SyncthingActivity() {
             val list = indexBrowser.listFiles()
             Log.i("navigateToFolder", "list for path = '" + indexBrowser.currentPath + "' list = " + list.size + " records")
             Log.d("navigateToFolder", "list for path = '" + indexBrowser.currentPath + "' list = " + list)
-            checkArgument(!list.isEmpty())//list must contain at least the 'parent' path
+            assert(!list.isEmpty())//list must contain at least the 'parent' path
             adapter.clear()
             adapter.addAll(list)
             adapter.notifyDataSetChanged()

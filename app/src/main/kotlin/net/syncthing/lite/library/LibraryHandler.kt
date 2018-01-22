@@ -64,7 +64,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
                 val indexInfo = event.indexInfo()
                 event.newRecords().size
                 Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
-                onIndexUpdateProgressListener(event.folder(), (indexInfo.completed * 100).toInt())
+                onIndexUpdateProgressListener(event.folder(), (indexInfo.getCompleted() * 100).toInt())
             }
 
             @Subscribe
@@ -80,11 +80,11 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     private fun init(context: Context) {
         isLoading = true
-        val configuration = ConfigurationService.newLoader()
+        val configuration = ConfigurationService.Loader()
                 .setCache(File(context.externalCacheDir, ".cache"))
                 .setDatabase(File(context.getExternalFilesDir(null), "database"))
                 .loadFrom(File(context.getExternalFilesDir(null), "config.properties"))
-        configuration.edit().setDeviceName(Util.getDeviceName())
+        configuration.Editor().setDeviceName(Util.getDeviceName())
         try {
             FileUtils.cleanDirectory(configuration.temp)
         } catch (e: IOException) {
@@ -92,10 +92,10 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
             close()
         }
 
-        KeystoreHandler.newLoader().loadAndStore(configuration)
-        configuration.edit().persistLater()
-        Log.i(TAG, "loaded mConfiguration = " + configuration.newWriter().dumpToString())
-        Log.i(TAG, "storage space = " + configuration.storageInfo.dumpAvailableSpace())
+        KeystoreHandler.Loader().loadAndStore(configuration)
+        configuration.Editor().persistLater()
+        Log.i(TAG, "loaded mConfiguration = " + configuration.Writer().dumpToString())
+        Log.i(TAG, "storage space = " + configuration.getStorageInfo().dumpAvailableSpace())
         val syncthingClient = SyncthingClient(configuration)
         //TODO listen for device events, update device list
         val folderBrowser = syncthingClient.indexHandler.newFolderBrowser()
