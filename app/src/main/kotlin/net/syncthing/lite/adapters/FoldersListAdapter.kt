@@ -25,13 +25,14 @@ class FoldersListAdapter(context: Context?, list: List<Pair<FolderInfo, FolderSt
             }
         val folderInfo = getItem(position)!!.left
         val folderStats = getItem(position)!!.right
-        binding.folderName.text = "${folderInfo.label} (${folderInfo.folder})"
+        binding.folderName.text = context.getString(R.string.folder_label_format, folderInfo.label, folderInfo.folder)
+
         binding.folderLastmodInfo.text =
                 if (folderStats.lastUpdate == null)
                     context.getString(R.string.last_modified_unknown)
-                else context.getString(R.string.last_modified_known) + " " +
-                        DateUtils.getRelativeDateTimeString(context, folderStats.lastUpdate.time, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0)
-        binding.folderContentInfo.text = "${folderStats.describeSize()}, ${folderStats.fileCount} files, ${folderStats.dirCount} dirs"
+                else context.getString(R.string.last_modified_time,
+                        DateUtils.getRelativeDateTimeString(context, folderStats.lastUpdate.time, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
+        binding.folderContentInfo.text = context.getString(R.string.folder_content_info, folderStats.describeSize(), folderStats.fileCount, folderStats.dirCount)
         return binding.root
     }
 

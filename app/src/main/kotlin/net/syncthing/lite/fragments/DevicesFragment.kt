@@ -30,10 +30,6 @@ import java.security.InvalidParameterException
 
 class DevicesFragment : SyncthingFragment() {
 
-    companion object {
-        private val TAG = "DevicesFragment"
-    }
-
     private lateinit var binding: FragmentDevicesBinding
     private lateinit var adapter: DevicesAdapter
 
@@ -54,16 +50,15 @@ class DevicesFragment : SyncthingFragment() {
         adapter = DevicesAdapter(context!!)
         binding.list.adapter = adapter
         binding.list.setOnItemLongClickListener { _, _, position, _ ->
-            val deviceId = (binding.list.getItemAtPosition(position) as DeviceStats).deviceId
+            val device = (binding.list.getItemAtPosition(position) as DeviceStats)
             AlertDialog.Builder(context)
-                    .setTitle(getString(R.string.remove_device_title) + " " + deviceId.substring(0, 7) + "?")
-                    .setMessage(getString(R.string.remove_device_body_1) + " " + deviceId.substring(0, 7) + " " + getString(R.string.remove_device_body_2))
+                    .setTitle(getString(R.string.remove_device_title, device.name))
+                    .setMessage(getString(R.string.remove_device_message, device.deviceId.substring(0, 7)))
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-                        libraryHandler?.configuration { it.Editor().removePeer(deviceId).persistLater() }
+                        libraryHandler?.configuration { it.Editor().removePeer(device.deviceId).persistLater() }
                     }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
-            Log.d(TAG, "showFolderListView delete device = '$deviceId'")
             false
         }
     }
@@ -100,11 +95,11 @@ class DevicesFragment : SyncthingFragment() {
                 val modified = configuration.Editor().addPeers(DeviceInfo(deviceId, null))
                 if (modified) {
                     configuration.Editor().persistLater()
-                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_import_success) + " " + deviceId, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_import_success, deviceId), Toast.LENGTH_SHORT).show()
                     updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
                     UpdateIndexTask(this@DevicesFragment.context!!, syncthingClient).updateIndex()
                 } else {
-                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_already_known) + " " + deviceId, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DevicesFragment.context, getString(R.string.device_already_known, deviceId), Toast.LENGTH_SHORT).show()
                 }
             }
         }

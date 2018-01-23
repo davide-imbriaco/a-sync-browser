@@ -10,6 +10,8 @@ import java.io.File
 
 object Util {
 
+    private val Tag = "Util"
+
     fun getDeviceName(): String {
         val manufacturer = Build.MANUFACTURER ?: ""
         val model = Build.MODEL ?: ""
@@ -29,7 +31,7 @@ object Util {
                 val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                 cursor.moveToFirst()
                 val path = cursor.getString(columnIndex)
-                Log.d("Main", "recovered 'content' uri real path = " + path)
+                Log.d(Tag, "recovered 'content' uri real path = " + path)
                 fileName = File(Uri.parse(path).lastPathSegment).name
             }
         }

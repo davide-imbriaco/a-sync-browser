@@ -30,9 +30,9 @@ class FolderContentsAdapter(context: Context) :
         } else {
             binding.fileIcon.setImageResource(R.drawable.ic_image_black_24dp)
             binding.fileSize.visibility = View.VISIBLE
-            binding.fileSize.text = (FileUtils.byteCountToDisplaySize(fileInfo.size!!)
-                    + context.getString(R.string.last_modified)
-                    + DateUtils.getRelativeDateTimeString(context, fileInfo.lastModified.time, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
+            binding.fileSize.text = context.getString(R.string.file_info,
+                    FileUtils.byteCountToDisplaySize(fileInfo.size!!),
+                    DateUtils.getRelativeDateTimeString(context, fileInfo.lastModified.time, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
         }
         return binding.root
     }

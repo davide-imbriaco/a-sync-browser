@@ -6,7 +6,4 @@
     <color name="accent">#FFC107</color>
     <color name="divider">#1F000000</color>
 
-    <color name="device_online_active">#ff99cc00</color>
-    <color name="device_online_inactive">#f43703</color>
-    <color name="device_offline">#aaaaaa</color>
 </resources>
