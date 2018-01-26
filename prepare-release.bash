@@ -10,6 +10,20 @@ then
     exit
 fi
 
+echo "
+
+Updating Translations
+-----------------------------
+"
+tx push -s
+# Force push/pull to make sure this is executed. Apparently tx only compares timestamps, not file
+# contents. So if a file was `touch`ed, it won't be updated by default.
+tx pull -a -f
+git add -A "app/src/main/res/values-*/strings.xml"
+if ! git diff --cached --exit-code;
+then
+    git commit -m "Imported translations"
+fi
 
 echo "
 
