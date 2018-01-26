@@ -15,6 +15,10 @@ This project is based on [syncthing-java][3], a java implementation of Syncthing
 
 [<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80">](https://play.google.com/store/apps/details?id=net.syncthing.lite)
 
+## Translations
+
+The project is translated on [Transifex](https://www.transifex.com/syncthing-android/syncthing-lite/).
+
 ## Building
 
 The project uses a standard Android build, and requires the Android SDK. The easiest option is if
