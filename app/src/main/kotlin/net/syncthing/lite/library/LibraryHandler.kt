@@ -4,12 +4,12 @@ import android.content.Context
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.util.Log
-import com.google.common.eventbus.Subscribe
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.java.bep.FolderBrowser
-import net.syncthing.java.bep.IndexHandler
 import net.syncthing.java.client.SyncthingClient
+import net.syncthing.java.core.beans.FileInfo
+import net.syncthing.java.core.beans.IndexInfo
 import net.syncthing.java.core.configuration.ConfigurationService
 import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.utils.Util
@@ -21,8 +21,8 @@ import java.io.IOException
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
-                     onIndexUpdateProgressListener: (String, Int) -> Unit,
-                     onIndexUpdateCompleteListener: () -> Unit) {
+                     private val onIndexUpdateProgressListener: (String, Int) -> Unit,
+                     private val onIndexUpdateCompleteListener: () -> Unit) {
 
     companion object {
         private var instanceCount = 0
@@ -59,23 +59,22 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         }
 
         onIndexUpdateListener = object : Any() {
-            @Subscribe
-            fun handleIndexRecordAquiredEvent(event: IndexHandler.IndexRecordAquiredEvent) {
-                val indexInfo = event.indexInfo()
-                event.newRecords().size
-                Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
-                onIndexUpdateProgressListener(event.folder(), (indexInfo.getCompleted() * 100).toInt())
-            }
-
-            @Subscribe
-            fun handleRemoteIndexAquiredEvent(event: IndexHandler.FullIndexAquiredEvent) {
-                Log.i(TAG, "handleIndexAcquiredEvent trigger folder list update from index acquired")
-                onIndexUpdateCompleteListener()
-            }
         }
         syncthingClient {
-            it.indexHandler.eventBus.register(onIndexUpdateListener)
+            it.indexHandler.registerOnIndexRecordAcquiredListener(this::onIndexRecordAcquired)
+            it.indexHandler.registerOnFullIndexAcquiredListenersListener(this::onRemoteIndexAcquired)
         }
+    }
+
+    private fun onIndexRecordAcquired(folderId: String, newRecords: List<FileInfo>, indexInfo: IndexInfo) {
+        newRecords.size
+        Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
+        onIndexUpdateProgressListener(folderId, (indexInfo.getCompleted() * 100).toInt())
+    }
+
+    private fun onRemoteIndexAcquired(folderId: String) {
+        Log.i(TAG, "handleIndexAcquiredEvent trigger folder list update from index acquired")
+        onIndexUpdateCompleteListener()
     }
 
     private fun init(context: Context) {
@@ -154,7 +153,8 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
     fun close() {
         syncthingClient {
             try {
-                it.indexHandler.eventBus.unregister(onIndexUpdateListener)
+                it.indexHandler.unregisterOnIndexRecordAcquiredListener(this::onIndexRecordAcquired)
+                it.indexHandler.unregisterOnFullIndexAcquiredListenersListener(this::onRemoteIndexAcquired)
             } catch (e: IllegalArgumentException) {
                 // ignored, no idea why this is thrown
             }

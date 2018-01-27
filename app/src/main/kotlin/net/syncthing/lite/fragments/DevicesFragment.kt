@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +14,9 @@ import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import net.syncthing.java.core.beans.DeviceId
 import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.java.core.beans.DeviceStats
-import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
@@ -26,6 +25,7 @@ import net.syncthing.lite.utils.FragmentIntentIntegrator
 import org.apache.commons.lang3.StringUtils.isBlank
 import uk.co.markormesher.android_fab.SpeedDialMenuAdapter
 import uk.co.markormesher.android_fab.SpeedDialMenuItem
+import java.io.IOException
 import java.security.InvalidParameterException
 
 class DevicesFragment : SyncthingFragment() {
@@ -53,7 +53,7 @@ class DevicesFragment : SyncthingFragment() {
             val device = (binding.list.getItemAtPosition(position) as DeviceStats)
             AlertDialog.Builder(context)
                     .setTitle(getString(R.string.remove_device_title, device.name))
-                    .setMessage(getString(R.string.remove_device_message, device.deviceId.substring(0, 7)))
+                    .setMessage(getString(R.string.remove_device_message, device.deviceId.deviceId.substring(0, 7)))
                     .setPositiveButton(android.R.string.yes) { _, _ ->
                         libraryHandler?.configuration { it.Editor().removePeer(device.deviceId).persistLater() }
                     }
@@ -66,7 +66,7 @@ class DevicesFragment : SyncthingFragment() {
     private fun updateDeviceList() {
         libraryHandler?.syncthingClient { syncthingClient ->
             adapter.clear()
-            adapter.addAll(syncthingClient.devicesHandler.deviceStatsList)
+            adapter.addAll(syncthingClient.devicesHandler.getDeviceStatsList())
             adapter.notifyDataSetChanged()
         }
     }
@@ -82,15 +82,16 @@ class DevicesFragment : SyncthingFragment() {
         }
     }
 
-    private fun importDeviceId(deviceId: String) {
+    private fun importDeviceId(deviceIdString: String) {
         libraryHandler?.library { configuration, syncthingClient, _ ->
             async(UI) {
-                try {
-                    KeystoreHandler.validateDeviceId(deviceId)
-                } catch (e: IllegalArgumentException) {
-                    Toast.makeText(this@DevicesFragment.context, R.string.invalid_device_id, Toast.LENGTH_SHORT).show()
-                    return@async
-                }
+                val deviceId =
+                    try {
+                        DeviceId(deviceIdString)
+                    } catch (e: IOException) {
+                        Toast.makeText(this@DevicesFragment.context, R.string.invalid_device_id, Toast.LENGTH_SHORT).show()
+                        return@async
+                    }
 
                 val modified = configuration.Editor().addPeers(DeviceInfo(deviceId, null))
                 if (modified) {
