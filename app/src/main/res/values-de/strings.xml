@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Syncthing Lite</string>
     <string name="index_update_progress_message">Index wird aktualisiert…</string>
     <string name="folder_list_empty_message">Keine Ordner verfügbar</string>
     <string name="clear_local_cache_index_label">Lokalen Index und Cache löschen</string>
@@ -21,18 +21,17 @@
     <string name="directory_empty">Ordner ist leer</string>
     <string name="clear_cache_and_index_title">Lokalen Cache und Index löschen?</string>
     <string name="clear_cache_and_index_body">Gesamten lokalen Cache und Index löschen?</string>
+    <string name="index_update_progress_label">Index aktualisierung für Ordner %1$s, %2$d\\% synchronisiert</string>
     <string name="loading_config_starting_syncthing_client">Konfiguartion wird geladen, Syncthing wird gestartet</string>
     <string name="last_modified_unknown">zuletzt modifiziert: unbekannt</string>
-    <string name="remove_device_title">Gerät entfernen %1$s\?</string>
+    <string name="last_modified_time">Zuletzt modifiziert: %1$s</string>
+    <string name="remove_device_title">Gerät entfernen:</string>
+    <string name="remove_device_message">Gerät %1$s entfernen?</string>
+    <string name="device_import_success">Gerät %1$s erfolgreich importiert</string>
     <string name="device_already_known">Gerät ist bereits bekannt $1%s</string>
     <string name="folders_label">Ordner</string>
     <string name="devices_label">Geräte</string>
-    <string name="app_name">Syncthing Lite</string>
-    <string name="index_update_progress_label">Index aktualisierung für Ordner %1$s, %2$d\\% synchronisiert</string>
-    <string name="last_modified_time">Zuletzt modifiziert: %1$s</string>
     <string name="folder_label_format">%1$s (%2$s)</string>
     <string name="folder_content_info">%1$s, %2$d Dateien, %3$d Ordner</string>
     <string name="file_info">%1$s, zuletzt modifiziert %2$s</string>
-    <string name="device_import_success">Gerät %1$s erfolgreich importiert</string>
-    <string name="remove_device_message">Gerät %1$s entfernen?</string>
 </resources>
