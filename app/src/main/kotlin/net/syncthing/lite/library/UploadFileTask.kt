@@ -11,6 +11,7 @@ import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.utils.Util
+import org.apache.commons.io.IOUtils
 import org.jetbrains.anko.toast
 import java.io.IOException
 
@@ -26,6 +27,7 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
 
     private val fileName = Util.getContentFileName(context, localFile)
     private val syncthingPath = PathUtils.buildPath(syncthingSubFolder, fileName)
+    private val uploadStream = context.contentResolver.openInputStream(localFile)
 
     private lateinit var mProgressDialog: ProgressDialog
     private var mCancelled = false
@@ -34,7 +36,6 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
         createDialog()
         Log.i(TAG, "Uploading file $localFile to folder $syncthingFolder:$syncthingPath")
         try {
-            val uploadStream = context.contentResolver.openInputStream(localFile)
             syncthingClient.pushFile(uploadStream, syncthingFolder, syncthingPath, { observer ->
                 onProgress(observer)
                 try {
@@ -43,7 +44,7 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
                             return@pushFile
 
                         observer.waitForProgressUpdate()
-                        Log.i(TAG, "upload progress = " + observer.progressMessage())
+                        Log.i(TAG, "upload progress = ${observer.progressPercentage()}%")
                         onProgress(observer)
                     }
                 } catch (e: InterruptedException) {
@@ -51,11 +52,11 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
                 }
 
                 onComplete()
-            }, { this.onError() })
+            }, { onError() })
         } catch (e: IOException) {
+            Log.w(TAG, e)
             onError()
         }
-
     }
 
     private fun createDialog() {
@@ -71,12 +72,13 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
     private fun onProgress(observer: BlockPusher.FileUploadObserver) {
         async(UI) {
             mProgressDialog.isIndeterminate = false
-            mProgressDialog.max = observer.dataSource().getSize().toInt()
-            mProgressDialog.progress = (observer.progress() * observer.dataSource().getSize()).toInt()
+            mProgressDialog.progress = observer.progressPercentage()
+            mProgressDialog.max = 100
         }
     }
 
     private fun onComplete() {
+        IOUtils.closeQuietly(uploadStream)
         if (mCancelled)
             return
 
@@ -89,6 +91,7 @@ class UploadFileTask(private val context: Context, private val syncthingClient: 
     }
 
     private fun onError() {
+        IOUtils.closeQuietly(uploadStream)
         async(UI) {
             mProgressDialog.dismiss()
             this@UploadFileTask.context.toast(R.string.toast_file_upload_failed)

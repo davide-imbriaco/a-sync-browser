@@ -29,5 +29,5 @@ abstract class SyncthingFragment : Fragment() {
 
     open fun onIndexUpdateProgress(folder: String, percentage: Int) {}
 
-    open fun onIndexUpdateComplete() {}
+    open fun onIndexUpdateComplete(folder: String) {}
 }

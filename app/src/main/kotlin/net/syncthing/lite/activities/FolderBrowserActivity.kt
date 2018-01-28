@@ -1,16 +1,11 @@
 package net.syncthing.lite.activities
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import net.syncthing.java.bep.IndexBrowser
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.utils.PathUtils
@@ -19,23 +14,21 @@ import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
 import net.syncthing.lite.library.DownloadFileTask
 import net.syncthing.lite.library.UploadFileTask
-import org.jetbrains.anko.intentFor
 
 class FolderBrowserActivity : SyncthingActivity() {
 
     companion object {
 
-        private val TAG = "FolderBrowserActivity"
-        private val REQUEST_WRITE_STORAGE = 142
-        private val REQUEST_SELECT_UPLOAD_FILE = 171
+        private const val TAG = "FolderBrowserActivity"
+        private const val REQUEST_WRITE_STORAGE = 142
+        private const val REQUEST_SELECT_UPLOAD_FILE = 171
 
-        val EXTRA_FOLDER_NAME = "folder_name"
+        const val EXTRA_FOLDER_NAME = "folder_name"
     }
 
     private lateinit var binding: ActivityFolderBrowserBinding
     private lateinit var indexBrowser: IndexBrowser
     private lateinit var adapter: FolderContentsAdapter
-    private var runWhenPermissionsReceived: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +66,7 @@ class FolderBrowserActivity : SyncthingActivity() {
             libraryHandler?.syncthingClient { syncthingClient ->
                 UploadFileTask(this@FolderBrowserActivity, syncthingClient, intent!!.data,
                         indexBrowser.folder, indexBrowser.currentPath,
-                        this@FolderBrowserActivity::showUploadHereDialog).uploadFile()
+                        { showFolderListView(indexBrowser.currentPath) } ).uploadFile()
             }
         }
     }
@@ -95,8 +88,7 @@ class FolderBrowserActivity : SyncthingActivity() {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo)
-                executeWithPermissions(
-                        Runnable { libraryHandler?.syncthingClient { DownloadFileTask(this, it, fileInfo).downloadFile() } })
+                libraryHandler?.syncthingClient { DownloadFileTask(this, it, fileInfo).downloadFile() }
             }
         }
     }
@@ -127,9 +119,10 @@ class FolderBrowserActivity : SyncthingActivity() {
     }
 
     private fun showUploadHereDialog() {
-        executeWithPermissions(Runnable {
-            startActivityForResult(intentFor<FilePickerActivity>(), REQUEST_SELECT_UPLOAD_FILE)
-        })
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "*/*"
+        startActivityForResult(intent, REQUEST_SELECT_UPLOAD_FILE)
     }
 
     override fun onIndexUpdateProgress(folder: String, percentage: Int) {
@@ -138,37 +131,8 @@ class FolderBrowserActivity : SyncthingActivity() {
         updateFolderListView()
     }
 
-    override fun onIndexUpdateComplete() {
+    override fun onIndexUpdateComplete(folder: String) {
         binding.indexUpdate.visibility = View.GONE
         updateFolderListView()
-    }
-
-    private fun executeWithPermissions(runnable: Runnable) {
-        val permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        if (permissionState != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    REQUEST_WRITE_STORAGE)
-            runWhenPermissionsReceived = runnable
-        } else {
-            runnable.run()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_WRITE_STORAGE -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, R.string.toast_write_storage_permission_required,
-                            Toast.LENGTH_LONG).show()
-                } else {
-                    runWhenPermissionsReceived!!.run()
-                }
-                runWhenPermissionsReceived = null
-            }
-            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
     }
 }

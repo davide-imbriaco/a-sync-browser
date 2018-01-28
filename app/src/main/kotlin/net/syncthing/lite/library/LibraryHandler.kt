@@ -22,7 +22,7 @@ import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
                      private val onIndexUpdateProgressListener: (String, Int) -> Unit,
-                     private val onIndexUpdateCompleteListener: () -> Unit) {
+                     private val onIndexUpdateCompleteListener: (String) -> Unit) {
 
     companion object {
         private var instanceCount = 0
@@ -67,14 +67,19 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
     }
 
     private fun onIndexRecordAcquired(folderId: String, newRecords: List<FileInfo>, indexInfo: IndexInfo) {
-        newRecords.size
         Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
-        onIndexUpdateProgressListener(folderId, (indexInfo.getCompleted() * 100).toInt())
+
+        async(UI) {
+            onIndexUpdateProgressListener(folderId, (indexInfo.getCompleted() * 100).toInt())
+        }
     }
 
     private fun onRemoteIndexAcquired(folderId: String) {
         Log.i(TAG, "handleIndexAcquiredEvent trigger folder list update from index acquired")
-        onIndexUpdateCompleteListener()
+
+        async(UI) {
+            onIndexUpdateCompleteListener(folderId)
+        }
     }
 
     private fun init(context: Context) {
@@ -82,6 +87,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         val configuration = ConfigurationService.Loader()
                 .setCache(File(context.externalCacheDir, ".cache"))
                 .setDatabase(File(context.getExternalFilesDir(null), "database"))
+                .setTemp(File(context.cacheDir, "temp"))
                 .loadFrom(File(context.getExternalFilesDir(null), "config.properties"))
         configuration.Editor().setDeviceName(Util.getDeviceName())
         try {

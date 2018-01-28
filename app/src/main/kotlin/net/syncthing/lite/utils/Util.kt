@@ -3,10 +3,9 @@ package net.syncthing.lite.utils
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
+import android.provider.OpenableColumns
 import org.apache.commons.lang3.StringUtils.capitalize
-import java.io.File
+import java.security.InvalidParameterException
 
 object Util {
 
@@ -24,17 +23,13 @@ object Util {
         return deviceName ?: "android"
     }
 
-    fun getContentFileName(context: Context, contentUri: Uri): String {
-        var fileName = File(contentUri.lastPathSegment).name
-        if (contentUri.scheme == "content") {
-            context.contentResolver.query(contentUri, arrayOf(MediaStore.Images.Media.DATA), null, null, null)!!.use { cursor ->
-                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                cursor.moveToFirst()
-                val path = cursor.getString(columnIndex)
-                Log.d(Tag, "recovered 'content' uri real path = " + path)
-                fileName = File(Uri.parse(path).lastPathSegment).name
+    fun getContentFileName(context: Context, uri: Uri): String {
+        context.contentResolver.query(uri, null, null, null, null, null).use { cursor ->
+            if (cursor == null || !cursor.moveToFirst()) {
+                throw InvalidParameterException("Cursor is null or empty")
             }
+            return cursor.getString(
+                    cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
         }
-        return fileName
     }
 }

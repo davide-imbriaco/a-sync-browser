@@ -98,15 +98,11 @@ class MainActivity : SyncthingActivity() {
     }
 
     override fun onIndexUpdateProgress(folder: String, percentage: Int) {
-        async(UI) {
-            binding.indexUpdate.visibility = View.VISIBLE
-            binding.indexUpdateLabel.text = getString(R.string.index_update_progress_label, folder, percentage)
-        }
+        binding.indexUpdate.visibility = View.VISIBLE
+        binding.indexUpdateLabel.text = getString(R.string.index_update_progress_label, folder, percentage)
     }
 
-    override fun onIndexUpdateComplete() {
-        async(UI) {
-            binding.indexUpdate.visibility = View.GONE
-        }
+    override fun onIndexUpdateComplete(folder: String) {
+        binding.indexUpdate.visibility = View.GONE
     }
 }
