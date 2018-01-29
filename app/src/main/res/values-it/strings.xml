@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Syncthing Lite</string>
+    <string name="index_update_progress_message">Aggiornamento indice ...</string>
+    <string name="folder_list_empty_message">Nessuna cartella disponibile</string>
+    <string name="clear_local_cache_index_label">Cancella cache/indice</string>
+    <string name="update_remote_index_label">Aggiorna indice remoto</string>
+    <string name="devices_list_view_empty_message">Nessun dispositivo disponibile</string>
+    <string name="toast_write_storage_permission_required">Per questa funzionalità è richiesto il permesso di scrittura</string>
+    <string name="scan_qr_code">Scansiona codice QR</string>
+    <string name="enter_device_id">Inserisci ID dispositivo</string>
+    <string name="invalid_device_id">ID dispositivo non valido</string>
+    <string name="device_id_dialog_title">Inserisci ID Dispositivo</string>
+    <string name="toast_index_update_successful">Aggiornamento indice riuscito</string>
+    <string name="toast_index_update_failed">Aggiornamento indice non riuscito per %1$d dispositivi</string>
+    <string name="dialog_downloading_file">Download del file %1$s</string>
+    <string name="toast_file_download_failed">Impossibile scaricare il file</string>
+    <string name="toast_open_file_failed">Nessuna applicazione compatibile trovata</string>
+    <string name="toast_file_upload_failed">Caricamento file fallito</string>
+    <string name="toast_upload_complete">Caricamento file completato</string>
+    <string name="dialog_uploading_file">Caricamento del file %1$s</string>
+    <string name="directory_empty">La cartella è vuota</string>
+    <string name="clear_cache_and_index_title">Cancellare la cache locale e l\'indice?</string>
+    <string name="clear_cache_and_index_body">Cancellare tutti i dati della cache locale e i dati dell\'indice?</string>
+    <string name="index_update_progress_label">Aggiornamento indice per la cartella %1$s, %2$d% sincronizzato</string>
+    <string name="loading_config_starting_syncthing_client">Caricamento configurazione, avvio del client syncthing</string>
+    <string name="last_modified_time">Ultima modifica: %1$s</string>
+    <string name="remove_device_title">Rimuovere il dispositivo %1$s\?</string>
+    <string name="remove_device_message">Rimuovere il dispositivo %1$s dalla lista dei dispositivi noti?</string>
+    <string name="device_import_success">Dispositivo %1$s importato con successo</string>
+    <string name="device_already_known">Dispositivo %1$s già presente</string>
+    <string name="folders_label">Cartelle</string>
+    <string name="devices_label">Dispositivi</string>
+    <string name="folder_label_format">%1$s (%2$s)</string>
+    <string name="folder_content_info">%1$s, %2$d file, %3$d cartelle</string>
+    <string name="file_info">%1$s, ultima modifica %2$s</string>
+</resources>
