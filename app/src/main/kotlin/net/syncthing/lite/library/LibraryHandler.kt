@@ -10,14 +10,10 @@ import net.syncthing.java.bep.FolderBrowser
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.beans.IndexInfo
-import net.syncthing.java.core.configuration.ConfigurationService
-import net.syncthing.java.core.security.KeystoreHandler
+import net.syncthing.java.core.configuration.Configuration
 import net.syncthing.lite.utils.Util
-import org.apache.commons.io.FileUtils
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.io.File
-import java.io.IOException
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
@@ -26,10 +22,10 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     companion object {
         private var instanceCount = 0
-        private var configuration: ConfigurationService? = null
+        private var configuration: Configuration? = null
         private var syncthingClient: SyncthingClient? = null
         private var folderBrowser: FolderBrowser? = null
-        private val callbacks = ArrayList<(ConfigurationService, SyncthingClient, FolderBrowser) -> Unit>()
+        private val callbacks = ArrayList<(Configuration, SyncthingClient, FolderBrowser) -> Unit>()
         private var isLoading = false
     }
 
@@ -84,30 +80,15 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     private fun init(context: Context) {
         isLoading = true
-        val configuration = ConfigurationService.Loader()
-                .setCache(File(context.externalCacheDir, ".cache"))
-                .setDatabase(File(context.getExternalFilesDir(null), "database"))
-                .setTemp(File(context.cacheDir, "temp"))
-                .loadFrom(File(context.getExternalFilesDir(null), "config.properties"))
-        configuration.Editor().setDeviceName(Util.getDeviceName())
-        try {
-            FileUtils.cleanDirectory(configuration.temp)
-        } catch (e: IOException) {
-            Log.e(TAG, "Failed to delete temporary files", e)
-            close()
-        }
-
-        KeystoreHandler.Loader().loadAndStore(configuration)
-        configuration.Editor().persistLater()
-        Log.i(TAG, "loaded mConfiguration = " + configuration.Writer().dumpToString())
-        Log.i(TAG, "storage space = " + configuration.getStorageInfo().dumpAvailableSpace())
+        val configuration = Configuration(configFolder = context.filesDir, cacheFolder = context.externalCacheDir)
+        configuration.localDeviceName = Util.getDeviceName()
+        configuration.persistLater()
         val syncthingClient = SyncthingClient(configuration)
         //TODO listen for device events, update device list
         val folderBrowser = syncthingClient.indexHandler.newFolderBrowser()
 
         if (instanceCount == 0) {
             Log.d(TAG, "All LibraryHandler instances were closed during init")
-            configuration.close()
             syncthingClient.close()
             folderBrowser.close()
         }
@@ -121,7 +102,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         isLoading = false
     }
 
-    fun library(callback: (ConfigurationService, SyncthingClient, FolderBrowser) -> Unit) {
+    fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {
         val nullCount = listOf(configuration, syncthingClient, folderBrowser).count { it == null }
         assert(nullCount == 0 || nullCount == 3, { "Inconsistent library state" })
 
@@ -142,7 +123,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         library { _, s, _ -> callback(s) }
     }
 
-    fun configuration(callback: (ConfigurationService) -> Unit) {
+    fun configuration(callback: (Configuration) -> Unit) {
         library { c, _, _ -> callback(c) }
     }
 
@@ -174,7 +155,6 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
                     folderBrowser = null
                     syncthingClient?.close()
                     syncthingClient = null
-                    configuration?.close()
                     configuration = null
                 }
             }.start()

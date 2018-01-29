@@ -55,7 +55,9 @@ class DevicesFragment : SyncthingFragment() {
                     .setTitle(getString(R.string.remove_device_title, device.name))
                     .setMessage(getString(R.string.remove_device_message, device.deviceId.deviceId.substring(0, 7)))
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-                        libraryHandler?.configuration { it.Editor().removePeer(device.deviceId).persistLater() }
+                        libraryHandler?.configuration { config ->
+                            config.peers = config.peers.filterNot { config.localDeviceId == device.deviceId }.toSet()
+                        }
                     }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
@@ -93,9 +95,9 @@ class DevicesFragment : SyncthingFragment() {
                         return@async
                     }
 
-                val modified = configuration.Editor().addPeers(DeviceInfo(deviceId, null))
-                if (modified) {
-                    configuration.Editor().persistLater()
+                if (!configuration.peerIds.contains(deviceId)) {
+                    configuration.peers = configuration.peers + DeviceInfo(deviceId, null)
+                    configuration.persistLater()
                     Toast.makeText(this@DevicesFragment.context, getString(R.string.device_import_success, deviceId), Toast.LENGTH_SHORT).show()
                     updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
                     UpdateIndexTask(this@DevicesFragment.context!!, syncthingClient).updateIndex()
