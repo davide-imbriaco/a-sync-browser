@@ -16,7 +16,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.java.core.beans.DeviceId
 import net.syncthing.java.core.beans.DeviceInfo
-import net.syncthing.java.core.beans.DeviceStats
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
@@ -50,13 +49,15 @@ class DevicesFragment : SyncthingFragment() {
         adapter = DevicesAdapter(context!!)
         binding.list.adapter = adapter
         binding.list.setOnItemLongClickListener { _, _, position, _ ->
-            val device = (binding.list.getItemAtPosition(position) as DeviceStats)
+            val device = adapter.getItem(position)
             AlertDialog.Builder(context)
                     .setTitle(getString(R.string.remove_device_title, device.name))
                     .setMessage(getString(R.string.remove_device_message, device.deviceId.deviceId.substring(0, 7)))
                     .setPositiveButton(android.R.string.yes) { _, _ ->
                         libraryHandler?.configuration { config ->
-                            config.peers = config.peers.filterNot { config.localDeviceId == device.deviceId }.toSet()
+                            config.peers = config.peers.filterNot { it.deviceId == device.deviceId }.toSet()
+                            config.persistLater()
+                            updateDeviceList()
                         }
                     }
                     .setNegativeButton(android.R.string.no, null)
@@ -68,7 +69,7 @@ class DevicesFragment : SyncthingFragment() {
     private fun updateDeviceList() {
         libraryHandler?.syncthingClient { syncthingClient ->
             adapter.clear()
-            adapter.addAll(syncthingClient.devicesHandler.getDeviceStatsList())
+            adapter.addAll(syncthingClient.getPeerStatus())
             adapter.notifyDataSetChanged()
         }
     }

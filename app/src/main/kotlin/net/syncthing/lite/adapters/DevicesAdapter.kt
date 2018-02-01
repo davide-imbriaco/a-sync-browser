@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import net.syncthing.java.core.beans.DeviceStats
+import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewDeviceBinding
 
 class DevicesAdapter(context: Context) :
-        ArrayAdapter<DeviceStats>(context, R.layout.listview_device, mutableListOf()) {
+        ArrayAdapter<DeviceInfo>(context, R.layout.listview_device, mutableListOf()) {
 
     override fun getView(position: Int, v: View?, parent: ViewGroup): View {
         val binding: ListviewDeviceBinding
@@ -23,10 +23,10 @@ class DevicesAdapter(context: Context) :
         val deviceStats = getItem(position)
         binding.deviceName.text = deviceStats!!.name
         val icon =
-            when (deviceStats.status) {
-                DeviceStats.DeviceStatus.OFFLINE -> R.drawable.ic_laptop_red_24dp
-                DeviceStats.DeviceStatus.ONLINE_INACTIVE,
-                DeviceStats.DeviceStatus.ONLINE_ACTIVE -> R.drawable.ic_laptop_green_24dp
+            if (deviceStats.isConnected!!) {
+                R.drawable.ic_laptop_red_24dp
+            } else {
+                R.drawable.ic_laptop_green_24dp
             }
         binding.deviceIcon.setImageResource(icon)
         return binding.root
