@@ -11,7 +11,6 @@ import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.beans.FolderStats
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ListviewFolderBinding
-import org.apache.commons.lang3.tuple.Pair
 
 class FoldersListAdapter(context: Context?, list: List<Pair<FolderInfo, FolderStats>>) :
         ArrayAdapter<Pair<FolderInfo, FolderStats>>(context, R.layout.listview_folder, list) {
@@ -23,8 +22,8 @@ class FoldersListAdapter(context: Context?, list: List<Pair<FolderInfo, FolderSt
             } else {
                 DataBindingUtil.bind(v)
             }
-        val folderInfo = getItem(position)!!.left
-        val folderStats = getItem(position)!!.right
+        val folderInfo = getItem(position)!!.first
+        val folderStats = getItem(position)!!.second
         binding.folderName.text = context.getString(R.string.folder_label_format, folderInfo.label, folderInfo.folder)
 
         binding.folderLastmodInfo.text = context.getString(R.string.last_modified_time,

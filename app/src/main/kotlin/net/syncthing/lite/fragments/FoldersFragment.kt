@@ -31,12 +31,12 @@ class FoldersFragment : SyncthingFragment() {
 
     private fun showAllFoldersListView() {
         libraryHandler?.folderBrowser { folderBrowser ->
-            val list = folderBrowser.folderInfoAndStatsList().sortedBy { it.left.label }
+            val list = folderBrowser.folderInfoAndStatsList()
             Log.i(TAG, "list folders = " + list + " (" + list.size + " records)")
             val adapter = FoldersListAdapter(context, list)
             binding.list.adapter = adapter
             binding.list.setOnItemClickListener { _, _, position, _ ->
-                val folder = adapter.getItem(position)!!.left.folder
+                val folder = adapter.getItem(position)!!.first.folder
                 val intent = context?.intentFor<FolderBrowserActivity>(FolderBrowserActivity.EXTRA_FOLDER_NAME to folder)
                 startActivity(intent)
             }

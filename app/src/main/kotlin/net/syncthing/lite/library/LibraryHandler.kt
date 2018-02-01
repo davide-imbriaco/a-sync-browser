@@ -13,7 +13,6 @@ import net.syncthing.java.core.beans.IndexInfo
 import net.syncthing.java.core.configuration.Configuration
 import net.syncthing.lite.utils.Util
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
@@ -31,11 +30,10 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     private val TAG = "LibConnectionHandler"
 
-    private val onIndexUpdateListener: Any
-
     init {
         instanceCount++
         if (configuration == null && !isLoading) {
+            isLoading = true
             doAsync {
                 init(context)
                 //trigger update if last was more than 10mins ago
@@ -46,16 +44,15 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
                     Log.d(TAG, "trigger index update, last was " + Date(lastUpdateMillis))
                     syncthingClient { UpdateIndexTask(context, it).updateIndex() }
                 }
-                uiThread {
+                async(UI) {
                     onLibraryLoaded(this@LibraryHandler)
                 }
+                isLoading = false
             }
         } else {
             onLibraryLoaded(this)
         }
 
-        onIndexUpdateListener = object : Any() {
-        }
         syncthingClient {
             it.indexHandler.registerOnIndexRecordAcquiredListener(this::onIndexRecordAcquired)
             it.indexHandler.registerOnFullIndexAcquiredListenersListener(this::onRemoteIndexAcquired)
@@ -79,7 +76,6 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
     }
 
     private fun init(context: Context) {
-        isLoading = true
         val configuration = Configuration(configFolder = context.filesDir, cacheFolder = context.externalCacheDir)
         configuration.localDeviceName = Util.getDeviceName()
         configuration.persistLater()
@@ -99,7 +95,6 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         LibraryHandler.configuration = configuration
         LibraryHandler.syncthingClient = syncthingClient
         LibraryHandler.folderBrowser = folderBrowser
-        isLoading = false
     }
 
     fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {

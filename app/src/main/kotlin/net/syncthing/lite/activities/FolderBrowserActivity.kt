@@ -14,13 +14,13 @@ import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
 import net.syncthing.lite.library.DownloadFileTask
 import net.syncthing.lite.library.UploadFileTask
+import net.syncthing.lite.utils.FileDownloadDialog
 
 class FolderBrowserActivity : SyncthingActivity() {
 
     companion object {
 
         private const val TAG = "FolderBrowserActivity"
-        private const val REQUEST_WRITE_STORAGE = 142
         private const val REQUEST_SELECT_UPLOAD_FILE = 171
 
         const val EXTRA_FOLDER_NAME = "folder_name"
@@ -88,7 +88,7 @@ class FolderBrowserActivity : SyncthingActivity() {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo)
-                libraryHandler?.syncthingClient { DownloadFileTask(this, it, fileInfo).downloadFile() }
+                libraryHandler?.syncthingClient { FileDownloadDialog(this, it, fileInfo) }
             }
         }
     }
