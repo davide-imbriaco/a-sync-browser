@@ -9,6 +9,7 @@ import kotlinx.coroutines.experimental.async
 import net.syncthing.java.bep.FolderBrowser
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.beans.FileInfo
+import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.beans.IndexInfo
 import net.syncthing.java.core.configuration.Configuration
 import net.syncthing.lite.utils.Util
@@ -16,8 +17,8 @@ import org.jetbrains.anko.doAsync
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
-                     private val onIndexUpdateProgressListener: (String, Int) -> Unit,
-                     private val onIndexUpdateCompleteListener: (String) -> Unit) {
+                     private val onIndexUpdateProgressListener: (FolderInfo, Int) -> Unit,
+                     private val onIndexUpdateCompleteListener: (FolderInfo) -> Unit) {
 
     companion object {
         private var instanceCount = 0
@@ -28,7 +29,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         private var isLoading = false
     }
 
-    private val TAG = "LibConnectionHandler"
+    private val TAG = "LibraryHandler"
 
     init {
         instanceCount++
@@ -59,19 +60,19 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         }
     }
 
-    private fun onIndexRecordAcquired(folderId: String, newRecords: List<FileInfo>, indexInfo: IndexInfo) {
+    private fun onIndexRecordAcquired(folderInfo: FolderInfo, newRecords: List<FileInfo>, indexInfo: IndexInfo) {
         Log.i(TAG, "handleIndexRecordEvent trigger folder list update from index record acquired")
 
         async(UI) {
-            onIndexUpdateProgressListener(folderId, (indexInfo.getCompleted() * 100).toInt())
+            onIndexUpdateProgressListener(folderInfo, (indexInfo.getCompleted() * 100).toInt())
         }
     }
 
-    private fun onRemoteIndexAcquired(folderId: String) {
+    private fun onRemoteIndexAcquired(folderInfo: FolderInfo) {
         Log.i(TAG, "handleIndexAcquiredEvent trigger folder list update from index acquired")
 
         async(UI) {
-            onIndexUpdateCompleteListener(folderId)
+            onIndexUpdateCompleteListener(folderInfo)
         }
     }
 

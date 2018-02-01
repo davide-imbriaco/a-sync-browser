@@ -8,11 +8,11 @@ import android.util.Log
 import android.view.View
 import net.syncthing.java.bep.IndexBrowser
 import net.syncthing.java.core.beans.FileInfo
+import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
-import net.syncthing.lite.library.DownloadFileTask
 import net.syncthing.lite.library.UploadFileTask
 import net.syncthing.lite.utils.FileDownloadDialog
 
@@ -125,14 +125,8 @@ class FolderBrowserActivity : SyncthingActivity() {
         startActivityForResult(intent, REQUEST_SELECT_UPLOAD_FILE)
     }
 
-    override fun onIndexUpdateProgress(folder: String, percentage: Int) {
-        binding.indexUpdate.visibility = View.VISIBLE
-        binding.indexUpdateLabel.text = getString(R.string.index_update_progress_label, folder, percentage)
-        updateFolderListView()
-    }
-
-    override fun onIndexUpdateComplete(folder: String) {
-        binding.indexUpdate.visibility = View.GONE
+    override fun onIndexUpdateComplete(folderInfo: FolderInfo) {
+        super.onIndexUpdateComplete(folderInfo)
         updateFolderListView()
     }
 }

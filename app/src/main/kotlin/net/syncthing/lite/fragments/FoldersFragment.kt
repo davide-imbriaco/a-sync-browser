@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.activities.FolderBrowserActivity
 import net.syncthing.lite.adapters.FoldersListAdapter
@@ -36,10 +37,15 @@ class FoldersFragment : SyncthingFragment() {
             val adapter = FoldersListAdapter(context, list)
             binding.list.adapter = adapter
             binding.list.setOnItemClickListener { _, _, position, _ ->
-                val folder = adapter.getItem(position)!!.first.folder
+                val folder = adapter.getItem(position)!!.first.folderId
                 val intent = context?.intentFor<FolderBrowserActivity>(FolderBrowserActivity.EXTRA_FOLDER_NAME to folder)
                 startActivity(intent)
             }
         }
+    }
+
+    override fun onIndexUpdateComplete(folderInfo: FolderInfo) {
+        super.onIndexUpdateComplete(folderInfo)
+        showAllFoldersListView()
     }
 }

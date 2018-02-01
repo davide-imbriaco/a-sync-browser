@@ -63,7 +63,7 @@ class SyncthingProvider : DocumentsProvider() {
         val result = MatrixCursor(projection ?: DefaultRootProjection)
         folders.forEach { folder ->
             val row = result.newRow()
-            row.add(Root.COLUMN_ROOT_ID, folder.first.folder)
+            row.add(Root.COLUMN_ROOT_ID, folder.first.folderId)
             row.add(Root.COLUMN_SUMMARY, folder.first.label)
             row.add(Root.COLUMN_FLAGS, 0)
             row.add(Root.COLUMN_TITLE, context.getString(R.string.app_name))
@@ -133,7 +133,7 @@ class SyncthingProvider : DocumentsProvider() {
 
     private fun getPathForDocId(docId: String) = docId.split(":")[1]
 
-    private fun getDocIdForFile(folderInfo: FolderInfo) = folderInfo.folder + ":"
+    private fun getDocIdForFile(folderInfo: FolderInfo) = folderInfo.folderId + ":"
 
     private fun getDocIdForFile(fileInfo: FileInfo) = fileInfo.folder + ":" + fileInfo.path
 

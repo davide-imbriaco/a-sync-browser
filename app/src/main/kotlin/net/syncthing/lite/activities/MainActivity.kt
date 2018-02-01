@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.View
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.lite.R
@@ -95,14 +94,5 @@ class MainActivity : SyncthingActivity() {
             libraryHandler?.syncthingClient { it.clearCacheAndIndex() }
             recreate()
         }
-    }
-
-    override fun onIndexUpdateProgress(folder: String, percentage: Int) {
-        binding.indexUpdate.visibility = View.VISIBLE
-        binding.indexUpdateLabel.text = getString(R.string.index_update_progress_label, folder, percentage)
-    }
-
-    override fun onIndexUpdateComplete(folder: String) {
-        binding.indexUpdate.visibility = View.GONE
     }
 }

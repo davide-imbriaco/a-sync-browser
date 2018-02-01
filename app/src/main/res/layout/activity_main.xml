@@ -5,40 +5,12 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!-- The main content view -->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:id="@+id/index_update"
-            android:orientation="horizontal"
-            android:background="@color/primary"
-            android:visibility="gone">
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:indeterminate="true"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"/>
-            <TextView
-                android:id="@+id/index_update_label"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:textSize="18sp"
-                android:textColor="@color/white_on_primary"
-                android:text="@string/index_update_progress_message"
-                android:layout_gravity="start"
-                android:textAlignment="gravity"
-                />
-        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-        <!-- The navigation drawer -->
+
         <android.support.design.widget.NavigationView
             android:id="@+id/navigation"
             android:layout_width="wrap_content"
@@ -46,6 +18,7 @@
             android:layout_gravity="start"
             android:background="@android:color/white"
             app:menu="@menu/drawer_view" />
+
     </android.support.v4.widget.DrawerLayout>
 
 </layout>

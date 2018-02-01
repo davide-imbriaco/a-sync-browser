@@ -24,7 +24,7 @@ class FoldersListAdapter(context: Context?, list: List<Pair<FolderInfo, FolderSt
             }
         val folderInfo = getItem(position)!!.first
         val folderStats = getItem(position)!!.second
-        binding.folderName.text = context.getString(R.string.folder_label_format, folderInfo.label, folderInfo.folder)
+        binding.folderName.text = context.getString(R.string.folder_label_format, folderInfo.label, folderInfo.folderId)
 
         binding.folderLastmodInfo.text = context.getString(R.string.last_modified_time,
                         DateUtils.getRelativeDateTimeString(context, folderStats.lastUpdate.time, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
