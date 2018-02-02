@@ -3,15 +3,12 @@
     <string name="index_update_progress_message">Aggiornamento indice ...</string>
     <string name="folder_list_empty_message">Nessuna cartella disponibile</string>
     <string name="clear_local_cache_index_label">Cancella cache/indice</string>
-    <string name="update_remote_index_label">Aggiorna indice remoto</string>
     <string name="devices_list_view_empty_message">Nessun dispositivo disponibile</string>
     <string name="toast_write_storage_permission_required">Per questa funzionalità è richiesto il permesso di scrittura</string>
     <string name="scan_qr_code">Scansiona codice QR</string>
     <string name="enter_device_id">Inserisci ID dispositivo</string>
     <string name="invalid_device_id">ID dispositivo non valido</string>
     <string name="device_id_dialog_title">Inserisci ID Dispositivo</string>
-    <string name="toast_index_update_successful">Aggiornamento indice riuscito</string>
-    <string name="toast_index_update_failed">Aggiornamento indice non riuscito per %1$d dispositivi</string>
     <string name="dialog_downloading_file">Download del file %1$s</string>
     <string name="toast_file_download_failed">Impossibile scaricare il file</string>
     <string name="toast_open_file_failed">Nessuna applicazione compatibile trovata</string>

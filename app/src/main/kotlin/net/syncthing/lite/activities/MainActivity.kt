@@ -14,7 +14,6 @@ import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
 import net.syncthing.lite.fragments.SyncthingFragment
-import net.syncthing.lite.library.UpdateIndexTask
 
 class MainActivity : SyncthingActivity() {
 
@@ -68,7 +67,6 @@ class MainActivity : SyncthingActivity() {
         when (menuItem.itemId) {
             R.id.folders -> setContentFragment(FoldersFragment())
             R.id.devices -> setContentFragment(DevicesFragment())
-            R.id.update_index -> libraryHandler?.syncthingClient { UpdateIndexTask(this@MainActivity, it).updateIndex() }
             R.id.clear_index -> AlertDialog.Builder(this)
                     .setTitle(getString(R.string.clear_cache_and_index_title))
                     .setMessage(getString(R.string.clear_cache_and_index_body))

@@ -14,12 +14,6 @@
             android:title="@string/devices_label" />
 
         <item
-            android:id="@+id/update_index"
-            android:icon="@drawable/ic_refresh_gray_24dp"
-            android:title="@string/update_remote_index_label"
-            android:checkable="false"/>
-
-        <item
             android:id="@+id/clear_index"
             android:icon="@drawable/ic_delete_gray_24dp"
             android:title="@string/clear_local_cache_index_label"

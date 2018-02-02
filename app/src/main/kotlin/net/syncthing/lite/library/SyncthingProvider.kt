@@ -23,10 +23,6 @@ import java.util.concurrent.CountDownLatch
 
 class SyncthingProvider : DocumentsProvider() {
 
-    private lateinit var libraryHandler: LibraryHandler
-    private val indexBrowserMap = mutableMapOf<String, IndexBrowser>()
-    private lateinit var folders: List<Pair<FolderInfo, FolderStats>>
-
     companion object {
         private const val Tag = "SyncthingProvider"
         private val DefaultRootProjection = arrayOf(
@@ -47,21 +43,28 @@ class SyncthingProvider : DocumentsProvider() {
 
     override fun onCreate(): Boolean {
         Log.d(Tag, "onCreate()")
-        libraryHandler = LibraryHandler(context, { }, { _, _ -> }, {})
         return true
+    }
+
+    private fun getLibraryHandler(): LibraryHandler {
+        val latch = CountDownLatch(1)
+        val libraryHandler = LibraryHandler(context, { latch.countDown() }, { _, _ -> }, {})
+        latch.await()
+        return libraryHandler
     }
 
     override fun queryRoots(projection: Array<String>?): Cursor {
         Log.d(Tag, "queryRoots($projection)")
         val latch = CountDownLatch(1)
-        libraryHandler.folderBrowser { folderBrowser ->
+        var folders: List<Pair<FolderInfo, FolderStats>>? = null
+        getLibraryHandler().folderBrowser { folderBrowser ->
             folders = folderBrowser.folderInfoAndStatsList()
             latch.countDown()
         }
         latch.await()
 
         val result = MatrixCursor(projection ?: DefaultRootProjection)
-        folders.forEach { folder ->
+        folders!!.forEach { folder ->
             val row = result.newRow()
             row.add(Root.COLUMN_ROOT_ID, folder.first.folderId)
             row.add(Root.COLUMN_SUMMARY, folder.first.label)
@@ -107,7 +110,7 @@ class SyncthingProvider : DocumentsProvider() {
 
         val latch = CountDownLatch(1)
         var outputFile: File? = null
-        libraryHandler.syncthingClient { syncthingClient ->
+        getLibraryHandler().syncthingClient { syncthingClient ->
             DownloadFileTask(context, syncthingClient, fileInfo, { signal?.isCanceled == true }, {}, {
                 outputFile = it
                 latch.countDown()
@@ -138,16 +141,13 @@ class SyncthingProvider : DocumentsProvider() {
     private fun getDocIdForFile(fileInfo: FileInfo) = fileInfo.folder + ":" + fileInfo.path
 
     private fun getIndexBrowser(folderId: String): IndexBrowser {
-        return indexBrowserMap[folderId] ?: run {
-            val latch = CountDownLatch(1)
-            var indexBrowser: IndexBrowser? = null
-            libraryHandler.syncthingClient {
-                indexBrowser = it.indexHandler.newIndexBrowser(folderId)
-                latch.countDown()
-            }
-            latch.await()
-            indexBrowserMap.set(folderId, indexBrowser!!)
-            indexBrowser!!
+        val latch = CountDownLatch(1)
+        var indexBrowser: IndexBrowser? = null
+        getLibraryHandler().syncthingClient {
+            indexBrowser = it.indexHandler.newIndexBrowser(folderId)
+            latch.countDown()
         }
+        latch.await()
+        return indexBrowser!!
     }
 }

@@ -16,10 +16,10 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.java.core.beans.DeviceId
 import net.syncthing.java.core.beans.DeviceInfo
+import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
-import net.syncthing.lite.library.UpdateIndexTask
 import net.syncthing.lite.utils.FragmentIntentIntegrator
 import org.apache.commons.lang3.StringUtils.isBlank
 import uk.co.markormesher.android_fab.SpeedDialMenuAdapter
@@ -38,6 +38,20 @@ class DevicesFragment : SyncthingFragment() {
         binding.list.emptyView = binding.empty
         binding.fab.speedDialMenuAdapter = FabMenuAdapter()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        libraryHandler?.syncthingClient { it.addOnConnectionChangedListener(this::onConnectionChanged) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        libraryHandler?.syncthingClient { it.removeOnConnectionChangedListener(this::onConnectionChanged) }
+    }
+
+    private fun onConnectionChanged(deviceId: DeviceId) {
+        updateDeviceList()
     }
 
     override fun onLibraryLoaded() {
@@ -67,10 +81,12 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     private fun updateDeviceList() {
-        libraryHandler?.syncthingClient { syncthingClient ->
-            adapter.clear()
-            adapter.addAll(syncthingClient.getPeerStatus())
-            adapter.notifyDataSetChanged()
+        async(UI) {
+            libraryHandler?.syncthingClient { syncthingClient ->
+                adapter.clear()
+                adapter.addAll(syncthingClient.getPeerStatus())
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -86,7 +102,7 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     private fun importDeviceId(deviceIdString: String) {
-        libraryHandler?.library { configuration, syncthingClient, _ ->
+        libraryHandler?.configuration { configuration ->
             async(UI) {
                 val deviceId =
                     try {
@@ -101,7 +117,6 @@ class DevicesFragment : SyncthingFragment() {
                     configuration.persistLater()
                     Toast.makeText(this@DevicesFragment.context, getString(R.string.device_import_success, deviceId), Toast.LENGTH_SHORT).show()
                     updateDeviceList()//TODO remove this if event triggered (and handler trigger update)
-                    UpdateIndexTask(this@DevicesFragment.context!!, syncthingClient).updateIndex()
                 } else {
                     Toast.makeText(this@DevicesFragment.context, getString(R.string.device_already_known, deviceId), Toast.LENGTH_SHORT).show()
                 }

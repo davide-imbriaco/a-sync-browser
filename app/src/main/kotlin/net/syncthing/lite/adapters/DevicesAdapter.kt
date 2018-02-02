@@ -24,9 +24,9 @@ class DevicesAdapter(context: Context) :
         binding.deviceName.text = deviceStats!!.name
         val icon =
             if (deviceStats.isConnected!!) {
-                R.drawable.ic_laptop_red_24dp
-            } else {
                 R.drawable.ic_laptop_green_24dp
+            } else {
+                R.drawable.ic_laptop_red_24dp
             }
         binding.deviceIcon.setImageResource(icon)
         return binding.root

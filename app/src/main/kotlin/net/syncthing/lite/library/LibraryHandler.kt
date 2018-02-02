@@ -37,14 +37,6 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
             isLoading = true
             doAsync {
                 init(context)
-                //trigger update if last was more than 10mins ago
-                val lastUpdateMillis = PreferenceManager.getDefaultSharedPreferences(context)
-                        .getLong(UpdateIndexTask.LAST_INDEX_UPDATE_TS_PREF, -1)
-                val lastUpdateTimeAgo = Date().time - lastUpdateMillis
-                if (lastUpdateMillis == -1L || lastUpdateTimeAgo > 10 * 60 * 1000) {
-                    Log.d(TAG, "trigger index update, last was " + Date(lastUpdateMillis))
-                    syncthingClient { UpdateIndexTask(context, it).updateIndex() }
-                }
                 async(UI) {
                     onLibraryLoaded(this@LibraryHandler)
                 }
@@ -98,7 +90,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         LibraryHandler.folderBrowser = folderBrowser
     }
 
-    fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {
+    private fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {
         val nullCount = listOf(configuration, syncthingClient, folderBrowser).count { it == null }
         assert(nullCount == 0 || nullCount == 3, { "Inconsistent library state" })
 
@@ -144,6 +136,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         }
 
         instanceCount--
+        Log.d("xxx", "instanceCount=$instanceCount")
         Handler().postDelayed({
             Thread {
                 if (instanceCount == 0) {
@@ -154,7 +147,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
                     configuration = null
                 }
             }.start()
-        }, 1000)
+        }, 60 * 1000)
 
     }
 }
