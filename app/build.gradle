@@ -9,7 +9,7 @@ android {
     dataBinding.enabled = true
     defaultConfig {
         applicationId "net.syncthing.lite"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 7
         versionName "0.1.5"
