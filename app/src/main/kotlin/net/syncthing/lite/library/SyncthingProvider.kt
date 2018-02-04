@@ -13,11 +13,8 @@ import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.beans.FolderStats
 import net.syncthing.lite.R
-import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.IOException
-import java.net.Socket
 import java.net.URLConnection
 import java.util.concurrent.CountDownLatch
 
@@ -111,7 +108,8 @@ class SyncthingProvider : DocumentsProvider() {
         val latch = CountDownLatch(1)
         var outputFile: File? = null
         getLibraryHandler().syncthingClient { syncthingClient ->
-            DownloadFileTask(context, syncthingClient, fileInfo, { signal?.isCanceled == true }, {}, {
+            DownloadFileTask(context, syncthingClient, fileInfo,
+                    { t, _ -> if (signal?.isCanceled == true) t.cancel() }, {
                 outputFile = it
                 latch.countDown()
             }, {})

@@ -13,8 +13,8 @@ import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
-import net.syncthing.lite.library.UploadFileTask
 import net.syncthing.lite.utils.FileDownloadDialog
+import net.syncthing.lite.utils.FileUploadDialog
 
 class FolderBrowserActivity : SyncthingActivity() {
 
@@ -64,9 +64,9 @@ class FolderBrowserActivity : SyncthingActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (requestCode == REQUEST_SELECT_UPLOAD_FILE && resultCode == Activity.RESULT_OK) {
             libraryHandler?.syncthingClient { syncthingClient ->
-                UploadFileTask(this@FolderBrowserActivity, syncthingClient, intent!!.data,
+                FileUploadDialog(this@FolderBrowserActivity, syncthingClient, intent!!.data,
                         indexBrowser.folder, indexBrowser.currentPath,
-                        { showFolderListView(indexBrowser.currentPath) } ).uploadFile()
+                        { showFolderListView(indexBrowser.currentPath) } )
             }
         }
     }

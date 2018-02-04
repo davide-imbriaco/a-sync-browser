@@ -2,7 +2,6 @@ package net.syncthing.lite.library
 
 import android.content.Context
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.util.Log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
@@ -136,7 +135,6 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         }
 
         instanceCount--
-        Log.d("xxx", "instanceCount=$instanceCount")
         Handler().postDelayed({
             Thread {
                 if (instanceCount == 0) {
