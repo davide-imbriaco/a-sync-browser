@@ -16,7 +16,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.java.core.beans.DeviceId
 import net.syncthing.java.core.beans.DeviceInfo
-import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding

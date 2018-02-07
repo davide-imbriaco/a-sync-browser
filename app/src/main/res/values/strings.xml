@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Syncthing Lite</string>
-    <string name="index_update_progress_message">Index update…</string>
     <string name="folder_list_empty_message">No folder available</string>
     <string name="clear_local_cache_index_label">Clear local cache/index</string>
     <string name="devices_list_view_empty_message">No devices available</string>
-    <string name="toast_write_storage_permission_required">Write storage permission is required for this functionality</string>
     <string name="scan_qr_code">Scan QR code</string>
     <string name="enter_device_id">Enter device ID</string>
     <string name="invalid_device_id">Invalid device ID</string>
@@ -15,7 +13,6 @@
     <string name="toast_file_upload_failed">File upload failed</string>
     <string name="toast_upload_complete">File upload complete</string>
     <string name="dialog_uploading_file">Uploading file %1$s</string>
-    <string name="directory_empty">Directory is empty</string>
     <string name="clear_cache_and_index_title">Clear local cache and index?</string>
     <string name="clear_cache_and_index_body">Clear all local cache data and index data?</string>
     <string name="index_update_progress_label">Index update for folder %1$s, %2$d%% synchronized</string>

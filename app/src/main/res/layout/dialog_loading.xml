@@ -4,27 +4,20 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/abc_action_bar_content_inset_material"
+        android:padding="24dp"
         android:theme="?alertDialogTheme"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginEnd="24dp" />
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/abc_action_bar_content_inset_material" />
-
-            <TextView
-                android:id="@+id/loading_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

@@ -2,7 +2,6 @@
 <resources>
     <color name="primary">#f43703</color>
     <color name="primary_dark">#d13602</color>
-    <color name="white_on_primary">#fefefe</color>
     <color name="accent">#FFC107</color>
     <color name="divider">#1F000000</color>
 

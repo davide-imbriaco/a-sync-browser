@@ -9,8 +9,6 @@ import java.security.InvalidParameterException
 
 object Util {
 
-    private val Tag = "Util"
-
     fun getDeviceName(): String {
         val manufacturer = Build.MANUFACTURER ?: ""
         val model = Build.MODEL ?: ""
@@ -28,8 +26,7 @@ object Util {
             if (cursor == null || !cursor.moveToFirst()) {
                 throw InvalidParameterException("Cursor is null or empty")
             }
-            return cursor.getString(
-                    cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
         }
     }
 }

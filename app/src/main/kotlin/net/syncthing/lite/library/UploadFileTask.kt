@@ -10,7 +10,7 @@ import net.syncthing.lite.utils.Util
 import org.apache.commons.io.IOUtils
 
 // TODO: this should be an IntentService with notification
-class UploadFileTask(context: Context, private val syncthingClient: SyncthingClient,
+class UploadFileTask(context: Context, syncthingClient: SyncthingClient,
                      localFile: Uri, private val syncthingFolder: String,
                      syncthingSubFolder: String,
                      private val onProgress: (BlockPusher.FileUploadObserver) -> Unit,

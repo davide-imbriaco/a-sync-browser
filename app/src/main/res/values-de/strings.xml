@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Syncthing Lite</string>
-    <string name="index_update_progress_message">Index wird aktualisiert…</string>
     <string name="folder_list_empty_message">Keine Ordner verfügbar</string>
     <string name="clear_local_cache_index_label">Lokalen Index und Cache löschen</string>
     <string name="devices_list_view_empty_message">Keine Geräte verfügbar</string>
-    <string name="toast_write_storage_permission_required">Schreibrechte werden für diese Funktion benötigt</string>
     <string name="scan_qr_code">QR code scannen</string>
     <string name="enter_device_id">Geräte ID eingeben</string>
     <string name="invalid_device_id">Ungültige Geräte ID</string>
@@ -15,7 +13,6 @@
     <string name="toast_file_upload_failed">Hochladen gescheitert</string>
     <string name="toast_upload_complete">Hochladen erfolgreich</string>
     <string name="dialog_uploading_file">Datei %1$s wird hochgeladen</string>
-    <string name="directory_empty">Ordner ist leer</string>
     <string name="clear_cache_and_index_title">Lokalen Cache und Index löschen?</string>
     <string name="clear_cache_and_index_body">Gesamten lokalen Cache und Index löschen?</string>
     <string name="loading_config_starting_syncthing_client">Konfiguartion wird geladen, Syncthing wird gestartet</string>

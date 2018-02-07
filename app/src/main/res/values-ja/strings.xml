@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Syncthing Lite</string>
-    <string name="index_update_progress_message">索引の更新…</string>
     <string name="folder_list_empty_message">フォルダーがありません</string>
     <string name="clear_local_cache_index_label">ローカルキャッシュ/索引をクリア</string>
     <string name="devices_list_view_empty_message">デバイスがありません</string>
-    <string name="toast_write_storage_permission_required">この機能はストレージの書き込みアクセス許可が必要です</string>
     <string name="scan_qr_code">QR コードをスキャン</string>
     <string name="enter_device_id">デバイス ID を入力</string>
     <string name="invalid_device_id">デバイス ID が無効です</string>
@@ -15,7 +13,6 @@
     <string name="toast_file_upload_failed">ファイルのアップロードに失敗しました</string>
     <string name="toast_upload_complete">ファイルのアップロードが完了しました</string>
     <string name="dialog_uploading_file">ファイル %1$s のアップロード中</string>
-    <string name="directory_empty">ディレクトリーは空です</string>
     <string name="clear_cache_and_index_title">ローカルキャッシュと索引をクリアしますか?</string>
     <string name="clear_cache_and_index_body">すべてのローカルキャッシュデータと索引データをクリアしますか?</string>
     <string name="loading_config_starting_syncthing_client">設定の読み込み中、syncthing クライアントの開始中</string>
