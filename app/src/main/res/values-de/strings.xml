@@ -18,7 +18,6 @@
     <string name="directory_empty">Ordner ist leer</string>
     <string name="clear_cache_and_index_title">Lokalen Cache und Index löschen?</string>
     <string name="clear_cache_and_index_body">Gesamten lokalen Cache und Index löschen?</string>
-    <string name="index_update_progress_label">Index aktualisierung für Ordner %1$s, %2$d%% synchronisiert</string>
     <string name="loading_config_starting_syncthing_client">Konfiguartion wird geladen, Syncthing wird gestartet</string>
     <string name="last_modified_time">Zuletzt modifiziert: %1$s</string>
     <string name="remove_device_title">Gerät entfernen:</string>

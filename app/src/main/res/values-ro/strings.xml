@@ -1,2 +1,32 @@
 <resources>
-    </resources>
+    <string name="app_name">Syncthing Lite</string>
+    <string name="index_update_progress_message">Actualizare index…</string>
+    <string name="folder_list_empty_message">Nici un director disponibil</string>
+    <string name="clear_local_cache_index_label">Curăță indexul/memoria locală</string>
+    <string name="devices_list_view_empty_message">Nici un dispozitiv disponibil</string>
+    <string name="toast_write_storage_permission_required">Este necesară permisiunea de acces la stocare pentru această funcționalitate</string>
+    <string name="scan_qr_code">Scanează cod QR</string>
+    <string name="enter_device_id">Introduceți ID dispozitiv</string>
+    <string name="invalid_device_id">ID dispozitiv invalid</string>
+    <string name="device_id_dialog_title">Introduceți ID dispozitiv</string>
+    <string name="dialog_downloading_file">Se descarcă fișierul %1$s</string>
+    <string name="toast_file_download_failed">Descărcarea fișierului a eșuat</string>
+    <string name="toast_open_file_failed">Nu a fost găsită nici o aplicație compatibilă</string>
+    <string name="toast_file_upload_failed">Încărcarea fișierului a eșuat</string>
+    <string name="toast_upload_complete">Încărcarea fișierelor finalizată</string>
+    <string name="dialog_uploading_file">Se încarcă fișierul %1$s</string>
+    <string name="directory_empty">Directorul este gol</string>
+    <string name="clear_cache_and_index_title">Se curăță memoria locală și indexul?</string>
+    <string name="clear_cache_and_index_body">Se curăță datele din memoria locală și datele indexului?</string>
+    <string name="loading_config_starting_syncthing_client">Încărcare setări, pornire client syncthing…</string>
+    <string name="last_modified_time">Modificat ultima dată pe: %1$s</string>
+    <string name="remove_device_title">Ștergere dispozitiv %1$s\?</string>
+    <string name="remove_device_message">Se va șterge %1$s din lista dispozitivelor cunoscute?</string>
+    <string name="device_import_success">Dispozitiv importat cu succes %1$s</string>
+    <string name="device_already_known">Dispozitiv deja prezent %1$s</string>
+    <string name="folders_label">Directoare</string>
+    <string name="devices_label">Dispozitive</string>
+    <string name="folder_label_format">%1$s (%2$s)</string>
+    <string name="folder_content_info">%1$s, %2$d fișier(e), %3$d director(oare)</string>
+    <string name="file_info">%1$s, modificat ultima dată pe %2$s</string>
+</resources>
