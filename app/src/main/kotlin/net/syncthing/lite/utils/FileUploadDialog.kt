@@ -18,7 +18,7 @@ class FileUploadDialog(private val context: Context, private val syncthingClient
                        private val onUploadCompleteListener: () -> Unit) {
 
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var uploadFileTask: UploadFileTask
+    private var uploadFileTask: UploadFileTask? = null
 
     init {
         showDialog()
@@ -34,7 +34,7 @@ class FileUploadDialog(private val context: Context, private val syncthingClient
         progressDialog.setMessage(context.getString(R.string.dialog_uploading_file, Util.getContentFileName(context, localFile)))
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
         progressDialog.setCancelable(true)
-        progressDialog.setOnCancelListener { uploadFileTask.cancel() }
+        progressDialog.setOnCancelListener { uploadFileTask?.cancel() }
         progressDialog.isIndeterminate = true
         progressDialog.show()
     }

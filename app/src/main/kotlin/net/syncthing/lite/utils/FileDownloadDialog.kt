@@ -26,7 +26,7 @@ class FileDownloadDialog(context: Context, syncthingClient: SyncthingClient,
 
     private val Tag = "FileDownloadDialog"
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var downloadFileTask: DownloadFileTask
+    private var downloadFileTask: DownloadFileTask? = null
 
     init {
         showDialog()
@@ -42,7 +42,7 @@ class FileDownloadDialog(context: Context, syncthingClient: SyncthingClient,
         progressDialog.setMessage(context.getString(R.string.dialog_downloading_file, fileInfo.fileName))
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
         progressDialog.setCancelable(true)
-        progressDialog.setOnCancelListener { downloadFileTask.cancel() }
+        progressDialog.setOnCancelListener { downloadFileTask?.cancel() }
         progressDialog.isIndeterminate = true
         progressDialog.show()
     }
