@@ -68,7 +68,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
     }
 
     private fun init(context: Context) {
-        val configuration = Configuration(configFolder = context.filesDir, cacheFolder = context.externalCacheDir)
+        val configuration = Configuration(configFolder = context.filesDir)
         configuration.localDeviceName = Util.getDeviceName()
         configuration.persistLater()
         val syncthingClient = SyncthingClient(configuration)

@@ -13,8 +13,8 @@ import net.syncthing.java.core.utils.PathUtils
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.FolderContentsAdapter
 import net.syncthing.lite.databinding.ActivityFolderBrowserBinding
-import net.syncthing.lite.utils.FileDownloadDialog
-import net.syncthing.lite.utils.FileUploadDialog
+import net.syncthing.lite.dialogs.FileDownloadDialog
+import net.syncthing.lite.dialogs.FileUploadDialog
 
 class FolderBrowserActivity : SyncthingActivity() {
 
@@ -66,7 +66,7 @@ class FolderBrowserActivity : SyncthingActivity() {
             libraryHandler?.syncthingClient { syncthingClient ->
                 FileUploadDialog(this@FolderBrowserActivity, syncthingClient, intent!!.data,
                         indexBrowser.folder, indexBrowser.currentPath,
-                        { showFolderListView(indexBrowser.currentPath) } )
+                        { showFolderListView(indexBrowser.currentPath) }).show()
             }
         }
     }
@@ -88,7 +88,7 @@ class FolderBrowserActivity : SyncthingActivity() {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 Log.i(TAG, "pulling file = " + fileInfo)
-                libraryHandler?.syncthingClient { FileDownloadDialog(this, it, fileInfo) }
+                libraryHandler?.syncthingClient { FileDownloadDialog(this, it, fileInfo).show() }
             }
         }
     }

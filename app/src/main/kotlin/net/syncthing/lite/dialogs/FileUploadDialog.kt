@@ -1,4 +1,4 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.dialogs
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -9,18 +9,19 @@ import net.syncthing.java.bep.BlockPusher
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.lite.R
 import net.syncthing.lite.library.UploadFileTask
+import net.syncthing.lite.utils.Util
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 
 class FileUploadDialog(private val context: Context, private val syncthingClient: SyncthingClient,
                        private val localFile: Uri, private val syncthingFolder: String,
-                       syncthingSubFolder: String,
+                       private val syncthingSubFolder: String,
                        private val onUploadCompleteListener: () -> Unit) {
 
     private lateinit var progressDialog: ProgressDialog
     private var uploadFileTask: UploadFileTask? = null
 
-    init {
+    fun show() {
         showDialog()
         doAsync {
             uploadFileTask = UploadFileTask(context, syncthingClient, localFile, syncthingFolder,

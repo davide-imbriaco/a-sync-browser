@@ -14,6 +14,12 @@
             android:title="@string/devices_label" />
 
         <item
+            android:id="@+id/device_id"
+            android:icon="@drawable/ic_qr_code_gray_24dp"
+            android:title="@string/show_device_id"
+            android:checkable="false" />
+
+        <item
             android:id="@+id/clear_index"
             android:icon="@drawable/ic_delete_gray_24dp"
             android:title="@string/clear_local_cache_index_label"

@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import net.syncthing.lite.R
 import net.syncthing.lite.databinding.ActivityMainBinding
+import net.syncthing.lite.dialogs.DeviceIdDialog
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
 import net.syncthing.lite.fragments.SyncthingFragment
@@ -67,6 +68,9 @@ class MainActivity : SyncthingActivity() {
         when (menuItem.itemId) {
             R.id.folders -> setContentFragment(FoldersFragment())
             R.id.devices -> setContentFragment(DevicesFragment())
+            R.id.device_id -> libraryHandler?.configuration { config ->
+                DeviceIdDialog(this, config.localDeviceId).show()
+            }
             R.id.clear_index -> AlertDialog.Builder(this)
                     .setTitle(getString(R.string.clear_cache_and_index_title))
                     .setMessage(getString(R.string.clear_cache_and_index_body))

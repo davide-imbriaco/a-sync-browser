@@ -1,6 +1,5 @@
-package net.syncthing.lite.utils
+package net.syncthing.lite.dialogs
 
-import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -21,14 +20,14 @@ import org.jetbrains.anko.newTask
 import org.jetbrains.anko.toast
 import java.io.File
 
-class FileDownloadDialog(context: Context, syncthingClient: SyncthingClient,
-                         private val fileInfo: FileInfo) : AlertDialog(context) {
+class FileDownloadDialog(private val context: Context, private val syncthingClient: SyncthingClient,
+                         private val fileInfo: FileInfo) {
 
     private val Tag = "FileDownloadDialog"
     private lateinit var progressDialog: ProgressDialog
     private var downloadFileTask: DownloadFileTask? = null
 
-    init {
+    fun show() {
         showDialog()
         doAsync {
             downloadFileTask = DownloadFileTask(context, syncthingClient, fileInfo,

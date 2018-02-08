@@ -27,4 +27,8 @@
     <string name="folder_label_format">%1$s (%2$s)</string>
     <string name="folder_content_info">%1$s, %2$d files, %3$d directories</string>
     <string name="file_info">%1$s, last modified %2$s</string>
+    <string name="show_device_id">Show device ID</string>
+    <string name="device_id">Device ID</string>
+    <string name="device_id_copied">Device ID copied to clipboard</string>
+    <string name="share_device_id_chooser">Share device ID with</string>
 </resources>
