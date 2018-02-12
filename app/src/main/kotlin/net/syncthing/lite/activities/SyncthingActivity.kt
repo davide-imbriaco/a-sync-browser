@@ -63,5 +63,13 @@ abstract class SyncthingActivity : AppCompatActivity() {
         snackBar = null
     }
 
-    open fun onLibraryLoaded() {}
+    open fun onLibraryLoaded() {
+        if (LibraryHandler.isListeningPortTaken) {
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.other_syncthing_instance_title)
+                    .setMessage(R.string.other_syncthing_instance_message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+        }
+    }
 }

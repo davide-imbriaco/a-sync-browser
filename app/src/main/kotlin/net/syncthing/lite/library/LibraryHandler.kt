@@ -13,6 +13,9 @@ import net.syncthing.java.core.beans.IndexInfo
 import net.syncthing.java.core.configuration.Configuration
 import net.syncthing.lite.utils.Util
 import org.jetbrains.anko.doAsync
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.SocketException
 import java.util.*
 
 class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit,
@@ -26,6 +29,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         private var folderBrowser: FolderBrowser? = null
         private val callbacks = ArrayList<(Configuration, SyncthingClient, FolderBrowser) -> Unit>()
         private var isLoading = false
+        var isListeningPortTaken = false
     }
 
     private val TAG = "LibraryHandler"
@@ -35,6 +39,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         if (configuration == null && !isLoading) {
             isLoading = true
             doAsync {
+                checkIsListeningPortTaken()
                 init(context)
                 async(UI) {
                     onLibraryLoaded(this@LibraryHandler)
@@ -116,6 +121,19 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     fun folderBrowser(callback: (FolderBrowser) -> Unit) {
         library { _, _, f -> callback(f) }
+    }
+
+    /**
+     * Check if listening port for local discovery is taken by another app. Do this check here to
+     * avoid adding another callback.
+     */
+    private fun checkIsListeningPortTaken() {
+        try {
+            DatagramSocket(21027, InetAddress.getByName("0.0.0.0")).close()
+        } catch (e: SocketException) {
+            Log.w(TAG, e)
+            isListeningPortTaken = true
+        }
     }
 
     /**

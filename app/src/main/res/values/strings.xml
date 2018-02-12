@@ -31,4 +31,6 @@
     <string name="device_id">Device ID</string>
     <string name="device_id_copied">Device ID copied to clipboard</string>
     <string name="share_device_id_chooser">Share device ID with</string>
+    <string name="other_syncthing_instance_title">Another Syncthing instance is running</string>
+    <string name="other_syncthing_instance_message">Local discovery will not work. Stop the other Syncthing instance to enable local discovery.</string>
 </resources>
