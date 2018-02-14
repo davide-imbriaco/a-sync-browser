@@ -15,7 +15,7 @@
 
         <item
             android:id="@+id/device_id"
-            android:icon="@drawable/ic_qr_code_gray_24dp"
+            android:icon="@drawable/ic_qr_code_black_24dp"
             android:title="@string/show_device_id"
             android:checkable="false" />
 

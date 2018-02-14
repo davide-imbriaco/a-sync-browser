@@ -5,7 +5,7 @@
     <string name="devices_list_view_empty_message">No devices available</string>
     <string name="scan_qr_code">Scan QR code</string>
     <string name="enter_device_id">Enter device ID</string>
-    <string name="invalid_device_id">Invalid device ID</string>
+    <string name="invalid_device_id">Error: Invalid device ID</string>
     <string name="device_id_dialog_title">Enter Device ID</string>
     <string name="dialog_downloading_file">Downloading file %1$s</string>
     <string name="toast_file_download_failed">Failed to download file</string>
