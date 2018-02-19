@@ -11,7 +11,6 @@ import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.beans.IndexInfo
 import net.syncthing.java.core.configuration.Configuration
-import net.syncthing.lite.utils.Util
 import org.jetbrains.anko.doAsync
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -74,10 +73,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
 
     private fun init(context: Context) {
         val configuration = Configuration(configFolder = context.filesDir)
-        configuration.localDeviceName = Util.getDeviceName()
-        configuration.persistLater()
         val syncthingClient = SyncthingClient(configuration)
-        //TODO listen for device events, update device list
         val folderBrowser = syncthingClient.indexHandler.newFolderBrowser()
 
         if (instanceCount == 0) {
@@ -94,7 +90,7 @@ class LibraryHandler(context: Context, onLibraryLoaded: (LibraryHandler) -> Unit
         LibraryHandler.folderBrowser = folderBrowser
     }
 
-    private fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {
+    fun library(callback: (Configuration, SyncthingClient, FolderBrowser) -> Unit) {
         val nullCount = listOf(configuration, syncthingClient, folderBrowser).count { it == null }
         assert(nullCount == 0 || nullCount == 3, { "Inconsistent library state" })
 

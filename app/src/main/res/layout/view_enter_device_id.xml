@@ -11,6 +11,7 @@
         android:paddingEnd="16dp">
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/device_id_holder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -21,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minLines="3"
-                android:inputType="textNoSuggestions|textMultiLine"
+                android:inputType="textNoSuggestions|textMultiLine|textCapCharacters"
                 tools:text="VPNPKMK-VL2SOQN-SS5I2AB-G4BV7ZK-RO5ODEE-Y2G3CZ4-C4FUW4P-ZEMJOAF"/>
 
         </android.support.design.widget.TextInputLayout>

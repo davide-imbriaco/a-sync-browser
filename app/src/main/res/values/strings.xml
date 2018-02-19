@@ -33,4 +33,10 @@
     <string name="share_device_id_chooser">Share device ID with</string>
     <string name="other_syncthing_instance_title">Another Syncthing instance is running</string>
     <string name="other_syncthing_instance_message">Local discovery will not work. Stop the other Syncthing instance to enable local discovery.</string>
+    <string name="intro_page_one_title">Welcome to Syncthing Lite</string>
+    <string name="intro_page_one_description">Syncthing replaces proprietary sync and cloud services with something open, trustworthy and decentralized. Your data is your data alone and you deserve to choose where it is stored, if it is shared with some third party and how it\'s transmitted over the Internet.</string>
+    <string name="intro_page_two_title">Add a device</string>
+    <string name="intro_page_three_title">Share your folders</string>
+    <string name="intro_page_two_description">Enter a Syncthing device ID, or scan a device ID from a QR code</string>
+    <string name="intro_page_three_description">Now accept the device with ID %1$s, and share a folder with it. It may take a few minutes until the devices connect.</string>
 </resources>

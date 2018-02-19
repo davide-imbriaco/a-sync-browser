@@ -63,4 +63,5 @@ dependencies {
     implementation 'sk.baka.slf4j:slf4j-handroid:1.7.26'
     implementation 'com.google.zxing:android-integration:3.3.0'
     implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.github.apl-devs:appintro:v4.2.3'
 }

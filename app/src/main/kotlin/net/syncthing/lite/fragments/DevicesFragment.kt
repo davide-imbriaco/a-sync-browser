@@ -12,17 +12,13 @@ import android.view.inputmethod.InputMethodManager
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import net.syncthing.java.core.beans.DeviceId
-import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.lite.R
 import net.syncthing.lite.adapters.DevicesAdapter
 import net.syncthing.lite.databinding.FragmentDevicesBinding
 import net.syncthing.lite.databinding.ViewEnterDeviceIdBinding
 import net.syncthing.lite.utils.FragmentIntentIntegrator
-import org.apache.commons.lang3.StringUtils.isBlank
-import org.jetbrains.anko.toast
+import net.syncthing.lite.utils.Util
 import java.io.IOException
-import java.util.*
 
 class DevicesFragment : SyncthingFragment() {
 
@@ -86,28 +82,9 @@ class DevicesFragment : SyncthingFragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        // Check if this was a QR code scan.
         val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent)
-        if (scanResult != null) {
-            val deviceId = scanResult.contents
-            if (!isBlank(deviceId)) {
-                addDeviceDialogBinding?.deviceId?.setText(deviceId)
-            }
-        }
-    }
-
-    private fun importDeviceId(deviceId: DeviceId) {
-        libraryHandler?.configuration { configuration ->
-            async(UI) {
-                if (!configuration.peerIds.contains(deviceId)) {
-                    configuration.peers = configuration.peers + DeviceInfo(deviceId, null)
-                    configuration.persistLater()
-                    getContext()?.toast(getString(R.string.device_import_success, deviceId.shortId))
-                    updateDeviceList()
-                } else {
-                    getContext()?.toast(getString(R.string.device_already_known, deviceId.shortId))
-                }
-            }
+        if (scanResult?.contents != null && scanResult.contents.isNotBlank()) {
+            addDeviceDialogBinding?.deviceId?.setText(scanResult.contents)
         }
     }
 
@@ -134,8 +111,8 @@ class DevicesFragment : SyncthingFragment() {
             addDeviceDialog?.getButton(AlertDialog.BUTTON_POSITIVE)
                     ?.setOnClickListener {
                         try {
-                            val deviceId = DeviceId(binding.deviceId.text.toString().toUpperCase(Locale.US))
-                            importDeviceId(deviceId)
+                            val deviceId = binding.deviceId.text.toString()
+                            Util.importDeviceId(libraryHandler, context, deviceId, { updateDeviceList() })
                             addDeviceDialog?.dismiss()
                         } catch (e: IOException) {
                             binding.deviceId.error = getString(R.string.invalid_device_id)

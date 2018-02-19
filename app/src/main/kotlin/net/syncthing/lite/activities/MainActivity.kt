@@ -15,8 +15,14 @@ import net.syncthing.lite.dialogs.DeviceIdDialog
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
 import net.syncthing.lite.fragments.SyncthingFragment
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.intentFor
 
 class MainActivity : SyncthingActivity() {
+
+    companion object {
+        const val PREF_IS_FIRST_START = "net.syncthing.lite.activities.MainActivity.IS_FIRST_START"
+    }
 
     private lateinit var binding: ActivityMainBinding
     private var drawerToggle: ActionBarDrawerToggle? = null
@@ -24,6 +30,11 @@ class MainActivity : SyncthingActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (defaultSharedPreferences.getBoolean(PREF_IS_FIRST_START, true)) {
+            startActivity(intentFor<IntroActivity>())
+            finish()
+        }
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 

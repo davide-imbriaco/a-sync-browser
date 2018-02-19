@@ -1,6 +1,7 @@
 package net.syncthing.lite.activities
 
 import android.app.AlertDialog
+import android.content.Context
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -15,6 +16,18 @@ import org.jetbrains.anko.contentView
 import org.slf4j.impl.HandroidLoggerAdapter
 
 abstract class SyncthingActivity : AppCompatActivity() {
+
+    companion object {
+        fun checkLocalDiscoveryPort(context: Context) {
+            if (LibraryHandler.isListeningPortTaken) {
+                AlertDialog.Builder(context)
+                        .setTitle(R.string.other_syncthing_instance_title)
+                        .setMessage(R.string.other_syncthing_instance_message)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+            }
+        }
+    }
 
     var libraryHandler: LibraryHandler? = null
         private set
@@ -64,12 +77,6 @@ abstract class SyncthingActivity : AppCompatActivity() {
     }
 
     open fun onLibraryLoaded() {
-        if (LibraryHandler.isListeningPortTaken) {
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.other_syncthing_instance_title)
-                    .setMessage(R.string.other_syncthing_instance_message)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-        }
+        checkLocalDiscoveryPort(this)
     }
 }
