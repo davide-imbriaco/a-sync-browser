@@ -11,8 +11,8 @@ android {
         applicationId "net.syncthing.lite"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 8
-        versionName "0.2.0"
+        versionCode 9
+        versionName "0.2.1"
         multiDexEnabled true
     }
     sourceSets {
@@ -51,7 +51,7 @@ dependencies {
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:preference-v14:$support_version"
     kapt "com.android.databinding:library:1.3.3"
-    implementation ("com.github.Nutomic:syncthing-java:0.2.0") {
+    implementation ("com.github.Nutomic:syncthing-java:0.2.1") {
         exclude group: 'commons-logging', module:'commons-logging'
         exclude group: 'org.apache.httpcomponents', module:'httpclient'
         exclude group: 'org.slf4j'
