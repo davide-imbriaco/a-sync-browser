@@ -5,7 +5,6 @@
     <string name="devices_list_view_empty_message">デバイスがありません</string>
     <string name="scan_qr_code">QR コードをスキャン</string>
     <string name="enter_device_id">デバイス ID を入力</string>
-    <string name="invalid_device_id">デバイス ID が無効です</string>
     <string name="device_id_dialog_title">デバイス ID を入力</string>
     <string name="dialog_downloading_file">ファイル %1$s のダウンロード中</string>
     <string name="toast_file_download_failed">ファイルのダウンロードに失敗しました</string>
@@ -15,10 +14,9 @@
     <string name="dialog_uploading_file">ファイル %1$s のアップロード中</string>
     <string name="clear_cache_and_index_title">ローカルキャッシュと索引をクリアしますか?</string>
     <string name="clear_cache_and_index_body">すべてのローカルキャッシュデータと索引データをクリアしますか?</string>
-    <string name="loading_config_starting_syncthing_client">設定の読み込み中、syncthing クライアントの開始中</string>
+    <string name="index_update_progress_label">フォルダー %1$s の索引を更新しました。 %2$d%% 同期しました</string>
     <string name="last_modified_time">最終更新: %1$s</string>
     <string name="remove_device_title">デバイス %1$sを削除しますか?</string>
-    <string name="remove_device_message">既存のデバイスリストからデバイス %1$s を削除しますか?</string>
     <string name="device_import_success">デバイス %1$s のインポートに成功しました</string>
     <string name="device_already_known">デバイスは既に存在します %1$s</string>
     <string name="folders_label">フォルダー</string>
@@ -26,4 +24,4 @@
     <string name="folder_label_format">%1$s (%2$s)</string>
     <string name="folder_content_info">%1$s, %2$d ファイル, %3$d ディレクトリー</string>
     <string name="file_info">%1$s, 最終更新 %2$s</string>
-</resources>
+    </resources>
