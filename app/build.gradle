@@ -48,9 +48,9 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
     kapt "com.android.databinding:compiler:$build_tools_version"
-    implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
-    implementation "com.android.support:cardview-v7:$support_version"
+    implementation "com.android.support:preference-v14:$support_version"
+    kapt "com.android.databinding:library:1.3.3"
     implementation ("com.github.Nutomic:syncthing-java:0.2.0") {
         exclude group: 'commons-logging', module:'commons-logging'
         exclude group: 'org.apache.httpcomponents', module:'httpclient'

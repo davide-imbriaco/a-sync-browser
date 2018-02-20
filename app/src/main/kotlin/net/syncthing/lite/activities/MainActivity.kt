@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Gravity
 import android.view.MenuItem
@@ -14,7 +15,7 @@ import net.syncthing.lite.databinding.ActivityMainBinding
 import net.syncthing.lite.dialogs.DeviceIdDialog
 import net.syncthing.lite.fragments.DevicesFragment
 import net.syncthing.lite.fragments.FoldersFragment
-import net.syncthing.lite.fragments.SyncthingFragment
+import net.syncthing.lite.fragments.SettingsFragment
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.intentFor
 
@@ -26,7 +27,6 @@ class MainActivity : SyncthingActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var drawerToggle: ActionBarDrawerToggle? = null
-    private var currentFragment: SyncthingFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +79,7 @@ class MainActivity : SyncthingActivity() {
         when (menuItem.itemId) {
             R.id.folders -> setContentFragment(FoldersFragment())
             R.id.devices -> setContentFragment(DevicesFragment())
+            R.id.settings -> setContentFragment(SettingsFragment())
             R.id.device_id -> libraryHandler?.configuration { config ->
                 DeviceIdDialog(this, config.localDeviceId).show()
             }
@@ -94,8 +95,7 @@ class MainActivity : SyncthingActivity() {
         return true
     }
 
-    private fun setContentFragment(fragment: SyncthingFragment) {
-        currentFragment = fragment
+    private fun setContentFragment(fragment: Fragment) {
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)

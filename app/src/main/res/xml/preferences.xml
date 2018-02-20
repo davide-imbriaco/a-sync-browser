@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings">
+
+        <EditTextPreference
+            android:key="local_device_name"
+            android:title="@string/settings_local_device_name"
+            android:summary="@string/settings_local_device_summary"
+            android:persistent="false"/>
+
+        <Preference
+            android:key="app_version"
+            android:title="@string/settings_app_version_title"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

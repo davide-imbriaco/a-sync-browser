@@ -14,6 +14,11 @@
             android:title="@string/devices_label" />
 
         <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings_gray_24dp"
+            android:title="@string/settings" />
+
+        <item
             android:id="@+id/device_id"
             android:icon="@drawable/ic_qr_code_black_24dp"
             android:title="@string/show_device_id"
