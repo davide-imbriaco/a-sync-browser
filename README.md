@@ -1,5 +1,6 @@
 # Syncthing Lite
 
+[![Build Status](https://travis-ci.org/Nutomic/syncthing-lite.svg?branch=master)](https://travis-ci.org/Nutomic/syncthing-lite)
 [![MPLv2 License](https://img.shields.io/badge/license-MPLv2-blue.svg?style=flat-square)](https://www.mozilla.org/MPL/2.0/)
 
 This project is an Android app, that works as a client for a [Syncthing][1] share (accessing 
