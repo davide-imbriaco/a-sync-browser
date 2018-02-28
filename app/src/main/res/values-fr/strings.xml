@@ -3,8 +3,6 @@
     <string name="folder_list_empty_message">Aucun dossier disponible</string>
     <string name="clear_local_cache_index_label">Effacer le cache et l\'index local</string>
     <string name="devices_list_view_empty_message">Aucun appareil disponible</string>
-    <string name="scan_qr_code">Scanner le QR Code</string>
-    <string name="enter_device_id">Entrer l\'ID de l\'appareil</string>
     <string name="device_id_dialog_title">Entrer l\'ID de l\'appareil</string>
     <string name="dialog_downloading_file">Téléchargement du fichier %1$s</string>
     <string name="toast_file_download_failed">Le téléchargement du fichier a échoué</string>

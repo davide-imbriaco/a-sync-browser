@@ -3,8 +3,6 @@
     <string name="folder_list_empty_message">Nici un director disponibil</string>
     <string name="clear_local_cache_index_label">Curăță indexul/memoria locală</string>
     <string name="devices_list_view_empty_message">Nici un dispozitiv disponibil</string>
-    <string name="scan_qr_code">Scanează cod QR</string>
-    <string name="enter_device_id">Introduceți ID dispozitiv</string>
     <string name="device_id_dialog_title">Introduceți ID dispozitiv</string>
     <string name="dialog_downloading_file">Se descarcă fișierul %1$s</string>
     <string name="toast_file_download_failed">Descărcarea fișierului a eșuat</string>

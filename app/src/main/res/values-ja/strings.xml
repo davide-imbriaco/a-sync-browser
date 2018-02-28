@@ -3,8 +3,6 @@
     <string name="folder_list_empty_message">フォルダーがありません</string>
     <string name="clear_local_cache_index_label">ローカルキャッシュ/索引をクリア</string>
     <string name="devices_list_view_empty_message">デバイスがありません</string>
-    <string name="scan_qr_code">QR コードをスキャン</string>
-    <string name="enter_device_id">デバイス ID を入力</string>
     <string name="device_id_dialog_title">デバイス ID を入力</string>
     <string name="dialog_downloading_file">ファイル %1$s のダウンロード中</string>
     <string name="toast_file_download_failed">ファイルのダウンロードに失敗しました</string>

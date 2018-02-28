@@ -3,8 +3,6 @@
     <string name="folder_list_empty_message">Keine Ordner verfügbar</string>
     <string name="clear_local_cache_index_label">Lokalen Index und Cache löschen</string>
     <string name="devices_list_view_empty_message">Keine Geräte verfügbar</string>
-    <string name="scan_qr_code">QR code scannen</string>
-    <string name="enter_device_id">Geräte ID eingeben</string>
     <string name="device_id_dialog_title">Geräte ID eingeben</string>
     <string name="dialog_downloading_file">Datei %1$s wird heruntergeladen</string>
     <string name="toast_file_download_failed">Datei konnte nicht heruntergeladen werden</string>
