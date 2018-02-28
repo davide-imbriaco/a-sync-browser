@@ -40,4 +40,5 @@
     <string name="settings_app_version_title">App version</string>
     <string name="settings_local_device_name">Local device name</string>
     <string name="settings_local_device_summary">The name that other devices will see for this device</string>
+    <string name="device_id_dialog_title">Enter Device ID</string>
 </resources>
