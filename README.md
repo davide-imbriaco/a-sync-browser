@@ -9,7 +9,7 @@ forum](https://forum.syncthing.net/).
 
 # Syncthing Lite
 
-[![Build Status](https://travis-ci.org/Nutomic/syncthing-lite.svg?branch=master)](https://travis-ci.org/Nutomic/syncthing-lite)
+[![Build Status](https://travis-ci.org/syncthing/syncthing-lite.svg?branch=master)](https://travis-ci.org/syncthing/syncthing-lite)
 [![MPLv2 License](https://img.shields.io/badge/license-MPLv2-blue.svg?style=flat-square)](https://www.mozilla.org/MPL/2.0/)
 
 This project is an Android app, that works as a client for a [Syncthing][1] share (accessing 
@@ -29,7 +29,7 @@ This project is based on [syncthing-java][3], a java implementation of Syncthing
 
 ## Translations
 
-The project is translated on [Transifex](https://www.transifex.com/syncthing-android/syncthing-lite/).
+The project is translated on [Transifex](https://www.transifex.com/syncthing/syncthing-lite/).
 
 ## Building
 
