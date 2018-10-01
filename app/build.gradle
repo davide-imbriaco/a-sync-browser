@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 
 android {
@@ -80,4 +79,6 @@ dependencies {
     implementation 'com.google.zxing:android-integration:3.3.0'
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'com.github.apl-devs:appintro:v4.2.3'
+
+    implementation project(':androidrepository')
 }
