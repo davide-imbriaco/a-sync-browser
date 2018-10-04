@@ -1,0 +1,16 @@
+apply plugin: 'application'
+apply plugin: 'kotlin'
+mainClassName = 'net.syncthing.java.client.cli.Main'
+
+dependencies {
+    compile project(':syncthing-client')
+    compile project(':syncthing-repository-default')
+    compile "commons-cli:commons-cli:1.4"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+run {
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
