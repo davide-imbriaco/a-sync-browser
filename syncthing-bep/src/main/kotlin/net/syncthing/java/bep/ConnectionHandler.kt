@@ -1,5 +1,6 @@
 /* 
  * Copyright (C) 2016 Davide Imbriaco
+ * Copyright (C) 2018 Jonas Lochmann
  *
  * This Java file is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +24,7 @@ import net.syncthing.java.core.beans.DeviceId
 import net.syncthing.java.core.beans.DeviceInfo
 import net.syncthing.java.core.beans.FolderInfo
 import net.syncthing.java.core.configuration.Configuration
+import net.syncthing.java.core.interfaces.TempRepository
 import net.syncthing.java.core.security.KeystoreHandler
 import net.syncthing.java.core.utils.NetworkUtils
 import net.syncthing.java.core.utils.submitLogging
@@ -45,6 +47,7 @@ import javax.net.ssl.SSLSocket
 
 class ConnectionHandler(private val configuration: Configuration, val address: DeviceAddress,
                         private val indexHandler: IndexHandler,
+                        private val tempRepository: TempRepository,
                         private val onNewFolderSharedListener: (ConnectionHandler, FolderInfo) -> Unit,
                         private val onConnectionChangedListener: (ConnectionHandler) -> Unit) : Closeable {
 
@@ -61,7 +64,8 @@ class ConnectionHandler(private val configuration: Configuration, val address: D
     internal var clusterConfigInfo: ClusterConfigInfo? = null
         private set
     private val clusterConfigWaitingLock = Object()
-    private val blockPuller = BlockPuller(this, indexHandler)
+    private val responseHandler = ResponseHandler()
+    private val blockPuller = BlockPuller(this, indexHandler, responseHandler, tempRepository)
     private val blockPusher = BlockPusher(configuration.localDeviceId, this, indexHandler)
     private val onRequestMessageReceivedListeners = mutableSetOf<(Request) -> Unit>()
     private var isClosed = false
@@ -395,7 +399,7 @@ class ConnectionHandler(private val configuration: Configuration, val address: D
                                 onRequestMessageReceivedListeners.forEach { it(message.value as Request) }
                             }
                             BlockExchangeProtos.MessageType.RESPONSE -> {
-                                blockPuller.onResponseMessageReceived(message.value as Response)
+                                responseHandler.handleResponse(message.value as Response)
                             }
                             BlockExchangeProtos.MessageType.PING -> logger.debug("ping message received")
                             BlockExchangeProtos.MessageType.CLOSE -> {

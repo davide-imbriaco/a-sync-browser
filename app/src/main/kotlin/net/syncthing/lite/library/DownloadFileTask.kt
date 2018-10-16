@@ -2,8 +2,11 @@ package net.syncthing.lite.library
 
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.os.CancellationSignal
 import android.util.Log
-import net.syncthing.java.bep.BlockPuller
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import net.syncthing.java.bep.BlockPullerStatus
 import net.syncthing.java.client.SyncthingClient
 import net.syncthing.java.core.beans.FileInfo
 import net.syncthing.lite.BuildConfig
@@ -14,62 +17,85 @@ import java.io.IOException
 class DownloadFileTask(private val externalCacheDir: File,
                        syncthingClient: SyncthingClient,
                        private val fileInfo: FileInfo,
-                       private val onProgress: (DownloadFileTask, BlockPuller.FileDownloadObserver) -> Unit,
+                       private val onProgress: (status: BlockPullerStatus) -> Unit,
                        private val onComplete: (File) -> Unit,
-                       private val onError: () -> Unit) {
+                       private val onError: (Exception) -> Unit) {
 
     companion object {
         private const val TAG = "DownloadFileTask"
         private val handler = Handler(Looper.getMainLooper())
+
+        suspend fun downloadFileCoroutine(
+                externalCacheDir: File,
+                syncthingClient: SyncthingClient,
+                fileInfo: FileInfo,
+                onProgress: (status: BlockPullerStatus) -> Unit
+        ) = suspendCancellableCoroutine<File> (holdCancellability = true) {
+            continuation ->
+
+            val task = DownloadFileTask(
+                    externalCacheDir,
+                    syncthingClient,
+                    fileInfo,
+                    onProgress,
+                    {
+                        continuation.resume(it)
+                    },
+                    {
+                        continuation.resumeWithException(it)
+                    }
+            )
+
+            continuation.invokeOnCancellation {
+                task.cancel()
+            }
+
+            continuation.initCancellability()
+        }
     }
 
-    private var isCancelled = false
+    private val cancellationSignal = CancellationSignal()
     private var doneListenerCalled = false
 
     init {
-        syncthingClient.getBlockPuller(fileInfo.folder, { blockPuller ->
-            val observer = blockPuller.pullFile(fileInfo)
+        launch {
+            syncthingClient.getBlockPuller(fileInfo.folder, { blockPuller ->
+                val job = launch {
+                    try {
+                        val inputStream = blockPuller.pullFileCoroutine(fileInfo, this@DownloadFileTask::callProgress)
 
-            callProgress(observer)
+                        val outputFile = File("$externalCacheDir/${fileInfo.folder}/${fileInfo.path}")
+                        FileUtils.copyInputStreamToFile(inputStream, outputFile)
 
-            try {
-                while (!observer.isCompleted()) {
-                    if (isCancelled) {
-                        callError()
-                        return@getBlockPuller
+                        if (BuildConfig.DEBUG) {
+                            Log.i(TAG, "Downloaded file $fileInfo")
+                        }
+
+                        callComplete(outputFile)
+                    } catch (e: Exception) {
+                        callError(e)
+
+                        if (BuildConfig.DEBUG) {
+                            Log.w(TAG, "Failed to download file $fileInfo", e)
+                        }
                     }
-
-                    observer.waitForProgressUpdate()
-
-                    if (BuildConfig.DEBUG) {
-                        Log.i("pullFile", "download progress = " + observer.progressMessage())
-                    }
-
-                    callProgress(observer)
                 }
 
-                val outputFile = File("$externalCacheDir/${fileInfo.folder}/${fileInfo.path}")
-                FileUtils.copyInputStreamToFile(observer.inputStream(), outputFile)
-
-                if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "Downloaded file $fileInfo")
+                cancellationSignal.setOnCancelListener {
+                    job.cancel()
                 }
-
-                callComplete(outputFile)
-            } catch (e: IOException) {
-                callError()
-
-                if (BuildConfig.DEBUG) {
-                    Log.w(TAG, "Failed to download file $fileInfo", e)
-                }
-            }
-        }, { callError() })
+            }, { callError(IOException("could not get block puller for file")) })
+        }
     }
 
-    private fun callProgress(observer: BlockPuller.FileDownloadObserver) {
+    private fun callProgress(status: BlockPullerStatus) {
         handler.post {
             if (!doneListenerCalled) {
-                onProgress(this, observer)
+                if (BuildConfig.DEBUG) {
+                    Log.i("pullFile", "download progress = $status")
+                }
+
+                onProgress(status)
             }
         }
     }
@@ -84,18 +110,18 @@ class DownloadFileTask(private val externalCacheDir: File,
         }
     }
 
-    private fun callError() {
+    private fun callError(exception: Exception) {
         handler.post {
             if (!doneListenerCalled) {
                 doneListenerCalled = true
 
-                onError()
+                onError(exception)
             }
         }
     }
 
     fun cancel() {
-        isCancelled = true
-        callError()
+        cancellationSignal.cancel()
+        callError(InterruptedException())
     }
 }
