@@ -1,12 +1,3 @@
-# UNMAINTAINED
-
-This project is a currently unmaintained experiment. You are welcome to fork
-it and continue experimenting. Should you, after doing so, feel that you
-wish to assume the maintainer role please get in touch [on the
-forum](https://forum.syncthing.net/).
-
----
-
 # Syncthing Lite
 
 [![Build Status](https://travis-ci.org/syncthing/syncthing-lite.svg?branch=master)](https://travis-ci.org/syncthing/syncthing-lite)
